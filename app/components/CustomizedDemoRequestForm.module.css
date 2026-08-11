@@ -1,0 +1,133 @@
+.form {
+  padding: clamp(22px, 4vw, 34px);
+  display: grid;
+  gap: 18px;
+  border: 1px solid var(--p-ink);
+  border-top: 6px solid var(--p-info);
+  background: var(--p-surface);
+  box-shadow: var(--p-shadow);
+}
+
+.heading span,
+.form label > span {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.heading > span {
+  color: var(--p-info);
+}
+
+.heading h3 {
+  margin: 8px 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.heading p,
+.actions p,
+.fallback {
+  color: var(--p-ink-soft);
+}
+
+.heading p {
+  max-width: 640px;
+  margin: 0;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.form label {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.form label small {
+  color: var(--p-ink-soft);
+  font: inherit;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.form input,
+.form textarea {
+  width: 100%;
+  border: 1px solid var(--p-line-strong, var(--p-ink));
+  border-radius: 0;
+  background: var(--p-paper);
+  color: var(--p-ink);
+  font: inherit;
+}
+
+.form input {
+  min-height: 46px;
+  padding: 10px 12px;
+}
+
+.form textarea {
+  min-height: 138px;
+  padding: 12px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.form input:focus-visible,
+.form textarea:focus-visible {
+  outline: 3px solid var(--p-info);
+  outline-offset: 2px;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+
+.actions p {
+  max-width: 580px;
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.fallback {
+  margin: -2px 0 0;
+  font-size: 0.8rem;
+}
+
+.fallback strong {
+  color: var(--p-ink);
+  overflow-wrap: anywhere;
+}
+
+.noScript {
+  margin: 0;
+  padding: 12px 14px;
+  border-left: 4px solid var(--p-pending);
+  background: var(--p-pending-soft);
+  color: var(--p-ink);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 680px) {
+  .fieldGrid,
+  .actions {
+    grid-template-columns: 1fr;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+}
