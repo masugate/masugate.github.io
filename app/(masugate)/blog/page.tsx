@@ -8,6 +8,7 @@ export const metadata: Metadata = createMasuGatePageMetadata({
   title: "Blog & Updates",
   description:
     "Technical articles, project updates, and announcements about MasuGate, stateful policy, concurrent agent actions, integrations, and evidence.",
+  path: "/blog/",
 });
 
 export default function BlogIndexPage() {

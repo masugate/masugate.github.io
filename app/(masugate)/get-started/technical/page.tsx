@@ -8,6 +8,7 @@ export const metadata: Metadata = createMasuGatePageMetadata({
   title: "Technical Reference",
   description:
     "Inspect the MasuGate reference environment, operation outcomes, integration boundaries, and troubleshooting guidance.",
+  path: "/get-started/technical/",
 });
 
 function titleCase(value: string) {

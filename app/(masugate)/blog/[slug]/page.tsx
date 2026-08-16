@@ -30,6 +30,7 @@ export async function generateMetadata({
     return createMasuGatePageMetadata({
       title: "Article unavailable",
       description: "This MasuGate technical article is not published.",
+      path: `/blog/${slug}/`,
     });
   }
 

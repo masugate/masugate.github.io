@@ -31,6 +31,7 @@ test("MasuGate page metadata carries the shared social identity", () => {
   const metadata = createMasuGatePageMetadata({
     title: "Route title",
     description: "Route description",
+    path: "/route/",
   });
 
   assert.equal(metadata.title, "Route title");
@@ -40,6 +41,7 @@ test("MasuGate page metadata carries the shared social identity", () => {
     description: "Route description",
     siteName: "MasuGate",
     type: "website",
+    url: "https://masugate.github.io/route/",
     images: [
       {
         url: "/og-masugate.png",
@@ -62,8 +64,9 @@ test("MasuGate page metadata carries the shared social identity", () => {
       },
     ],
   });
-  assert.equal("alternates" in metadata, false);
-  assert.equal("url" in metadata.openGraph, false);
+  assert.deepEqual(metadata.alternates, {
+    canonical: "https://masugate.github.io/route/",
+  });
 });
 
 test("site metadata keeps the title template while sharing the social card", () => {
@@ -74,11 +77,16 @@ test("site metadata keeps the title template while sharing the social card", () 
     template: "%s — MasuGate",
   });
   assert.equal(metadata.openGraph.siteName, "MasuGate");
+  assert.equal(metadata.openGraph.url, "https://masugate.github.io/");
+  assert.deepEqual(metadata.alternates, {
+    canonical: "https://masugate.github.io/",
+  });
   assert.equal(metadata.twitter.card, "summary_large_image");
 });
 
-test("article metadata publishes article dates and topic tags without a URL", () => {
+test("article metadata publishes article dates, topic tags, and its canonical URL", () => {
   const metadata = createMasuGateArticleMetadata({
+    href: "/blog/concurrent-decisions/",
     title: "Concurrent decisions",
     summary: "Why allowed decisions can go stale.",
     publishedAt: "2026-08-03",
@@ -94,7 +102,10 @@ test("article metadata publishes article dates and topic tags without a URL", ()
     "Concurrency",
   ]);
   assert.equal(metadata.twitter.title, "Concurrent decisions — MasuGate");
-  assert.equal("url" in metadata.openGraph, false);
+  assert.equal(
+    metadata.openGraph.url,
+    "https://masugate.github.io/blog/concurrent-decisions/",
+  );
 });
 
 test("the public social image matches its declared PNG dimensions", async () => {

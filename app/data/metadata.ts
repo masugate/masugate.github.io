@@ -6,11 +6,12 @@ import { masugateSite } from "./masugate-site";
 export interface MasuGatePageMetadataInput {
   title: string;
   description: string;
+  path: `/${string}`;
 }
 
 type MasuGateArticleMetadataInput = Pick<
   PublishedArticle,
-  "title" | "summary" | "publishedAt" | "updatedAt" | "labels"
+  "href" | "title" | "summary" | "publishedAt" | "updatedAt" | "labels"
 >;
 
 function socialImages() {
@@ -48,18 +49,25 @@ function brandedSocialTitle(title: string): string {
 export function createMasuGatePageMetadata({
   title,
   description,
+  path,
 }: MasuGatePageMetadataInput): Metadata {
   const images = socialImages();
   const socialTitle = brandedSocialTitle(title);
+  const origin = masugateSite.metadata.canonicalOrigin;
+  const canonicalUrl = isAvailable(origin)
+    ? new URL(path, origin.value).toString()
+    : undefined;
 
   return {
     title,
     description,
+    alternates: canonicalUrl ? { canonical: canonicalUrl } : undefined,
     openGraph: {
       title: socialTitle,
       description,
       siteName: masugateSite.name,
       type: "website",
+      url: canonicalUrl,
       images,
     },
     twitter: {
@@ -75,6 +83,7 @@ export function createMasuGateSiteMetadata(): Metadata {
   const metadata = createMasuGatePageMetadata({
     title: masugateSite.metadata.defaultTitle,
     description: masugateSite.metadata.description,
+    path: "/",
   });
 
   return {
@@ -92,6 +101,7 @@ export function createMasuGateArticleMetadata(
   const metadata = createMasuGatePageMetadata({
     title: article.title,
     description: article.summary,
+    path: article.href,
   });
 
   return {

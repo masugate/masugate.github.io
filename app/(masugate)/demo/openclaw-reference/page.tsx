@@ -8,6 +8,7 @@ export const metadata: Metadata = createMasuGatePageMetadata({
   title: "OpenClaw reference candidate",
   description:
     "Inspect the pinned Git-backed OpenClaw purchase candidate, its relationship to the interactive Demo, and the gates that remain before a public runnable release.",
+  path: "/demo/openclaw-reference/",
 });
 
 function titleCase(value: string): string {

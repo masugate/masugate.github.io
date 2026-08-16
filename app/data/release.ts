@@ -91,10 +91,10 @@ interface ReleaseBase {
 export type UnreleasedRelease = ReleaseBase &
   Readonly<{
     state: "unreleased";
-    publicRepository: Unavailable;
+    publicRepository: Availability<Readonly<{ href: `https://${string}` }>>;
     immutableRevision: Unavailable;
     verifiedAt: Unavailable;
-    publicDocumentation: Unavailable;
+    publicDocumentation: Availability<Readonly<{ href: `https://${string}` }>>;
     primaryInstall: Readonly<{
       state: "unavailable";
       intendedChannel: "pypi";
@@ -306,10 +306,9 @@ export const masugateRelease = {
     note:
       "Git-backed candidate metadata is source material, not retained runtime evidence or a public release guarantee.",
   },
-  publicRepository: unavailable(
-    "public-release-unavailable",
-    "The MasuGate source repository is public, but the candidate has no public v0.1.0 tag or GitHub Release yet.",
-  ),
+  publicRepository: available({
+    href: "https://github.com/masugate/masugate",
+  }),
   immutableRevision: unavailable(
     "public-release-unavailable",
     "The candidate commit is pinned, but no public v0.1.0 tag or GitHub Release exists yet.",
@@ -318,10 +317,9 @@ export const masugateRelease = {
     "verification-pending",
     "A public-release verification date is not available.",
   ),
-  publicDocumentation: unavailable(
-    "public-release-unavailable",
-    "Release-candidate documentation exists in Git, but its destination is not anonymously public.",
-  ),
+  publicDocumentation: available({
+    href: "https://github.com/masugate/masugate/blob/main/README.md",
+  }),
   primaryInstall: {
     state: "unavailable",
     intendedChannel: "pypi",

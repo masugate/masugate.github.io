@@ -692,7 +692,7 @@
 
 .masugate-footer-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(160px, 0.6fr));
+  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(150px, 0.6fr));
   gap: 40px;
 }
 
@@ -702,6 +702,7 @@
 }
 
 .masugate-footer-nav,
+.masugate-footer-project,
 .masugate-footer-contact {
   display: grid;
   align-content: start;
@@ -710,6 +711,7 @@
 }
 
 .masugate-footer-nav strong,
+.masugate-footer-project strong,
 .masugate-footer-contact strong {
   margin-bottom: 5px;
   color: #79d8ad;
@@ -1228,6 +1230,7 @@
 }
 
 .masugate-footer-nav strong,
+.masugate-footer-project strong,
 .masugate-footer-contact strong {
   color: #75ead3;
 }

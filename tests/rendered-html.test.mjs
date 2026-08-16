@@ -176,6 +176,17 @@ function assertMasuGateChrome(html, path) {
     `${path}: mobile navigation`,
   );
 
+  for (const href of [
+    "https://github.com/masugate/masugate",
+    "https://github.com/masugate/masugate/issues",
+    "https://github.com/masugate/masugate/blob/main/SECURITY.md",
+  ]) {
+    assert.ok(
+      linksIn(html).some((link) => link.href === href),
+      `${path}: footer is missing project link ${href}`,
+    );
+  }
+
   assert.ok(
     linksIn(primaryNavigation).some(
       ({ href, label }) =>
@@ -275,7 +286,7 @@ test("server-renders the MasuGate primary routes through one gated shell", async
   }
 });
 
-test("renders route-specific social metadata without inventing a canonical origin", async () => {
+test("renders route-specific social and canonical metadata", async () => {
   const routes = [
     [
       "/",
@@ -326,7 +337,15 @@ test("renders route-specific social metadata without inventing a canonical origi
     assert.match(html, /<meta property="og:image:width" content="1200"\/>/);
     assert.match(html, /<meta property="og:image:height" content="630"\/>/);
     assert.match(html, /<meta name="twitter:card" content="summary_large_image"\/>/);
-    assert.doesNotMatch(html, /<link rel="canonical"|property="og:url"/i);
+    const canonical = `https://masugate.github.io${path}`;
+    assert.ok(
+      html.includes(`<link rel="canonical" href="${canonical}"/>`),
+      `${path}: canonical link`,
+    );
+    assert.ok(
+      html.includes(`<meta property="og:url" content="${canonical}"/>`),
+      `${path}: Open Graph URL`,
+    );
   }
 
   const articleResponse = await render("/blog/when-allowed-goes-stale/");
@@ -932,6 +951,17 @@ test("server-renders the focused installation and five-minute demo guide", async
     assert.ok(
       linksIn(html).some((link) => link.href === href),
       `Get Started is missing its action: ${href}`,
+    );
+  }
+
+  for (const href of [
+    "https://github.com/masugate/masugate",
+    "https://github.com/masugate/masugate/archive/refs/heads/main.zip",
+    "https://github.com/masugate/masugate/blob/main/README.md",
+  ]) {
+    assert.ok(
+      linksIn(html).some((link) => link.href === href),
+      `Get Started is missing its public source link: ${href}`,
     );
   }
 

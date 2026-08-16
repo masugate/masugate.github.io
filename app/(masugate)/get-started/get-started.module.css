@@ -45,6 +45,26 @@
   line-height: 1.55;
 }
 
+.heroActions,
+.sourceLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sourceLinks {
+  margin-top: 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--p-line);
+  background: var(--p-paper);
+}
+
+.sourceLinks a {
+  border-bottom: 1px solid currentColor;
+  color: var(--p-info);
+  font-weight: 800;
+}
+
 .summary {
   padding: 24px;
   border: 1px solid var(--p-ink);

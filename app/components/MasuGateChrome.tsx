@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { selectLatestAnnouncement } from "../data/articles";
 import { contactContract } from "../data/contact";
+import { isAvailable } from "../data/contracts";
 import {
   type NavigationItemId,
   masugateSite,
@@ -202,6 +203,7 @@ export function MasuGateHeader() {
 
 export function MasuGateFooter() {
   const navigation = selectPrimaryNavigation();
+  const source = masugateSite.sourceRepository;
 
   return (
     <footer className="masugate-footer">
@@ -219,6 +221,24 @@ export function MasuGateFooter() {
             </Link>
           ))}
         </nav>
+        {isAvailable(source) ? (
+          <div className="masugate-footer-project">
+            <strong>Project</strong>
+            <a href={source.value.href} rel="noreferrer" target="_blank">
+              Source on GitHub
+            </a>
+            <a href={source.value.issuesHref} rel="noreferrer" target="_blank">
+              Issue tracker
+            </a>
+            <a
+              href={source.value.securityHref}
+              rel="noreferrer"
+              target="_blank"
+            >
+              Security policy
+            </a>
+          </div>
+        ) : null}
         <div className="masugate-footer-contact">
           <strong>Contact</strong>
           <a href={contactContract.sharedInbox.mailtoHref}>

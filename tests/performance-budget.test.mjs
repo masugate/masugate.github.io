@@ -13,7 +13,9 @@ const MASUGATE_ROUTES = [
   "/blog/when-allowed-goes-stale/",
 ];
 
-const MAX_HTML_GZIP_BYTES = 30 * 1024;
+// The public project/footer links and route-specific canonical metadata are a
+// deliberate part of every primary route. Keep the resulting ceiling tight.
+const MAX_HTML_GZIP_BYTES = 31 * 1024;
 const MAX_REFERENCED_ASSETS_GZIP_BYTES = 150 * 1024;
 const MAX_SOCIAL_IMAGE_BYTES = 1024 * 1024;
 
@@ -38,7 +40,7 @@ async function render(path) {
   );
 }
 
-test("MasuGate routes stay within the pre-launch transfer-size budget", async () => {
+test("MasuGate routes stay within the public-site transfer-size budget", async () => {
   for (const path of MASUGATE_ROUTES) {
     const response = await render(path);
     const html = Buffer.from(await response.arrayBuffer());

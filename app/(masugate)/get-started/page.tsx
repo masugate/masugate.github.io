@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { isAvailable } from "../../data/contracts";
+import { getStartedGuide } from "../../data/get-started";
+import { masugateSite } from "../../data/masugate-site";
 import { createMasuGatePageMetadata } from "../../data/metadata";
 import styles from "./get-started.module.css";
 
@@ -7,6 +10,7 @@ export const metadata: Metadata = createMasuGatePageMetadata({
   title: "Get Started",
   description:
     "Prepare the supported local environment, then run and verify the MasuGate five-minute reference demonstration.",
+  path: "/get-started/",
 });
 
 const demoCommand = `. /tmp/masugate-reviewer-setup/reviewer.env
@@ -27,6 +31,9 @@ python3 scripts/prepare-reference-demo.py \\
   --outdir /tmp/masugate-reviewer-setup`;
 
 export default function GetStartedPage() {
+  const source = masugateSite.sourceRepository;
+  const documentation = getStartedGuide.availability.publicDocumentation;
+
   return (
     <main className="masugate-main" id="masugate-main">
       <section className={styles.hero}>
@@ -38,9 +45,21 @@ export default function GetStartedPage() {
               Prepare the supported local workspace once, then run a governed
               procurement scenario in under five minutes.
             </p>
-            <a className="masugate-button masugate-button-primary" href="#run-demo">
-              Go to the demo command
-            </a>
+            <div className={styles.heroActions}>
+              {isAvailable(source) ? (
+                <a
+                  className="masugate-button masugate-button-primary"
+                  href={source.value.href}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Get the source on GitHub
+                </a>
+              ) : null}
+              <a className="masugate-button" href="#run-demo">
+                Go to the demo command
+              </a>
+            </div>
           </div>
           <aside className={styles.summary} aria-label="Quick-start summary">
             <span>Two steps</span>
@@ -81,6 +100,20 @@ export default function GetStartedPage() {
               <p>Keep the release checkout and one-time setup environment together.</p>
             </article>
           </div>
+          {isAvailable(source) ? (
+            <div className={styles.sourceLinks} aria-label="Source checkout links">
+              <a href={source.value.downloadHref}>Download current source (.zip)</a>
+              {isAvailable(documentation) ? (
+                <a
+                  href={documentation.value.href}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Read the complete repository guide
+                </a>
+              ) : null}
+            </div>
+          ) : null}
           <div className={styles.commandCard}>
             <div className={styles.commandLabel}>In a clean release checkout, prepare once</div>
             <pre><code>{setupCommand}</code></pre>

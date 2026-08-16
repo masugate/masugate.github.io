@@ -18,6 +18,7 @@ export const metadata: Metadata = createMasuGatePageMetadata({
   title: "Interactive OpenClaw developer demo",
   description:
     "Start with one governed OpenClaw purchase, coordinate a shared budget across agents, then extend the policy model to calendar and workspace actions.",
+  path: "/demo/",
 });
 
 type DemoStage = DemoExperienceModel["stages"][number];

@@ -298,8 +298,36 @@ test("OpenClaw continuation preserves its exact route and trust boundaries", () 
   assert.ok(getStartedGuide.openClawContinuation.truths.length >= 7);
 });
 
-test("unreleased guide exposes no install, local run, public evidence, or support destinations", () => {
-  for (const availability of Object.values(getStartedGuide.availability)) {
+test("unreleased guide exposes public source and support links without release promotion", () => {
+  assert.deepEqual(getStartedGuide.availability.publicRepository, {
+    state: "available",
+    value: { href: "https://github.com/masugate/masugate" },
+  });
+  assert.deepEqual(getStartedGuide.availability.publicDocumentation, {
+    state: "available",
+    value: {
+      href: "https://github.com/masugate/masugate/blob/main/README.md",
+    },
+  });
+  assert.deepEqual(getStartedGuide.availability.issueTracker, {
+    state: "available",
+    value: { href: "https://github.com/masugate/masugate/issues" },
+  });
+  assert.deepEqual(getStartedGuide.availability.securityReporting, {
+    state: "available",
+    value: {
+      href: "https://github.com/masugate/masugate/blob/main/SECURITY.md",
+    },
+  });
+
+  for (const availability of [
+    getStartedGuide.availability.primaryInstall,
+    getStartedGuide.availability.runLocally,
+    getStartedGuide.availability.publicEvidence,
+    getStartedGuide.availability.verifiedAt,
+    getStartedGuide.availability.openClawPublicInstructions,
+    getStartedGuide.availability.openClawCapturedRun,
+  ]) {
     assert.equal(availability.state, "unavailable");
     assert.ok(availability.reason);
     assert.ok(availability.note);

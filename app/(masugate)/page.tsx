@@ -23,6 +23,7 @@ export const metadata: Metadata = createMasuGatePageMetadata({
   title: "Stateful governance for concurrent agents",
   description:
     "MasuGate connects stateful policies, shared mutable state, and governed effects so concurrent agent actions retain a valid policy explanation.",
+  path: "/",
 });
 
 const usd = new Intl.NumberFormat("en-US", {
@@ -83,6 +84,16 @@ export default function MasuGateHomePage() {
               <Link className={styles.quietLink} href="/demo/">
                 Open the demo
               </Link>
+              {isAvailable(masugateSite.sourceRepository) ? (
+                <a
+                  className={styles.quietLink}
+                  href={masugateSite.sourceRepository.value.href}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  View source on GitHub
+                </a>
+              ) : null}
             </div>
           </div>
 

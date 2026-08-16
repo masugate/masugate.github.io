@@ -1,7 +1,6 @@
 import {
   type Availability,
   available,
-  unavailable,
 } from "./contracts";
 import { hasPublishedArticles } from "./articles";
 import { contactContract } from "./contact";
@@ -50,6 +49,10 @@ export interface SiteIdentityContract {
     Readonly<{
       label: string;
       href: `https://${string}`;
+      downloadHref: `https://${string}`;
+      documentationHref: `https://${string}`;
+      issuesHref: `https://${string}`;
+      securityHref: `https://${string}`;
     }>
   >;
   researchPaper: Availability<
@@ -93,10 +96,7 @@ export const masugateSite = {
     titleTemplate: "%s — MasuGate",
     description:
       "MasuGate connects stateful policies, shared mutable state, and governed effects so concurrent agent actions retain a valid policy explanation.",
-    canonicalOrigin: unavailable(
-      "canonical-source-unconfirmed",
-      "The public domain has not been confirmed; omit a canonical URL until it is.",
-    ),
+    canonicalOrigin: available("https://masugate.github.io"),
     socialImage: available({
       path: "/og-masugate.png",
       width: 1200,
@@ -107,6 +107,12 @@ export const masugateSite = {
   sourceRepository: available({
     label: "MasuGate on GitHub",
     href: "https://github.com/masugate/masugate",
+    downloadHref:
+      "https://github.com/masugate/masugate/archive/refs/heads/main.zip",
+    documentationHref:
+      "https://github.com/masugate/masugate/blob/main/README.md",
+    issuesHref: "https://github.com/masugate/masugate/issues",
+    securityHref: "https://github.com/masugate/masugate/blob/main/SECURITY.md",
   }),
   researchPaper: available({
     title: "Stateful Governance for Concurrent Agentic Systems",

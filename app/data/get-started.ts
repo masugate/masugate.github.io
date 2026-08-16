@@ -7,6 +7,7 @@ import {
   type OperationStatus,
   type PathRequirement,
   type ReleaseState,
+  available,
   unavailable,
 } from "./contracts";
 import {
@@ -301,7 +302,7 @@ export const getStartedGuide = {
       outcome:
         "Use the eventual immutable release, supported environment, and retained verification gates.",
       currentBoundary:
-        "The Git-backed candidate is fixed, but its tag, release authorization, public visibility, and retained evidence are still pending.",
+        "The public Git-backed candidate is fixed, but its tag, release authorization, and retained evidence are still pending.",
       cta: pathCtas.contact,
     },
   ],
@@ -338,7 +339,7 @@ export const getStartedGuide = {
       { label: "Retained public evidence bundle", status: "pending" },
     ],
     boundary:
-      "A pinned candidate is not a published release: anonymous repository access returned 404, no v0.1.0 tag or GitHub Release exists, release authorization is pending, and the live gate input contract still needs reconciliation.",
+      "A public pinned candidate is not a published release: no v0.1.0 tag or GitHub Release exists, release authorization is pending, and the live gate input contract still needs reconciliation.",
   },
   declaredPackages,
   readinessSteps: [
@@ -548,20 +549,18 @@ export const getStartedGuide = {
     primaryInstall: masugateRelease.primaryInstall.command,
     runLocally: unavailable(
       "verification-pending",
-      "A release-owned local-run path will appear only after clean supported-environment verification.",
+      "A tagged release-owned local-run path remains pending.",
     ),
     publicEvidence: masugateRelease.publicEvidenceLinks,
     verifiedAt: masugateRelease.verifiedAt,
     openClawPublicInstructions: openClawReferenceCandidate.publicInstructions,
     openClawCapturedRun: openClawReferenceCandidate.capturedRun,
-    issueTracker: unavailable(
-      "public-release-unavailable",
-      "The public issue-tracker destination has not been confirmed.",
-    ),
-    securityReporting: unavailable(
-      "public-release-unavailable",
-      "The public security-reporting destination has not been confirmed.",
-    ),
+    issueTracker: available({
+      href: "https://github.com/masugate/masugate/issues",
+    }),
+    securityReporting: available({
+      href: "https://github.com/masugate/masugate/blob/main/SECURITY.md",
+    }),
   },
   cta: pathCtas,
 } as const satisfies GetStartedGuide;
@@ -812,7 +811,16 @@ export function validateGetStartedGuide(
   }
 
   if (release.state === "unreleased") {
-    for (const [name, value] of Object.entries(guide.availability)) {
+    const releaseOnlyAvailability = {
+      primaryInstall: guide.availability.primaryInstall,
+      runLocally: guide.availability.runLocally,
+      publicEvidence: guide.availability.publicEvidence,
+      verifiedAt: guide.availability.verifiedAt,
+      openClawPublicInstructions:
+        guide.availability.openClawPublicInstructions,
+      openClawCapturedRun: guide.availability.openClawCapturedRun,
+    };
+    for (const [name, value] of Object.entries(releaseOnlyAvailability)) {
       if (value.state === "available") {
         errors.push(`Unreleased Get Started cannot expose available ${name}.`);
       }
