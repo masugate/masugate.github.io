@@ -31,7 +31,7 @@ const {
   validatePublishedArticles,
 } = articleModule;
 
-test("Milestone 5 publishes two complete validated articles", () => {
+test("the publication manifest contains the release announcement and editorial pair", () => {
   assert.equal(hasPublishedArticles, true);
   assert.deepEqual(articleValidationErrors, []);
   assert.deepEqual(validatePublishedArticles(publishedArticles), []);
@@ -43,6 +43,12 @@ test("Milestone 5 publishes two complete validated articles", () => {
       evidence: evidence.status,
     })),
     [
+      {
+        slug: "masugate-public-source-release",
+        publicationType: "announcement",
+        showInBanner: true,
+        evidence: "reference",
+      },
       {
         slug: "policy-as-code-not-prompt",
         publicationType: "article",
@@ -66,11 +72,30 @@ test("Milestone 5 publishes two complete validated articles", () => {
   }
 });
 
-test("the editorial pair is cross-linked and the research article is pinned", () => {
+test("the announcement connects the website, repository, and pinned paper", () => {
+  const announcement = getPublishedArticle("masugate-public-source-release");
   const policyArticle = getPublishedArticle("policy-as-code-not-prompt");
   const statefulArticle = getPublishedArticle("when-allowed-goes-stale");
+  assert.ok(announcement);
   assert.ok(policyArticle);
   assert.ok(statefulArticle);
+
+  assert.equal(announcement.readingMinutes, 4);
+  assert.equal(announcement.publicationType, "announcement");
+  for (const href of [
+    "/",
+    "https://github.com/masugate/masugate",
+    "https://arxiv.org/abs/2608.02764",
+  ]) {
+    assert.ok(
+      announcement.relatedLinks.some((link) => link.href === href),
+      `release announcement must link to ${href}`,
+    );
+  }
+  assert.match(JSON.stringify(announcement), /LangChain/);
+  assert.match(JSON.stringify(announcement), /Microsoft Agent Framework/);
+  assert.match(JSON.stringify(announcement), /CrewAI/);
+  assert.match(JSON.stringify(announcement), /OpenClaw/);
 
   assert.ok(
     policyArticle.relatedLinks.some(
@@ -109,12 +134,12 @@ test("the homepage selector returns the latest bounded set without mutating the 
 
   assert.deepEqual(
     selectHomepageArticles().map(({ slug }) => slug),
-    originalOrder,
-    "equal publication dates preserve editorial manifest order",
+    ["masugate-public-source-release", "policy-as-code-not-prompt"],
+    "the announcement leads the bounded homepage selection",
   );
   assert.deepEqual(
     selectHomepageArticles(1).map(({ slug }) => slug),
-    ["policy-as-code-not-prompt"],
+    ["masugate-public-source-release"],
   );
   assert.deepEqual(selectHomepageArticles(0), []);
   assert.deepEqual(selectHomepageArticles(Number.NaN), []);
@@ -126,9 +151,12 @@ test("the homepage selector returns the latest bounded set without mutating the 
 });
 
 test("the global banner selects only the newest eligible announcement", () => {
-  const [base] = publishedArticles;
+  const base = getPublishedArticle("policy-as-code-not-prompt");
   assert.ok(base);
-  assert.equal(selectLatestAnnouncement(), undefined);
+  assert.equal(
+    selectLatestAnnouncement()?.slug,
+    "masugate-public-source-release",
+  );
 
   const olderButRecentlyEdited = {
     ...base,
@@ -183,7 +211,7 @@ test("the global banner selects only the newest eligible announcement", () => {
   );
 });
 
-test("initial articles do not publish release-gated commands or evidence labels", () => {
+test("published articles do not publish release-gated commands or evidence labels", () => {
   const serialized = JSON.stringify(publishedArticles);
 
   assert.doesNotMatch(serialized, /"status":"verified"|"status":"recorded"/i);
@@ -191,11 +219,11 @@ test("initial articles do not publish release-gated commands or evidence labels"
     serialized,
     /\b(?:pip3?|npm|npx|pnpm|yarn)\s+(?:install|add|run)\b|\buv\s+sync\b|\bgit\s+clone\b|\bdocker\s+compose\b/i,
   );
-  assert.doesNotMatch(serialized, /\bOmnigent\b|Microsoft Agent Framework/);
+  assert.doesNotMatch(serialized, /\bOmnigent\b/);
 });
 
 test("article validation rejects broken publication metadata and links", () => {
-  const [first] = publishedArticles;
+  const first = getPublishedArticle("policy-as-code-not-prompt");
   assert.ok(first);
 
   const errors = validatePublishedArticles([
@@ -214,7 +242,7 @@ test("article validation rejects broken publication metadata and links", () => {
 });
 
 test("article validation rejects unsafe banner metadata", () => {
-  const [first] = publishedArticles;
+  const first = getPublishedArticle("policy-as-code-not-prompt");
   assert.ok(first);
 
   assert.match(

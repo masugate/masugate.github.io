@@ -180,6 +180,7 @@ function assertMasuGateChrome(html, path) {
     "https://github.com/masugate/masugate",
     "https://github.com/masugate/masugate/issues",
     "https://github.com/masugate/masugate/blob/main/SECURITY.md",
+    "https://arxiv.org/abs/2608.02764",
   ]) {
     assert.ok(
       linksIn(html).some((link) => link.href === href),
@@ -301,6 +302,11 @@ test("renders route-specific social and canonical metadata", async () => {
     ["/get-started/", "Get Started — MasuGate", "website"],
     ["/blog/", "Blog & Updates — MasuGate", "website"],
     [
+      "/blog/masugate-public-source-release/",
+      "MasuGate Is Now Public: From Research Prototype to Product-Oriented Release — MasuGate",
+      "article",
+    ],
+    [
       "/blog/when-allowed-goes-stale/",
       "When “Allowed” Goes Stale: Why Concurrent Agents Need Stateful Governance — MasuGate",
       "article",
@@ -364,6 +370,7 @@ test("all MasuGate internal links and fragments resolve", async () => {
     "/get-started/",
     "/get-started/technical/",
     "/blog/",
+    "/blog/masugate-public-source-release/",
     "/blog/policy-as-code-not-prompt/",
     "/blog/when-allowed-goes-stale/",
   ];
@@ -780,8 +787,8 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
 
   assert.match(
     html,
-    /<a\b[^>]*href="https:\/\/arxiv\.org\/abs\/2608\.02764v1"[^>]*>/i,
-    "Home must link to the pinned v1 MasuGate paper",
+    /<a\b[^>]*href="https:\/\/arxiv\.org\/abs\/2608\.02764"[^>]*>/i,
+    "Home must link to the latest MasuGate paper",
   );
 
   const staleAuthorization = sectionContaining(
@@ -828,11 +835,11 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
   );
   assert.match(
     blogSection,
-    /href="\/blog\/policy-as-code-not-prompt\/"/i,
+    /href="\/blog\/masugate-public-source-release\/"/i,
   );
   assert.match(
     blogSection,
-    /href="\/blog\/when-allowed-goes-stale\/"/i,
+    /href="\/blog\/policy-as-code-not-prompt\/"/i,
   );
   assert.match(blogSection, /href="\/blog\/"[^>]*>[\s\S]*?View all posts/i);
 
@@ -1003,7 +1010,7 @@ test("returns 404 for an unpublished Blog slug", async () => {
   assert.equal(await response.text(), "Not Found");
 });
 
-test("server-renders the complete Milestone 5 editorial pair", async () => {
+test("server-renders the release announcement and complete editorial pair", async () => {
   const indexResponse = await render("/blog/");
   const indexHtml = await indexResponse.text();
   const indexText = textContent(indexHtml);
@@ -1018,21 +1025,55 @@ test("server-renders the complete Milestone 5 editorial pair", async () => {
   assert.match(indexText, /Policy as Code, Not Prompt: A Practical Introduction/);
   assert.match(
     indexText,
+    /MasuGate Is Now Public: From Research Prototype to Product-Oriented Release/,
+  );
+  assert.match(
+    indexText,
     /When “Allowed” Goes Stale: Why Concurrent Agents Need Stateful Governance/,
   );
   assert.equal(countMatches(indexText, /Technical article/g), 2);
+  assert.equal(countMatches(indexText, /Announcement · Evidence · Reference/g), 1);
   assert.doesNotMatch(indexText, /No articles or updates are published/);
-  assert.doesNotMatch(
+  assert.match(
     indexHtml,
     /aria-label="Latest announcement"/i,
-    "No banner should render before a real announcement is published",
+    "The public-source announcement should render in the global banner",
   );
   assert.equal(
     linksIn(indexHtml).filter(({ label }) => label === "Read article →").length,
     2,
   );
+  assert.equal(
+    linksIn(indexHtml).filter(({ label }) => label === "Read announcement →").length,
+    1,
+    "The announcement index card exposes its dedicated reading link",
+  );
 
   const routes = [
+    {
+      path: "/blog/masugate-public-source-release/",
+      required: [
+        "The gate is open.",
+        "The paper explains the technique. The repository engineers the path.",
+        "Closer to a product-level engineering shape—without overclaiming maturity.",
+        "Governance should meet agents where they already run.",
+        "LangChain 1.3.14",
+        "Microsoft Agent Framework Core 1.12.0",
+        "CrewAI 1.15.6",
+        "OpenClaw 2026.7.1",
+        "Choose your entry point—and tell us where the boundary bends.",
+        "Reading time 4 minutes",
+        "Evidence and limitations",
+        "Sources and further reading",
+      ],
+      hrefs: [
+        "/",
+        "/get-started/",
+        "https://github.com/masugate/masugate",
+        "https://arxiv.org/abs/2608.02764",
+        "https://github.com/masugate/masugate/blob/main/docs/framework-adapters.md",
+      ],
+    },
     {
       path: "/blog/policy-as-code-not-prompt/",
       required: [
@@ -1102,7 +1143,10 @@ test("server-renders the complete Milestone 5 editorial pair", async () => {
       text,
       /\b(?:pip3?|npm|npx|pnpm|yarn)\s+(?:install|add|run)\b|\buv\s+sync\b|\bgit\s+clone\b|\bdocker\s+compose\b/i,
     );
-    assert.doesNotMatch(text, /\bOmnigent\b|Microsoft Agent Framework/);
+    assert.doesNotMatch(text, /\bOmnigent\b/);
+    if (route.path !== "/blog/masugate-public-source-release/") {
+      assert.doesNotMatch(text, /Microsoft Agent Framework/);
+    }
     assert.doesNotMatch(html, /\bSAGE\b/);
   }
 });

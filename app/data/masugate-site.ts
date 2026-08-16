@@ -116,7 +116,7 @@ export const masugateSite = {
   }),
   researchPaper: available({
     title: "Stateful Governance for Concurrent Agentic Systems",
-    href: "https://arxiv.org/abs/2608.02764v1",
+    href: "https://arxiv.org/abs/2608.02764",
   }),
 } as const satisfies SiteIdentityContract;
 

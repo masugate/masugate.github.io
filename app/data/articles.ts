@@ -1,3 +1,4 @@
+import { masugatePublicSourceRelease } from "../content/articles/masugate-public-source-release";
 import { policyAsCodeNotPromptArticle } from "../content/articles/policy-as-code-not-prompt";
 import { whenAllowedGoesStaleArticle } from "../content/articles/when-allowed-goes-stale";
 import type {
@@ -20,6 +21,7 @@ export type {
 // its complete body, evidence boundary, limitations, sources, and related
 // links are ready for publication.
 export const publishedArticles: readonly PublishedArticle[] = [
+  masugatePublicSourceRelease,
   policyAsCodeNotPromptArticle,
   whenAllowedGoesStaleArticle,
 ];

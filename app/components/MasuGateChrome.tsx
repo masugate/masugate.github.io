@@ -204,6 +204,7 @@ export function MasuGateHeader() {
 export function MasuGateFooter() {
   const navigation = selectPrimaryNavigation();
   const source = masugateSite.sourceRepository;
+  const paper = masugateSite.researchPaper;
 
   return (
     <footer className="masugate-footer">
@@ -237,6 +238,11 @@ export function MasuGateFooter() {
             >
               Security policy
             </a>
+            {isAvailable(paper) ? (
+              <a href={paper.value.href} rel="noreferrer" target="_blank">
+                Read the arXiv paper
+              </a>
+            ) : null}
           </div>
         ) : null}
         <div className="masugate-footer-contact">

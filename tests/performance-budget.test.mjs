@@ -9,6 +9,7 @@ const MASUGATE_ROUTES = [
   "/demo/openclaw-reference/",
   "/get-started/",
   "/blog/",
+  "/blog/masugate-public-source-release/",
   "/blog/policy-as-code-not-prompt/",
   "/blog/when-allowed-goes-stale/",
 ];
