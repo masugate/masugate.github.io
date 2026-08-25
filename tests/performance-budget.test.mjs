@@ -12,6 +12,7 @@ const MASUGATE_ROUTES = [
   "/blog/masugate-public-source-release/",
   "/blog/policy-as-code-not-prompt/",
   "/blog/when-allowed-goes-stale/",
+  "/blog/when-time-becomes-agent-policy/",
 ];
 
 // The public project/footer links and route-specific canonical metadata are a

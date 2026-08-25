@@ -1,5 +1,6 @@
 import { masugatePublicSourceRelease } from "../content/articles/masugate-public-source-release";
 import { policyAsCodeNotPromptArticle } from "../content/articles/policy-as-code-not-prompt";
+import { whenTimeBecomesAgentPolicyArticle } from "../content/articles/when-time-becomes-agent-policy";
 import { whenAllowedGoesStaleArticle } from "../content/articles/when-allowed-goes-stale";
 import type {
   ArticleBlock,
@@ -24,6 +25,7 @@ export const publishedArticles: readonly PublishedArticle[] = [
   masugatePublicSourceRelease,
   policyAsCodeNotPromptArticle,
   whenAllowedGoesStaleArticle,
+  whenTimeBecomesAgentPolicyArticle,
 ];
 
 export const hasPublishedArticles: boolean = publishedArticles.length > 0;

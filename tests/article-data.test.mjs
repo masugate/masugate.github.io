@@ -31,7 +31,7 @@ const {
   validatePublishedArticles,
 } = articleModule;
 
-test("the publication manifest contains the release announcement and editorial pair", () => {
+test("the publication manifest contains the release announcement and editorial series", () => {
   assert.equal(hasPublishedArticles, true);
   assert.deepEqual(articleValidationErrors, []);
   assert.deepEqual(validatePublishedArticles(publishedArticles), []);
@@ -61,6 +61,12 @@ test("the publication manifest contains the release announcement and editorial p
         showInBanner: false,
         evidence: "reference",
       },
+      {
+        slug: "when-time-becomes-agent-policy",
+        publicationType: "article",
+        showInBanner: false,
+        evidence: "reference",
+      },
     ],
   );
 
@@ -76,12 +82,17 @@ test("the announcement connects the website, repository, and pinned paper", () =
   const announcement = getPublishedArticle("masugate-public-source-release");
   const policyArticle = getPublishedArticle("policy-as-code-not-prompt");
   const statefulArticle = getPublishedArticle("when-allowed-goes-stale");
+  const timeArticle = getPublishedArticle("when-time-becomes-agent-policy");
   assert.ok(announcement);
   assert.ok(policyArticle);
   assert.ok(statefulArticle);
+  assert.ok(timeArticle);
 
   assert.equal(announcement.readingMinutes, 4);
   assert.equal(announcement.publicationType, "announcement");
+  assert.equal(timeArticle.readingMinutes, 11);
+  assert.equal(timeArticle.publicationType, "article");
+  assert.equal(timeArticle.showInBanner, false);
   for (const href of [
     "/",
     "https://github.com/masugate/masugate",
@@ -134,12 +145,12 @@ test("the homepage selector returns the latest bounded set without mutating the 
 
   assert.deepEqual(
     selectHomepageArticles().map(({ slug }) => slug),
-    ["masugate-public-source-release", "policy-as-code-not-prompt"],
-    "the announcement leads the bounded homepage selection",
+    ["when-time-becomes-agent-policy", "masugate-public-source-release"],
+    "the latest publication leads the bounded homepage selection",
   );
   assert.deepEqual(
     selectHomepageArticles(1).map(({ slug }) => slug),
-    ["masugate-public-source-release"],
+    ["when-time-becomes-agent-policy"],
   );
   assert.deepEqual(selectHomepageArticles(0), []);
   assert.deepEqual(selectHomepageArticles(Number.NaN), []);
