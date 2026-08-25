@@ -197,6 +197,7 @@ function assertMasuGateChrome(html, path) {
 
   for (const href of [
     "https://github.com/masugate/masugate",
+    "https://github.com/masugate/masugate/blob/main/REVIEWING.md",
     "https://github.com/masugate/masugate/issues",
     "https://github.com/masugate/masugate/blob/main/SECURITY.md",
     "https://arxiv.org/abs/2608.02764",
@@ -206,6 +207,13 @@ function assertMasuGateChrome(html, path) {
       `${path}: footer is missing project link ${href}`,
     );
   }
+
+  assert.ok(
+    !linksIn(html).some(
+      ({ href }) => href === "https://github.com/masugate/masugate/discussions",
+    ),
+    `${path}: Discussions must remain hidden until the repository setting is enabled`,
+  );
 
   assert.ok(
     linksIn(primaryNavigation).some(
@@ -759,6 +767,8 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
     "Open email draft",
     "Prefer webmail? Copy masugate.governance@gmail.com into a new message.",
     "See the shared-budget problem",
+    "View source on GitHub",
+    "Review MasuGate · 15–60 min",
     "Follow the full OpenClaw demo",
     "Open the OpenClaw developer demo",
   ]) {
@@ -1084,6 +1094,8 @@ test("server-renders the release announcement and complete editorial series", as
       path: "/blog/masugate-public-source-release/",
       required: [
         "The gate is open.",
+        "Update · current review target",
+        "Reviewers should use 0.1.1",
         "The paper explains the technique. The repository engineers the path.",
         "Closer to a product-level engineering shape—without overclaiming maturity.",
         "Governance should meet agents where they already run.",
@@ -1101,6 +1113,8 @@ test("server-renders the release announcement and complete editorial series", as
         "/get-started/",
         "https://github.com/masugate/masugate",
         "https://arxiv.org/abs/2608.02764",
+        "https://arxiv.org/abs/2608.02764v2",
+        "https://github.com/masugate/masugate/blob/main/docs/pss-v0.1.1-correction.md",
         "https://github.com/masugate/masugate/blob/main/docs/framework-adapters.md",
       ],
     },
@@ -1157,7 +1171,11 @@ test("server-renders the release announcement and complete editorial series", as
         "Current reference boundary",
         "Freshness, cooldowns, and request-bound approval",
         "Provider-owned event history",
-        "does not bundle a generic event-history provider",
+        "experimental, opt-in event-history provider",
+        "history.recent_bound_approval",
+        "history.transfer_attempt_count",
+        "history.distinct_transfer_receivers",
+        "disabled by default",
         "A fact observed before closing is not proof",
         "Policy-State Serializability",
         "Reading time 11 minutes",
@@ -1169,6 +1187,7 @@ test("server-renders the release announcement and complete editorial series", as
         "/demo/",
         "https://github.com/masugate/masugate",
         "https://github.com/masugate/masugate/blob/main/docs/time-aware-policies.md",
+        "https://github.com/masugate/masugate/blob/main/docs/event-history-provider.md",
         "https://arxiv.org/abs/2608.02764",
       ],
     },

@@ -7,6 +7,7 @@ export type UnavailableReason =
   | "verification-pending"
   | "public-evidence-unavailable"
   | "install-command-unavailable"
+  | "discussions-disabled"
   | "social-image-unavailable";
 
 export type Available<T> = Readonly<{

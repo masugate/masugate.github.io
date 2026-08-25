@@ -24,7 +24,7 @@ export const whenTimeBecomesAgentPolicyArticle = {
   },
   limitations: [
     "The shipped certified-time contracts and asynchronous PostgreSQL transfer path still require a compatible adapter and deployment composition before the combined examples become a turnkey reference profile.",
-    "The reference release does not bundle a generic event-history provider, automatic request/response ingestion, a temporal-query language, or the illustrative freshness, request-bound approval, request-count, distinct-value, and sequence views described below.",
+    "The repository now contains an experimental, opt-in event-history provider with three fixed transfer views: protected-attempt count, distinct receivers, and recent request-bound approval. It remains outside 0.1.1 and disabled by default; vendor freshness, arbitrary history.* views, a temporal-query language, automatic request/response ingestion, and sequence views remain future extensions.",
     "A live-window fact establishes truth at a protected evaluation point; it does not by itself prove that a database commit or remote completion occurred before closing.",
     "The current transfer reservation has a fixed one-hour entitlement and a proof bound to the configured 24-hour argument; its escrow counter requires a sound reset or rebase before claiming continuously sliding reservation semantics.",
   ],
@@ -42,6 +42,13 @@ export const whenTimeBecomesAgentPolicyArticle = {
       publisher: "GitHub",
       href: "https://github.com/masugate/masugate",
       note: "Source for the policy language, certified-context contracts, PostgreSQL rolling-budget views, reservation path, tests, and PSS checker.",
+    },
+    {
+      id: "event-history-provider",
+      title: "Bounded Event History for Policy",
+      publisher: "MasuGate repository documentation",
+      href: "https://github.com/masugate/masugate/blob/main/docs/event-history-provider.md",
+      note: "The exact experimental provider contracts, opt-in activation path, evidence model, and current limitations.",
     },
     {
       id: "masugate-paper",
@@ -219,23 +226,24 @@ export const whenTimeBecomesAgentPolicyArticle = {
         },
         {
           kind: "paragraph",
-          text: "Some policies need to ask what happened before this request: Was this exact transfer approved recently? How many attempts came from this team? How much money actually settled? For bounded, history-dependent rules, MasuGate's extension point is event history represented as governed provider state. Such a provider would authenticate and retain lifecycle events—such as admission, denial, approval, reservation, commit, and settlement—then expose only the bounded answers a policy needs as typed, scoped, and versioned state.",
-          citationIds: ["time-guide"],
+          text: "Some policies need to ask what happened before this request: Was this exact transfer approved recently? How many protected attempts came from this team? How much money actually settled? The repository now includes an experimental, opt-in event-history provider that authenticates and retains protected lifecycle events, then exposes three fixed, typed, scoped, and versioned answers: transfer-attempt count, distinct transfer receivers, and recent approval bound to the exact request. It is disabled by default and remains outside the 0.1.1 release boundary.",
+          citationIds: ["time-guide", "event-history-provider"],
         },
         {
           kind: "list",
           items: [
             "Freshness — vendor.assessment_fresh(receiver, 5m): is the authoritative vendor assessment recent enough?",
-            "Matching prerequisite — approval.valid_for_request(principal, request digest, 30m): did approval for this exact transfer occur recently enough?",
-            "Recent count — history.request_count(team, \"transfer\", 10m): how many authenticated attempts occurred in the window?",
-            "Distinct count — history.distinct_receivers(team, 24h): how many different vendors were involved?",
+            "Matching prerequisite — history.recent_bound_approval(principal.id, request.digest, 30m): did approval for this exact transfer occur recently enough?",
+            "Recent count — history.transfer_attempt_count(team, 10m): how many protected attempts occurred in the window?",
+            "Distinct count — history.distinct_transfer_receivers(team, 24h): how many different vendors were involved?",
             "Rolling sum — ledger.sum_sent_by_team(team, 24h): how much actually committed?",
             "Sequence condition — history.vendor_reviewed_since_change(receiver, 30d): did the required review happen after the vendor record last changed within the retained window?",
           ],
         },
         {
           kind: "paragraph",
-          text: "These views turn a potentially large event log into small policy questions. Their names alone do not define the answer: the provider must say whether denied attempts count, whether the current event is included, how retries are deduplicated, which clock and scope apply, and which lifecycle transition updates the history. One-use approval must be consumed from the same approval scope in the protected transaction that relies on it, or through a provider-bound entitlement protocol. Of the examples above, only ledger.sum_sent_by_team(team, 24h) is a current reference view. vendor.assessment_fresh(...), approval.valid_for_request(...), every history.* view, and the generic event-history provider are extension designs, not bundled features.",
+          text: "These views turn a potentially large event log into small policy questions. Their names alone do not define the answer: the provider must say whether denied attempts count, whether the current event is included, how retries are deduplicated, which clock and scope apply, and which lifecycle transition updates the history. One-use approval must be consumed from the same approval scope in the protected transaction that relies on it, or through a provider-bound entitlement protocol. The three named history views above are implemented as an experimental opt-in provider, not as part of 0.1.1, and remain disabled by default. vendor.assessment_fresh(...), arbitrary history.* contracts, a temporal-query language, automatic request/response ingestion, and the sequence view remain future extensions; ledger.sum_sent_by_team(team, 24h) remains the separate current reference view.",
+          citationIds: ["event-history-provider", "time-guide"],
         },
         {
           kind: "callout",
@@ -313,6 +321,13 @@ export const whenTimeBecomesAgentPolicyArticle = {
       description:
         "Understand why shared mutable state can invalidate a reasonable decision before its effect commits.",
       href: "/blog/when-allowed-goes-stale/",
+    },
+    {
+      label: "Inspect bounded event history",
+      title: "Experimental Event-History Provider",
+      description:
+        "Review its three fixed transfer views, opt-in activation, evidence, replay, and current limits.",
+      href: "https://github.com/masugate/masugate/blob/main/docs/event-history-provider.md",
     },
     {
       label: "Inspect the implementation",

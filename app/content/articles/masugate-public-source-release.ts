@@ -8,18 +8,19 @@ export const masugatePublicSourceRelease = {
   href: "/blog/masugate-public-source-release/",
   title: "MasuGate Is Now Public: From Research Prototype to Product-Oriented Release",
   summary:
-    "The MasuGate 0.1.0 research-preview source is open: a product-oriented implementation of the ideas developed in our stateful-governance paper, with concrete paths into today’s agent frameworks.",
+    "The MasuGate 0.1.1 research-preview source is open: a product-oriented implementation of the ideas developed in our stateful-governance paper, with concrete paths into today’s agent frameworks.",
   audience:
     "Agent-framework developers, systems researchers, technical leaders, and artifact reviewers",
   publishedAt: "2026-08-16",
+  updatedAt: "2026-08-25",
   labels: ["Public source release", "Research to engineering", "Agent integrations"],
   readingMinutes: 4,
-  relatedReleaseId: "MasuGate 0.1.0 · public-source research preview",
+  relatedReleaseId: "MasuGate 0.1.1 · public-source research preview",
   relatedSourceRevision: "arXiv:2608.02764v2 · 10 August 2026",
   evidence: {
     status: "reference",
     sourceKind: "candidate-manifest",
-    locator: "github.com/masugate/masugate · 0.1.0 research-preview source tree",
+    locator: "github.com/masugate/masugate · 0.1.1 research-preview source tree",
     note: "This announcement describes the public source, checked-in release controls, documentation, and exact integration profiles. It does not claim an independently verified package-registry release or general production assurance.",
   },
   limitations: [
@@ -32,7 +33,7 @@ export const masugatePublicSourceRelease = {
       id: "masugate-paper",
       title: "Stateful Governance for Concurrent Agentic Systems",
       publisher: "arXiv:2608.02764v2",
-      href: "https://arxiv.org/abs/2608.02764",
+      href: "https://arxiv.org/abs/2608.02764v2",
       note: "The in-depth technical account of MasuGate’s stateful-governance model and research prototype.",
     },
     {
@@ -40,7 +41,14 @@ export const masugatePublicSourceRelease = {
       title: "MasuGate public source repository",
       publisher: "GitHub",
       href: "https://github.com/masugate/masugate",
-      note: "The product-oriented 0.1.0 research-preview implementation, documentation, tests, and release artifacts.",
+      note: "The product-oriented 0.1.1 research-preview implementation, documentation, tests, and release artifacts.",
+    },
+    {
+      id: "pss-correction",
+      title: "MasuGate PSS correction record — v0.1.1",
+      publisher: "MasuGate repository documentation",
+      href: "https://github.com/masugate/masugate/blob/main/docs/pss-v0.1.1-correction.md",
+      note: "The correction boundary for the PSS checker and prior 0.1.0 measurements.",
     },
     {
       id: "framework-adapters",
@@ -67,6 +75,13 @@ export const masugatePublicSourceRelease = {
           kind: "paragraph",
           text: "Today we are opening the MasuGate 0.1.0 research-preview repository. It is the first public source release that brings the project’s central idea—keeping a policy decision valid across a consequential agent action—into an implementation that developers can inspect, test, extend, and connect to existing agent systems.",
           citationIds: ["masugate-repository"],
+        },
+        {
+          kind: "callout",
+          label: "Update · current review target",
+          text: "The repository now identifies as MasuGate 0.1.1, a corrective research-preview update to the initial 0.1.0 source opening. Reviewers should use 0.1.1 and rerun prior 0.1.0 PSS measurements under the corrected checker and evidence boundary.",
+          tone: "evidence",
+          citationIds: ["pss-correction"],
         },
         {
           kind: "paragraph",
