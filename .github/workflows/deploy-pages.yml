@@ -31,6 +31,8 @@ jobs:
           cache: npm
 
       - name: Build the static site
+        env:
+          NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: G-ZWBT158GJT
         run: |
           npm ci
           npm run build:pages

@@ -85,14 +85,24 @@ export default function MasuGateHomePage() {
                 Open the demo
               </Link>
               {isAvailable(masugateSite.sourceRepository) ? (
-                <a
-                  className={styles.quietLink}
-                  href={masugateSite.sourceRepository.value.href}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  View source on GitHub
-                </a>
+                <>
+                  <a
+                    className={styles.quietLink}
+                    href={masugateSite.sourceRepository.value.href}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    View source on GitHub
+                  </a>
+                  <a
+                    className={styles.quietLink}
+                    href={masugateSite.sourceRepository.value.reviewHref}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    Review MasuGate · 15–60 min
+                  </a>
+                </>
               ) : null}
             </div>
           </div>

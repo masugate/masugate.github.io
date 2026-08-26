@@ -133,6 +133,25 @@ const activeNavigation = [
   { href: "/blog/", label: "Blog & Updates" },
 ];
 
+function assertGoogleAnalytics(html, path) {
+  assert.equal(
+    countMatches(
+      html,
+      /<script\b(?=[^>]*\basync(?:=""|(?=[\s>])))(?=[^>]*\bsrc="https:\/\/www\.googletagmanager\.com\/gtag\/js\?id=G-TEST123456")[^>]*>/gi,
+    ),
+    1,
+    `${path}: expected one async Google Analytics loader`,
+  );
+  assert.equal(
+    countMatches(
+      html,
+      /<script\b(?![^>]*\bsrc=)[^>]*>\s*window\.dataLayer=window\.dataLayer\|\|\[\];function gtag\(\)\{dataLayer\.push\(arguments\);\}gtag\('js',new Date\(\)\);gtag\('config','G-TEST123456'\);\s*<\/script>/gi,
+    ),
+    1,
+    `${path}: expected one executable Google Analytics initializer`,
+  );
+}
+
 function assertMasuGateChrome(html, path) {
   assert.equal(
     countMatches(html, /<header\b[^>]*class="masugate-header"[^>]*>/gi),
@@ -178,6 +197,7 @@ function assertMasuGateChrome(html, path) {
 
   for (const href of [
     "https://github.com/masugate/masugate",
+    "https://github.com/masugate/masugate/blob/main/REVIEWING.md",
     "https://github.com/masugate/masugate/issues",
     "https://github.com/masugate/masugate/blob/main/SECURITY.md",
     "https://arxiv.org/abs/2608.02764",
@@ -187,6 +207,13 @@ function assertMasuGateChrome(html, path) {
       `${path}: footer is missing project link ${href}`,
     );
   }
+
+  assert.ok(
+    !linksIn(html).some(
+      ({ href }) => href === "https://github.com/masugate/masugate/discussions",
+    ),
+    `${path}: Discussions must remain hidden until the repository setting is enabled`,
+  );
 
   assert.ok(
     linksIn(primaryNavigation).some(
@@ -283,6 +310,7 @@ test("server-renders the MasuGate primary routes through one gated shell", async
     const html = await response.text();
     assert.match(html, /<title>[^<]*MasuGate<\/title>/i, path);
     assert.match(html, expected, path);
+    assertGoogleAnalytics(html, path);
     assertMasuGateChrome(html, path);
   }
 });
@@ -309,6 +337,11 @@ test("renders route-specific social and canonical metadata", async () => {
     [
       "/blog/when-allowed-goes-stale/",
       "When “Allowed” Goes Stale: Why Concurrent Agents Need Stateful Governance — MasuGate",
+      "article",
+    ],
+    [
+      "/blog/when-time-becomes-agent-policy/",
+      "Approved at 5:05: When Time Becomes Part of an Agent Policy — MasuGate",
       "article",
     ],
   ];
@@ -373,6 +406,7 @@ test("all MasuGate internal links and fragments resolve", async () => {
     "/blog/masugate-public-source-release/",
     "/blog/policy-as-code-not-prompt/",
     "/blog/when-allowed-goes-stale/",
+    "/blog/when-time-becomes-agent-policy/",
   ];
   const renderedRoutes = new Map();
 
@@ -733,6 +767,8 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
     "Open email draft",
     "Prefer webmail? Copy masugate.governance@gmail.com into a new message.",
     "See the shared-budget problem",
+    "View source on GitHub",
+    "Review MasuGate · 15–60 min",
     "Follow the full OpenClaw demo",
     "Open the OpenClaw developer demo",
   ]) {
@@ -839,7 +875,7 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
   );
   assert.match(
     blogSection,
-    /href="\/blog\/policy-as-code-not-prompt\/"/i,
+    /href="\/blog\/when-time-becomes-agent-policy\/"/i,
   );
   assert.match(blogSection, /href="\/blog\/"[^>]*>[\s\S]*?View all posts/i);
 
@@ -1010,7 +1046,7 @@ test("returns 404 for an unpublished Blog slug", async () => {
   assert.equal(await response.text(), "Not Found");
 });
 
-test("server-renders the release announcement and complete editorial pair", async () => {
+test("server-renders the release announcement and complete editorial series", async () => {
   const indexResponse = await render("/blog/");
   const indexHtml = await indexResponse.text();
   const indexText = textContent(indexHtml);
@@ -1031,7 +1067,11 @@ test("server-renders the release announcement and complete editorial pair", asyn
     indexText,
     /When “Allowed” Goes Stale: Why Concurrent Agents Need Stateful Governance/,
   );
-  assert.equal(countMatches(indexText, /Technical article/g), 2);
+  assert.match(
+    indexText,
+    /Approved at 5:05: When Time Becomes Part of an Agent Policy/,
+  );
+  assert.equal(countMatches(indexText, /Technical article/g), 3);
   assert.equal(countMatches(indexText, /Announcement · Evidence · Reference/g), 1);
   assert.doesNotMatch(indexText, /No articles or updates are published/);
   assert.match(
@@ -1041,7 +1081,7 @@ test("server-renders the release announcement and complete editorial pair", asyn
   );
   assert.equal(
     linksIn(indexHtml).filter(({ label }) => label === "Read article →").length,
-    2,
+    3,
   );
   assert.equal(
     linksIn(indexHtml).filter(({ label }) => label === "Read announcement →").length,
@@ -1054,6 +1094,8 @@ test("server-renders the release announcement and complete editorial pair", asyn
       path: "/blog/masugate-public-source-release/",
       required: [
         "The gate is open.",
+        "Update · current review target",
+        "Reviewers should use 0.1.1",
         "The paper explains the technique. The repository engineers the path.",
         "Closer to a product-level engineering shape—without overclaiming maturity.",
         "Governance should meet agents where they already run.",
@@ -1071,6 +1113,8 @@ test("server-renders the release announcement and complete editorial pair", asyn
         "/get-started/",
         "https://github.com/masugate/masugate",
         "https://arxiv.org/abs/2608.02764",
+        "https://arxiv.org/abs/2608.02764v2",
+        "https://github.com/masugate/masugate/blob/main/docs/pss-v0.1.1-correction.md",
         "https://github.com/masugate/masugate/blob/main/docs/framework-adapters.md",
       ],
     },
@@ -1114,6 +1158,37 @@ test("server-renders the release announcement and complete editorial pair", asyn
         "/blog/policy-as-code-not-prompt/",
         "/demo/",
         "https://arxiv.org/abs/2608.02764v1",
+      ],
+    },
+    {
+      path: "/blog/when-time-becomes-agent-policy/",
+      required: [
+        "A $50 transfer is approved at 5:05. Should it run?",
+        "The request can be on time while authorization is too late.",
+        "Admission time and live authorization time",
+        "The last 24 hours",
+        "Human review forces a choice: revalidate current truth or reserve capacity.",
+        "Current reference boundary",
+        "Freshness, cooldowns, and request-bound approval",
+        "Provider-owned event history",
+        "experimental, opt-in event-history provider",
+        "history.recent_bound_approval",
+        "history.transfer_attempt_count",
+        "history.distinct_transfer_receivers",
+        "disabled by default",
+        "A fact observed before closing is not proof",
+        "Policy-State Serializability",
+        "Reading time 11 minutes",
+        "Evidence and limitations",
+        "Sources and further reading",
+      ],
+      hrefs: [
+        "/blog/when-allowed-goes-stale/",
+        "/demo/",
+        "https://github.com/masugate/masugate",
+        "https://github.com/masugate/masugate/blob/main/docs/time-aware-policies.md",
+        "https://github.com/masugate/masugate/blob/main/docs/event-history-provider.md",
+        "https://arxiv.org/abs/2608.02764",
       ],
     },
   ];

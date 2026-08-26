@@ -1,6 +1,7 @@
 import {
   type Availability,
   available,
+  unavailable,
 } from "./contracts";
 import { hasPublishedArticles } from "./articles";
 import { contactContract } from "./contact";
@@ -51,6 +52,8 @@ export interface SiteIdentityContract {
       href: `https://${string}`;
       downloadHref: `https://${string}`;
       documentationHref: `https://${string}`;
+      reviewHref: `https://${string}`;
+      discussionsHref: Availability<`https://${string}`>;
       issuesHref: `https://${string}`;
       securityHref: `https://${string}`;
     }>
@@ -68,6 +71,13 @@ const blogNavigationItem = {
   label: "Blog & Updates",
   href: "/blog/",
 } as const satisfies NavigationItem;
+
+function configuredDiscussionsHref(): Availability<`https://${string}`> {
+  return unavailable(
+    "discussions-disabled",
+    "GitHub Discussions is not enabled yet; render this path only after the repository setting and pinned review post are live.",
+  );
+}
 
 export const masugateSite = {
   name: "MasuGate",
@@ -111,6 +121,9 @@ export const masugateSite = {
       "https://github.com/masugate/masugate/archive/refs/heads/main.zip",
     documentationHref:
       "https://github.com/masugate/masugate/blob/main/README.md",
+    reviewHref:
+      "https://github.com/masugate/masugate/blob/main/REVIEWING.md",
+    discussionsHref: configuredDiscussionsHref(),
     issuesHref: "https://github.com/masugate/masugate/issues",
     securityHref: "https://github.com/masugate/masugate/blob/main/SECURITY.md",
   }),

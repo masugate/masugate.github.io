@@ -31,7 +31,7 @@ const {
   validatePublishedArticles,
 } = articleModule;
 
-test("the publication manifest contains the release announcement and editorial pair", () => {
+test("the publication manifest contains the release announcement and editorial series", () => {
   assert.equal(hasPublishedArticles, true);
   assert.deepEqual(articleValidationErrors, []);
   assert.deepEqual(validatePublishedArticles(publishedArticles), []);
@@ -61,6 +61,12 @@ test("the publication manifest contains the release announcement and editorial p
         showInBanner: false,
         evidence: "reference",
       },
+      {
+        slug: "when-time-becomes-agent-policy",
+        publicationType: "article",
+        showInBanner: false,
+        evidence: "reference",
+      },
     ],
   );
 
@@ -76,12 +82,77 @@ test("the announcement connects the website, repository, and pinned paper", () =
   const announcement = getPublishedArticle("masugate-public-source-release");
   const policyArticle = getPublishedArticle("policy-as-code-not-prompt");
   const statefulArticle = getPublishedArticle("when-allowed-goes-stale");
+  const timeArticle = getPublishedArticle("when-time-becomes-agent-policy");
   assert.ok(announcement);
   assert.ok(policyArticle);
   assert.ok(statefulArticle);
+  assert.ok(timeArticle);
 
   assert.equal(announcement.readingMinutes, 4);
   assert.equal(announcement.publicationType, "announcement");
+  assert.equal(announcement.publishedAt, "2026-08-16");
+  assert.equal(announcement.updatedAt, "2026-08-25");
+  assert.equal(
+    announcement.relatedReleaseId,
+    "MasuGate 0.1.1 · public-source research preview",
+  );
+  assert.match(announcement.summary, /MasuGate 0\.1\.1/);
+  assert.match(announcement.evidence.locator, /0\.1\.1/);
+  assert.ok(
+    announcement.sections.some(({ blocks }) =>
+      blocks.some(
+        (block) =>
+          block.kind === "paragraph" &&
+          block.text.includes("opening the MasuGate 0.1.0"),
+      ),
+    ),
+    "the dated announcement must preserve the initial 0.1.0 opening",
+  );
+  assert.ok(
+    announcement.sections.some(({ blocks }) =>
+      blocks.some(
+        (block) =>
+          block.kind === "callout" &&
+          block.label === "Update · current review target" &&
+          block.text.includes("Reviewers should use 0.1.1"),
+      ),
+    ),
+    "the announcement must identify 0.1.1 as the current review target",
+  );
+  assert.ok(
+    announcement.citations.some(
+      ({ id, href }) =>
+        id === "masugate-paper" &&
+        href === "https://arxiv.org/abs/2608.02764v2",
+    ),
+    "the announcement's v2 paper citation must be version-pinned",
+  );
+  assert.equal(timeArticle.readingMinutes, 11);
+  assert.equal(timeArticle.publicationType, "article");
+  assert.equal(timeArticle.showInBanner, false);
+  assert.ok(
+    timeArticle.citations.some(
+      ({ id, href }) =>
+        id === "event-history-provider" &&
+        href ===
+          "https://github.com/masugate/masugate/blob/main/docs/event-history-provider.md",
+    ),
+    "the time-aware article must cite the implemented event-history boundary",
+  );
+  assert.ok(
+    timeArticle.relatedLinks.some(
+      ({ href }) =>
+        href ===
+        "https://github.com/masugate/masugate/blob/main/docs/event-history-provider.md",
+    ),
+    "the time-aware article must link to the event-history provider guide",
+  );
+  assert.match(
+    JSON.stringify(timeArticle),
+    /experimental, opt-in event-history provider/,
+  );
+  assert.match(JSON.stringify(timeArticle), /outside (?:the )?0\.1\.1/);
+  assert.match(JSON.stringify(timeArticle), /disabled by default/);
   for (const href of [
     "/",
     "https://github.com/masugate/masugate",
@@ -134,8 +205,8 @@ test("the homepage selector returns the latest bounded set without mutating the 
 
   assert.deepEqual(
     selectHomepageArticles().map(({ slug }) => slug),
-    ["masugate-public-source-release", "policy-as-code-not-prompt"],
-    "the announcement leads the bounded homepage selection",
+    ["masugate-public-source-release", "when-time-becomes-agent-policy"],
+    "the latest publication or update leads the bounded homepage selection",
   );
   assert.deepEqual(
     selectHomepageArticles(1).map(({ slug }) => slug),

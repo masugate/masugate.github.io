@@ -228,6 +228,16 @@ export function MasuGateFooter() {
             <a href={source.value.href} rel="noreferrer" target="_blank">
               Source on GitHub
             </a>
+            <a href={source.value.reviewHref}>Review MasuGate</a>
+            {isAvailable(source.value.discussionsHref) ? (
+              <a
+                href={source.value.discussionsHref.value}
+                rel="noreferrer"
+                target="_blank"
+              >
+                Discussions
+              </a>
+            ) : null}
             <a href={source.value.issuesHref} rel="noreferrer" target="_blank">
               Issue tracker
             </a>

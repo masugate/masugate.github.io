@@ -12,11 +12,12 @@ const MASUGATE_ROUTES = [
   "/blog/masugate-public-source-release/",
   "/blog/policy-as-code-not-prompt/",
   "/blog/when-allowed-goes-stale/",
+  "/blog/when-time-becomes-agent-policy/",
 ];
 
 // The public project/footer links and route-specific canonical metadata are a
 // deliberate part of every primary route. Keep the resulting ceiling tight.
-const MAX_HTML_GZIP_BYTES = 31 * 1024;
+const MAX_HTML_GZIP_BYTES = 32 * 1024;
 const MAX_REFERENCED_ASSETS_GZIP_BYTES = 150 * 1024;
 const MAX_SOCIAL_IMAGE_BYTES = 1024 * 1024;
 
