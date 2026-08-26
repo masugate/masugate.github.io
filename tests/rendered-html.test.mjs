@@ -137,7 +137,7 @@ function assertGoogleAnalytics(html, path) {
   assert.equal(
     countMatches(
       html,
-      /<script\b(?=[^>]*\basync(?:=""|(?=[\s>])))(?=[^>]*\bsrc="https:\/\/www\.googletagmanager\.com\/gtag\/js\?id=G-ZWBT158GJT")[^>]*>/gi,
+      /<script\b(?=[^>]*\basync(?:=""|(?=[\s>])))(?=[^>]*\bsrc="https:\/\/www\.googletagmanager\.com\/gtag\/js\?id=G-TEST123456")[^>]*>/gi,
     ),
     1,
     `${path}: expected one async Google Analytics loader`,
@@ -145,7 +145,7 @@ function assertGoogleAnalytics(html, path) {
   assert.equal(
     countMatches(
       html,
-      /<script\b(?![^>]*\bsrc=)[^>]*>\s*window\.dataLayer=window\.dataLayer\|\|\[\];function gtag\(\)\{dataLayer\.push\(arguments\);\}gtag\('js',new Date\(\)\);gtag\('config','G-ZWBT158GJT'\);\s*<\/script>/gi,
+      /<script\b(?![^>]*\bsrc=)[^>]*>\s*window\.dataLayer=window\.dataLayer\|\|\[\];function gtag\(\)\{dataLayer\.push\(arguments\);\}gtag\('js',new Date\(\)\);gtag\('config','G-TEST123456'\);\s*<\/script>/gi,
     ),
     1,
     `${path}: expected one executable Google Analytics initializer`,
