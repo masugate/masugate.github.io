@@ -782,19 +782,24 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
     "Committed",
     "Denied",
     "Pending",
-    "From stateful policy to governed concurrent execution.",
-    "Keep OpenClaw in control. Protect the consequential action.",
-    "Blog & announcements",
-    "Technical thinking and project updates.",
-    "Future MasuGate releases, studies, and announcements will appear here too.",
-    "Inspect the assumptions and evidence.",
-    "Want to see the scenario applied to your agent system?",
+    "Try it. Read it. Check the evidence.",
+    "Interactive demo",
+    "Public source",
+    "Research paper",
+    "Simulated · Reference",
+    "Open source",
+    "Paper · v1",
+    "Read the latest. Test your own scenario.",
+    "Latest writing",
     "Request a customized demo",
     "Open email draft",
     "Prefer webmail? Copy masugate.governance@gmail.com into a new message.",
     "See it happen",
     "Run the complete demo",
-    "Open the OpenClaw developer demo",
+    "Run the demo",
+    "Browse GitHub",
+    "Open the paper",
+    "All posts",
   ]) {
     assert.ok(text.includes(requiredCopy), `Home is missing: ${requiredCopy}`);
   }
@@ -872,15 +877,17 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
     "Home must show both $60 requests",
   );
 
-  const differentiators = sectionContaining(
-    html,
-    "From stateful policy to governed concurrent execution.",
-  );
-  assert.deepEqual(headingsIn(differentiators, 3), [
-    "Policy over shared mutable state",
-    "Coordination for overlapping actions",
-    "Independently managed, interpretable policy",
+  const proof = sectionContaining(html, "Try it. Read it. Check the evidence.");
+  assert.deepEqual(headingsIn(proof, 3), [
+    "Interactive demo",
+    "Public source",
+    "Research paper",
   ]);
+  assert.equal(
+    countMatches(proof, /data-proof-resource="(?:demo|source|paper)"/g),
+    3,
+    "Home proof must stay bounded to three resource cards",
+  );
 
   assert.match(
     html,
@@ -904,22 +911,6 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
 
   assert.match(text, /categorized-purchase@v2/);
 
-  const openClawBridge = sectionContaining(
-    html,
-    "Keep OpenClaw in control. Protect the consequential action.",
-  );
-  assert.match(textContent(openClawBridge), /Presentation: Simulated/);
-  assert.match(textContent(openClawBridge), /Evidence: Reference/);
-  assert.match(textContent(openClawBridge), /Provider-owned/);
-  assert.match(textContent(openClawBridge), /Certified view: budget\.available/);
-  assert.match(textContent(openClawBridge), /Configured provider effect/);
-  assert.match(
-    textContent(openClawBridge),
-    /protects the owner-and-category scope/,
-  );
-  assert.match(textContent(openClawBridge), /Reference profile: OpenClaw 2026\.7\.1/);
-  assert.match(textContent(openClawBridge), /Figure 4/i);
-  assert.match(textContent(openClawBridge), /2608\.02764v1/i);
   assert.match(
     text,
     /Separate records retain the committed and denied operations\./,
@@ -927,7 +918,7 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
 
   const blogSection = sectionContaining(
     html,
-    "Technical thinking and project updates.",
+    "Read the latest. Test your own scenario.",
   );
   assert.match(
     blogSection,
@@ -937,7 +928,21 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
     blogSection,
     /href="\/blog\/when-time-becomes-agent-policy\/"/i,
   );
-  assert.match(blogSection, /href="\/blog\/"[^>]*>[\s\S]*?View all posts/i);
+  assert.match(blogSection, /href="\/blog\/"[^>]*>[\s\S]*?All posts/i);
+
+  const homepageMain = mainMarkup(html);
+  assert.equal(
+    countMatches(homepageMain, /<section\b/gi),
+    6,
+    "Home must keep the six-part narrative",
+  );
+  const homepageWordCount = textContent(homepageMain)
+    .split(/\s+/)
+    .filter(Boolean).length;
+  assert.ok(
+    homepageWordCount <= 818,
+    `Home must retain the promised 50% copy reduction; found ${homepageWordCount} words`,
+  );
 
   assert.match(html, /Yuxiang Peng/);
   assert.match(

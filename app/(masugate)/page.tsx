@@ -2,17 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ConcurrentStateHero } from "../components/ConcurrentStateHero";
 import { CustomizedDemoRequestForm } from "../components/CustomizedDemoRequestForm";
-import {
-  GovernedRuntimeSchematic,
-  OpenClawBridgeSchematic,
-} from "../components/MasuGateSchematics";
+import { GovernedRuntimeSchematic } from "../components/MasuGateSchematics";
 import { SharedBudgetComparison } from "../components/SharedBudgetComparison";
 import { SharedStateStrip } from "../components/SharedStateStrip";
 import { contactContract } from "../data/contact";
 import { selectHomepageArticles } from "../data/articles";
 import { isAvailable } from "../data/contracts";
 import { homepageContent } from "../data/homepage";
-import { selectHomepageIntegrationBridge } from "../data/integrations";
 import { createMasuGatePageMetadata } from "../data/metadata";
 import { masugateSite } from "../data/masugate-site";
 import {
@@ -57,12 +53,39 @@ function shortAgentName(agentId: (typeof openClawScenario.agents)[number]["id"])
 
 export default function MasuGateHomePage() {
   const comparison = selectHomepageBudgetComparison();
-  const integrationBridge = selectHomepageIntegrationBridge();
   const homepageArticles = selectHomepageArticles();
   const [travelRequest, workRequest] = comparison.requests;
   const [independentPath, governedPath] = comparison.paths;
   const paper = masugateSite.researchPaper;
+  const source = masugateSite.sourceRepository;
   const hero = homepageContent.hero;
+  const proof = homepageContent.proof;
+  const closing = homepageContent.closing;
+  const proofItems = [
+    {
+      ...proof.items[0],
+      external: false,
+      href: "/demo/",
+    },
+    ...(isAvailable(source)
+      ? [
+          {
+            ...proof.items[1],
+            external: true,
+            href: source.value.href,
+          },
+        ]
+      : []),
+    ...(isAvailable(paper)
+      ? [
+          {
+            ...proof.items[2],
+            external: true,
+            href: paper.value.href,
+          },
+        ]
+      : []),
+  ];
   const remainingCapacity = {
     ...comparison.capacity,
     minorUnits:
@@ -227,204 +250,137 @@ export default function MasuGateHomePage() {
         </div>
       </section>
 
-      <section className={`masugate-section ${styles.sectionWhite}`}>
+      <section className={`masugate-section ${styles.proofSection}`}>
         <div className="masugate-shell">
-          <div className="masugate-section-heading">
-            <p className="masugate-eyebrow">What MasuGate contributes</p>
-            <h2>From stateful policy to governed concurrent execution.</h2>
-          </div>
-          <div className={styles.differentiatorGrid}>
-            <article className={styles.differentiator}>
-              <span className={styles.cardIndex}>01</span>
-              <h3>Policy over shared mutable state</h3>
-              <p>Express rules over the shared state that changes as agents act.</p>
-              <details className={styles.differentiatorDetail}>
-                <summary>How it works</summary>
-                <p className={styles.secondaryDetail}>
-                  Bounded policy programs can use registered views such as
-                  accumulated spend, remaining capacity, approval state, or risk
-                  context.
-                </p>
-              </details>
-            </article>
-            <article className={styles.differentiator}>
-              <span className={styles.cardIndex}>02</span>
-              <h3>Coordination for overlapping actions</h3>
-              <p>
-                Preserve the meaning of stateful policy decisions when governed
-                actions run concurrently.
-              </p>
-              <details className={styles.differentiatorDetail}>
-                <summary>Technical premise</summary>
-                <p className={styles.secondaryDetail}>
-                  The technical model is policy-state serializability under
-                  explicit policy, provider, and enforcement assumptions.
-                </p>
-              </details>
-            </article>
-            <article className={styles.differentiator}>
-              <span className={styles.cardIndex}>03</span>
-              <h3>Independently managed, interpretable policy</h3>
-              <p>
-                Manage governance as structured policy, independently of agent
-                prompts and tool implementations.
-              </p>
-              <details className={styles.differentiatorDetail}>
-                <summary>What reviewers can inspect</summary>
-                <p className={styles.secondaryDetail}>
-                  Policy owners can inspect, validate, test, review, version,
-                  and evolve one shared rule. Records identify the applicable
-                  rule, revision, and state facts used.
-                </p>
-              </details>
-              <p className={styles.proofLine}>
-                <span className={styles.proofLabel}>Policy lifecycle</span>
-                {openClawScenario.policyOwner.label} → reviewed revision →
-                governed agent routes → versioned records
-              </p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section className="masugate-section masugate-section-dark">
-        <div className={`masugate-shell ${styles.bridgeGrid}`}>
-          <div className={styles.bridgeCopy}>
-            <p className="masugate-eyebrow">OpenClaw integration</p>
-            <h2>Keep {integrationBridge.primary.name} in control. Protect the consequential action.</h2>
-            <p>
-              Selected calls cross the MasuGate boundary; orchestration stays
-              in {integrationBridge.primary.name}.
-            </p>
-            <Link
-              className={`masugate-button masugate-button-primary ${styles.bridgeAction}`}
-              href="/demo/"
-            >
-              Open the OpenClaw developer demo
-            </Link>
-          </div>
-          <OpenClawBridgeSchematic />
-        </div>
-      </section>
-
-      <section
-        aria-labelledby="home-blog-title"
-        className={`masugate-section ${styles.sectionWhite}`}
-      >
-        <div className="masugate-shell">
-          <div className={styles.blogHeading}>
+          <div className={styles.proofHeading}>
             <div className="masugate-section-heading">
-              <p className="masugate-eyebrow">Blog &amp; announcements</p>
-              <h2 id="home-blog-title">Technical thinking and project updates.</h2>
-              <p>
-                Read the current explainers. Future MasuGate releases,
-                studies, and announcements will appear here too.
-              </p>
+              <p className="masugate-eyebrow">{proof.eyebrow}</p>
+              <h2>{proof.title}</h2>
+              <p>{proof.intro}</p>
             </div>
-            <Link className={styles.blogIndexLink} href="/blog/">
-              View all posts
-            </Link>
+            <span aria-hidden="true" className={styles.proofRule} />
           </div>
-          <div className={styles.blogGrid}>
-            {homepageArticles.map((article) => (
-              <article className={styles.blogCard} key={article.slug}>
-                <p className={styles.blogMeta}>
-                  <span>
-                    {article.publicationType === "announcement"
-                      ? "Announcement"
-                      : "Technical article"}
-                  </span>
-                  <span aria-hidden="true">·</span>
-                  <time dateTime={article.updatedAt ?? article.publishedAt}>
-                    {formatArticleDate(article.updatedAt ?? article.publishedAt)}
-                  </time>
-                  <span aria-hidden="true">·</span>
-                  <span>{article.readingMinutes} min read</span>
-                </p>
-                <h3>
-                  <Link href={article.href}>{article.title}</Link>
-                </h3>
-                <p>{article.summary}</p>
-                <Link className={styles.blogCardLink} href={article.href}>
-                  {article.publicationType === "announcement"
-                    ? "Read announcement"
-                    : "Read article"}{" "}
-                  →
-                </Link>
+
+          <div className={styles.proofGrid}>
+            {proofItems.map((item, index) => (
+              <article
+                className={styles.proofCard}
+                data-proof-resource={item.id}
+                key={item.id}
+              >
+                <div className={styles.proofCardTopline}>
+                  <span>0{index + 1}</span>
+                  <span>{item.status}</span>
+                </div>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+                <details className={styles.proofDetails}>
+                  <summary>{item.detailsLabel}</summary>
+                  <ul>
+                    {item.details.map((detail) => (
+                      <li key={detail}>{detail}</li>
+                    ))}
+                  </ul>
+                </details>
+                {item.external ? (
+                  <a
+                    className={styles.proofAction}
+                    href={item.href}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    {item.actionLabel} ↗
+                  </a>
+                ) : (
+                  <Link className={styles.proofAction} href={item.href}>
+                    {item.actionLabel} →
+                  </Link>
+                )}
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className={`masugate-section ${styles.sectionMuted}`}>
-        <div className="masugate-shell">
-          <div className={styles.evidenceStrip}>
-            <div>
-              <h2>Inspect the assumptions and evidence.</h2>
-              <p>
-                MasuGate&apos;s formal and empirical claims have explicit premises,
-                controlled evaluation boundaries, and named evidence paths.
-              </p>
-            </div>
-            {isAvailable(paper) ? (
-              <a
-                className={styles.evidenceLink}
-                href={paper.value.href}
-                rel="noreferrer"
-                target="_blank"
-              >
-                Open the paper
-              </a>
-            ) : null}
-          </div>
-        </div>
-      </section>
-
       <section
-        className={`masugate-section ${styles.sectionWhite}`}
+        aria-labelledby="home-closing-title"
+        className={`masugate-section ${styles.closingSection}`}
         id={contactContract.sectionId}
       >
         <div className="masugate-shell">
-          <div className={`masugate-section-heading ${styles.contactIntro}`}>
-            <p className="masugate-eyebrow">Continue the conversation</p>
-            <h2>Want to see the scenario applied to your agent system?</h2>
-            <p>
-              Request a customized demo or ask a bounded integration question
-              through the MasuGate project inbox.
-            </p>
+          <div className={`masugate-section-heading ${styles.closingHeading}`}>
+            <p className="masugate-eyebrow">{closing.eyebrow}</p>
+            <h2 id="home-closing-title">{closing.title}</h2>
           </div>
-          <div className={styles.contactLayout}>
-            <CustomizedDemoRequestForm
-              actionLabel={contactContract.requestDemoAction.value.label}
-              recipientEmail={contactContract.sharedInbox.email}
-              recipientMailtoHref={contactContract.sharedInbox.mailtoHref}
-            />
-            <aside className={styles.teamPanel} aria-labelledby="team-title">
-              <p className="masugate-eyebrow">Current team</p>
-              <h3 id="team-title">People behind the project</h3>
-              <div className={styles.contactGrid}>
-                {contactContract.people.map((person) => (
-                  <article className={styles.contactCard} key={person.id}>
-                    <h4>{person.name}</h4>
-                    <p>{person.affiliation}</p>
-                    <a
-                      href={person.profileHref}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      {person.profileLabel} ↗
-                    </a>
+
+          <div className={styles.closingGrid}>
+            <div className={styles.writingBlock}>
+              <div className={styles.blockHeading}>
+                <h3>{closing.writingLabel}</h3>
+                <Link href="/blog/">{closing.writingActionLabel} →</Link>
+              </div>
+              <div className={styles.writingList}>
+                {homepageArticles.map((article) => (
+                  <article key={article.slug}>
+                    <p>
+                      <span>
+                        {article.publicationType === "announcement"
+                          ? "Announcement"
+                          : "Article"}
+                      </span>
+                      <time dateTime={article.updatedAt ?? article.publishedAt}>
+                        {formatArticleDate(
+                          article.updatedAt ?? article.publishedAt,
+                        )}
+                      </time>
+                    </p>
+                    <h4>
+                      <Link href={article.href}>{article.title}</Link>
+                    </h4>
                   </article>
                 ))}
               </div>
-              <p className={styles.sharedInbox}>
-                Project contact: {" "}
-                <a href={contactContract.sharedInbox.mailtoHref}>
-                  {contactContract.sharedInbox.email}
-                </a>
-              </p>
-            </aside>
+            </div>
+
+            <div className={styles.contactBlock}>
+              <p className="masugate-eyebrow">{closing.contactLabel}</p>
+              <h3>{closing.contactTitle}</h3>
+              <p>{closing.contactCopy}</p>
+              <details className={styles.contactDisclosure}>
+                <summary>
+                  <span>{contactContract.requestDemoAction.value.label}</span>
+                  <small>{closing.disclosureHint}</small>
+                </summary>
+                <div className={styles.formWrap}>
+                  <CustomizedDemoRequestForm
+                    actionLabel={contactContract.requestDemoAction.value.label}
+                    recipientEmail={contactContract.sharedInbox.email}
+                    recipientMailtoHref={contactContract.sharedInbox.mailtoHref}
+                  />
+                </div>
+              </details>
+
+              <div className={styles.teamLinks}>
+                <span>{closing.teamLabel}</span>
+                {contactContract.people.map((person) => (
+                  <a
+                    href={person.profileHref}
+                    key={person.id}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    {person.name}
+                    <small>{person.affiliation}</small>
+                  </a>
+                ))}
+              </div>
+              <a
+                className={styles.inboxLink}
+                href={contactContract.sharedInbox.mailtoHref}
+              >
+                {contactContract.sharedInbox.email}
+              </a>
+            </div>
           </div>
         </div>
       </section>

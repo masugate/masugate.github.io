@@ -66,6 +66,51 @@ export interface HomepageContentContract {
     scopeNote: string;
     recordNote: string;
   }>;
+  proof: Readonly<{
+    eyebrow: string;
+    title: string;
+    intro: string;
+    items: readonly [
+      Readonly<{
+        id: "demo";
+        title: string;
+        description: string;
+        status: string;
+        actionLabel: string;
+        detailsLabel: string;
+        details: readonly [string, string];
+      }>,
+      Readonly<{
+        id: "source";
+        title: string;
+        description: string;
+        status: string;
+        actionLabel: string;
+        detailsLabel: string;
+        details: readonly [string, string];
+      }>,
+      Readonly<{
+        id: "paper";
+        title: string;
+        description: string;
+        status: string;
+        actionLabel: string;
+        detailsLabel: string;
+        details: readonly [string, string];
+      }>,
+    ];
+  }>;
+  closing: Readonly<{
+    eyebrow: string;
+    title: string;
+    writingLabel: string;
+    writingActionLabel: string;
+    contactLabel: string;
+    contactTitle: string;
+    contactCopy: string;
+    disclosureHint: string;
+    teamLabel: string;
+  }>;
 }
 
 export const homepageContent = {
@@ -168,5 +213,64 @@ export const homepageContent = {
       "MasuGate governs configured consequential routes; the host keeps orchestration and model behavior.",
     recordNote:
       "The receipt keeps the revision, state facts, decision, and outcome linked.",
+  },
+  proof: {
+    eyebrow: "Inspect the project",
+    title: "Try it. Read it. Check the evidence.",
+    intro:
+      "The demo, public source, and paper expose different layers of the same system.",
+    items: [
+      {
+        id: "demo",
+        title: "Interactive demo",
+        description:
+          "Watch overlapping actions resolve against one changing budget.",
+        status: "Simulated · Reference",
+        actionLabel: "Run the demo",
+        detailsLabel: "Integration boundary",
+        details: [
+          "OpenClaw keeps orchestration; selected consequential calls cross the protected path.",
+          "The reference scenario uses categorized-purchase@v2.",
+        ],
+      },
+      {
+        id: "source",
+        title: "Public source",
+        description:
+          "Review the implementation, policy lifecycle, and validation path.",
+        status: "Open source",
+        actionLabel: "Browse GitHub",
+        detailsLabel: "Review scope",
+        details: [
+          "Bounded policies read registered views: spend, capacity, approval, or risk.",
+          "Reviewers inspect policy revisions and state facts.",
+        ],
+      },
+      {
+        id: "paper",
+        title: "Research paper",
+        description:
+          "Inspect the formal model, assumptions, and controlled evaluation.",
+        status: "Paper · v1",
+        actionLabel: "Open the paper",
+        detailsLabel: "Technical premise",
+        details: [
+          "The model is policy-state serializability under explicit policy, provider, and enforcement assumptions.",
+          "Claims name premises, evaluation boundaries, and evidence paths.",
+        ],
+      },
+    ],
+  },
+  closing: {
+    eyebrow: "Continue",
+    title: "Read the latest. Test your own scenario.",
+    writingLabel: "Latest writing",
+    writingActionLabel: "All posts",
+    contactLabel: "Bring your system",
+    contactTitle: "Request a customized demo.",
+    contactCopy:
+      "Tell us the action, policy, and shared state. We will scope it.",
+    disclosureHint: "Opens a prepared email draft",
+    teamLabel: "Project team",
   },
 } as const satisfies HomepageContentContract;

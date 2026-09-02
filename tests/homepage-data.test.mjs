@@ -58,3 +58,34 @@ test("homepage mechanism is one bounded three-step flow", () => {
   assert.deepEqual(mechanism.outcomes, ["Committed", "Denied", "Pending"]);
   assert.match(mechanism.boundaryLabel, /protected path/i);
 });
+
+test("homepage proof stays bounded to three inspectable paths", () => {
+  const { proof } = homepageContent;
+
+  assert.ok(wordCount(proof.title) <= 10);
+  assert.ok(wordCount(proof.intro) <= 25);
+  assert.deepEqual(
+    proof.items.map(({ id }) => id),
+    ["demo", "source", "paper"],
+  );
+
+  for (const item of proof.items) {
+    assert.ok(wordCount(item.description) <= 14);
+    assert.equal(item.details.length, 2);
+    for (const detail of item.details) {
+      assert.ok(
+        wordCount(detail) <= 20,
+        `${item.id} proof detail must stay within 20 words`,
+      );
+    }
+  }
+});
+
+test("homepage ending combines writing and contact without another narrative section", () => {
+  const { closing } = homepageContent;
+
+  assert.ok(wordCount(closing.title) <= 10);
+  assert.ok(wordCount(closing.contactCopy) <= 20);
+  assert.equal(closing.writingActionLabel, "All posts");
+  assert.match(closing.contactTitle, /customized demo/i);
+});
