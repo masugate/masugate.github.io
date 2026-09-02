@@ -1,29 +1,37 @@
 .masugate-site {
-  --p-ink: #092f28;
-  --p-ink-soft: #38534c;
-  --p-paper: #f7f2e8;
-  --p-surface: #fffcf5;
-  --p-surface-soft: #e9dfcd;
-  --p-decision-allow: #176b59;
-  --p-decision-deny: #a83f35;
-  --p-decision-escalate: #845700;
-  --p-operation-committed: #176b59;
-  --p-operation-denied: #a83f35;
-  --p-operation-pending: #845700;
+  --p-ink: #f4f7ff;
+  --p-ink-soft: #aab6cc;
+  --p-paper: #080b12;
+  --p-surface: #0e131d;
+  --p-surface-soft: #151c2a;
+  --p-decision-allow: #59e3a7;
+  --p-decision-deny: #ff7a8a;
+  --p-decision-escalate: #f5c451;
+  --p-operation-committed: #59e3a7;
+  --p-operation-denied: #ff7a8a;
+  --p-operation-pending: #f5c451;
   --p-allow: var(--p-decision-allow);
-  --p-allow-soft: #dcefe7;
+  --p-allow-soft: #102820;
   --p-deny: var(--p-decision-deny);
-  --p-deny-soft: #f7d9d3;
+  --p-deny-soft: #2b161d;
   --p-pending: var(--p-operation-pending);
-  --p-pending-soft: #f4e1ab;
-  --p-info: #405fbe;
-  --p-info-soft: #dfe6fb;
-  --p-line: rgba(9, 47, 40, 0.2);
-  --p-shadow: 0 20px 52px rgba(9, 47, 40, 0.12);
+  --p-pending-soft: #2b2412;
+  --p-info: #63d5ff;
+  --p-info-soft: #10283a;
+  --p-accent-violet: #a798ff;
+  --p-accent-violet-soft: #211b3d;
+  --p-on-accent: #080b12;
+  --p-line: rgba(170, 182, 204, 0.16);
+  --p-line-strong: #5a6c87;
+  --p-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+  --p-font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --p-font-mono: ui-monospace, "SFMono-Regular", "Cascadia Code", "Roboto Mono", Consolas, monospace;
   min-height: 100vh;
   background: var(--p-paper);
   color: var(--p-ink);
-  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  color-scheme: dark;
+  font-family: var(--p-font-sans);
+  text-rendering: optimizeLegibility;
 }
 
 .masugate-site *,
@@ -35,6 +43,10 @@
 .masugate-site a {
   color: inherit;
   text-decoration: none;
+}
+
+.masugate-site :where(h1, h2, h3) {
+  font-family: var(--p-font-sans);
 }
 
 .masugate-site :where(a, button, summary):focus-visible {
@@ -50,7 +62,7 @@
   left: 12px;
   translate: 0 -150%;
   padding: 12px 16px;
-  border: 2px solid var(--p-ink);
+  border: 2px solid var(--p-info);
   background: var(--p-surface);
   font-weight: 800;
   transition: translate 120ms ease;
@@ -61,7 +73,7 @@
 }
 
 .masugate-shell {
-  width: min(1180px, calc(100% - 48px));
+  width: min(1240px, calc(100% - 56px));
   margin-inline: auto;
 }
 
@@ -69,23 +81,24 @@
   position: sticky;
   z-index: 100;
   top: 0;
-  border-top: 4px solid var(--p-deny);
   border-bottom: 1px solid var(--p-line);
-  background: color-mix(in srgb, var(--p-paper) 94%, transparent);
-  backdrop-filter: blur(14px);
+  background: color-mix(in srgb, var(--p-paper) 88%, transparent);
+  backdrop-filter: blur(22px) saturate(135%);
 }
 
 .masugate-header-inner {
-  min-height: 70px;
+  min-height: 74px;
   display: flex;
   align-items: center;
   gap: 28px;
 }
 
 .masugate-update-banner {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
-  background: var(--p-ink);
-  color: var(--p-surface);
+  border-bottom: 1px solid var(--p-line);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--p-accent-violet) 24%, transparent), transparent 42%),
+    var(--p-paper);
+  color: var(--p-ink);
 }
 
 .masugate-update-banner-inner {
@@ -105,9 +118,11 @@
 
 .masugate-update-meta span {
   padding: 5px 8px;
-  background: var(--p-pending-soft);
-  color: var(--p-ink);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  border: 1px solid color-mix(in srgb, var(--p-allow) 38%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--p-allow) 12%, transparent);
+  color: var(--p-allow);
+  font-family: var(--p-font-mono);
   font-size: 0.64rem;
   font-weight: 900;
   letter-spacing: 0.07em;
@@ -116,8 +131,8 @@
 }
 
 .masugate-update-meta time {
-  color: #c8d4d0;
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color: var(--p-ink-soft);
+  font-family: var(--p-font-mono);
   font-size: 0.68rem;
   font-weight: 800;
   white-space: nowrap;
@@ -139,7 +154,7 @@
 }
 
 .masugate-update-link > span {
-  color: #ffe29a;
+  color: var(--p-info);
   font-size: 0.76rem;
   font-weight: 900;
   white-space: nowrap;
@@ -156,7 +171,7 @@
   align-items: center;
   gap: 11px;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
 }
 
 .masugate-brand-mark {
@@ -164,11 +179,14 @@
   height: 28px;
   display: inline-grid;
   place-items: center;
-  border: 1px solid var(--p-ink);
-  background: var(--p-ink);
-  color: var(--p-surface);
-  font-family: Georgia, "Times New Roman", serif;
+  border: 1px solid color-mix(in srgb, var(--p-info) 52%, transparent);
+  border-radius: 9px;
+  background: linear-gradient(145deg, var(--p-accent-violet), var(--p-info));
+  color: var(--p-on-accent);
+  box-shadow: 0 0 26px color-mix(in srgb, var(--p-info) 28%, transparent);
+  font-family: var(--p-font-sans);
   font-size: 0.9rem;
+  font-weight: 800;
   letter-spacing: 0;
 }
 
@@ -195,19 +213,19 @@
 
 .masugate-nav-link::after {
   content: "⌄";
-  color: var(--p-allow);
+  color: var(--p-info);
   font-size: 0.95rem;
   line-height: 1;
   transition: rotate 140ms ease;
 }
 
 .masugate-nav-link:hover {
-  border-bottom-color: var(--p-deny);
+  border-bottom-color: var(--p-info);
 }
 
 .masugate-nav-menu:hover .masugate-nav-link,
 .masugate-nav-menu:focus-within .masugate-nav-link {
-  border-bottom-color: var(--p-deny);
+  border-bottom-color: var(--p-info);
 }
 
 .masugate-nav-menu:hover .masugate-nav-link::after,
@@ -222,8 +240,10 @@
   left: -12px;
   width: min(330px, 42vw);
   padding: 16px;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
+  border-radius: 16px;
   background: var(--p-surface);
+  color: var(--p-ink);
   box-shadow: var(--p-shadow);
   opacity: 0;
   pointer-events: none;
@@ -262,13 +282,13 @@
 
 .masugate-nav-panel a:hover,
 .masugate-nav-panel a:focus-visible {
-  border-left-color: var(--p-allow);
-  background: var(--p-allow-soft);
+  border-left-color: var(--p-info);
+  background: color-mix(in srgb, var(--p-info) 9%, transparent);
 }
 
 .masugate-mobile-nav > summary {
-  border-color: rgba(139, 163, 223, 0.42);
-  color: #f5f7ff;
+  border-color: var(--p-line-strong);
+  color: var(--p-ink);
 }
 
 .masugate-nav-panel strong {
@@ -288,20 +308,27 @@
   align-items: center;
   justify-content: center;
   padding: 10px 16px;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
+  border-radius: 999px;
   font-size: 0.82rem;
   font-weight: 900;
+  transition: border-color 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
 }
 
 .masugate-header-action,
 .masugate-button-primary {
-  background: var(--p-ink);
-  color: var(--p-surface) !important;
+  border-color: var(--p-info);
+  background: var(--p-info);
+  color: var(--p-on-accent) !important;
+  box-shadow: 0 8px 26px color-mix(in srgb, var(--p-info) 18%, transparent);
 }
 
 .masugate-header-action:hover,
 .masugate-button-primary:hover {
-  background: var(--p-allow);
+  border-color: color-mix(in srgb, var(--p-info) 76%, white);
+  background: color-mix(in srgb, var(--p-info) 76%, white);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 34px color-mix(in srgb, var(--p-info) 28%, transparent);
 }
 
 .masugate-button-secondary {
@@ -309,7 +336,9 @@
 }
 
 .masugate-button-secondary:hover {
-  background: var(--p-surface);
+  border-color: var(--p-accent-violet);
+  background: var(--p-accent-violet-soft);
+  transform: translateY(-2px);
 }
 
 .masugate-mobile-nav {
@@ -328,8 +357,8 @@
   padding: clamp(72px, 10vw, 128px) 0 clamp(70px, 9vw, 112px);
   border-bottom: 1px solid var(--p-line);
   background:
-    radial-gradient(circle at 88% 18%, rgba(241, 189, 75, 0.25), transparent 26%),
-    linear-gradient(135deg, transparent 64%, rgba(121, 216, 173, 0.14));
+    radial-gradient(circle at 88% 18%, color-mix(in srgb, var(--p-accent-violet) 20%, transparent), transparent 26%),
+    linear-gradient(135deg, transparent 64%, color-mix(in srgb, var(--p-info) 12%, transparent));
 }
 
 .masugate-hero-grid {
@@ -342,20 +371,20 @@
 .masugate-eyebrow {
   margin: 0 0 18px;
   color: var(--p-allow);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
-  font-size: 0.72rem;
+  font-family: var(--p-font-mono);
+  font-size: 0.69rem;
   font-weight: 900;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
 .masugate-hero h1,
 .masugate-page-hero h1,
 .masugate-section h2 {
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 400;
-  letter-spacing: -0.035em;
-  line-height: 1.04;
+  font-family: var(--p-font-sans);
+  font-weight: 560;
+  letter-spacing: -0.055em;
+  line-height: 0.98;
 }
 
 .masugate-hero h1 {
@@ -380,7 +409,8 @@
 
 .masugate-shared-state {
   padding: 24px;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
+  border-radius: 18px;
   border-top: 6px solid var(--p-pending);
   background: var(--p-surface);
   box-shadow: var(--p-shadow);
@@ -392,7 +422,7 @@
 .masugate-path > span {
   display: block;
   color: var(--p-ink-soft);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -402,7 +432,7 @@
 .masugate-shared-state strong {
   display: block;
   margin: 10px 0 22px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(2.5rem, 5vw, 4.6rem);
   font-weight: 400;
 }
@@ -439,21 +469,29 @@
 }
 
 .masugate-section {
+  position: relative;
   padding: clamp(68px, 8vw, 104px) 0;
   border-bottom: 1px solid var(--p-line);
 }
 
 .masugate-section-soft {
-  background: var(--p-allow-soft);
+  background:
+    radial-gradient(circle at 90% 10%, color-mix(in srgb, var(--p-accent-violet) 10%, transparent), transparent 25%),
+    var(--p-surface);
 }
 
 .masugate-section-dark {
-  background: var(--p-ink);
-  color: var(--p-surface);
+  background:
+    linear-gradient(color-mix(in srgb, var(--p-accent-violet) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--p-accent-violet) 8%, transparent) 1px, transparent 1px),
+    radial-gradient(circle at 74% 38%, color-mix(in srgb, var(--p-accent-violet) 22%, transparent), transparent 30%),
+    var(--p-paper);
+  background-size: 48px 48px, 48px 48px, auto, auto;
+  color: var(--p-ink);
 }
 
 .masugate-section-dark .masugate-eyebrow {
-  color: #79d8ad;
+  color: var(--p-info);
 }
 
 .masugate-section-heading {
@@ -476,7 +514,7 @@
 
 .masugate-section-dark .masugate-section-heading > p:last-child,
 .masugate-section-dark .masugate-section-lede {
-  color: #c8d4d0;
+  color: var(--p-ink-soft);
 }
 
 .masugate-path-grid,
@@ -499,7 +537,9 @@
 .masugate-contact-card {
   padding: 26px;
   border: 1px solid var(--p-line);
+  border-radius: 18px;
   background: var(--p-surface);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.18);
 }
 
 .masugate-path-deny {
@@ -566,10 +606,29 @@
   color: var(--p-ink-soft);
 }
 
+.masugate-card,
+.masugate-stage,
+.masugate-contact-card {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.masugate-card:hover,
+.masugate-stage:hover,
+.masugate-contact-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--p-accent-violet) 34%, transparent);
+  box-shadow: var(--p-shadow);
+}
+
 .masugate-page-hero {
+  position: relative;
+  overflow: hidden;
   padding: clamp(64px, 8vw, 100px) 0;
   border-bottom: 1px solid var(--p-line);
-  background: var(--p-surface-soft);
+  background:
+    radial-gradient(circle at 82% 20%, color-mix(in srgb, var(--p-accent-violet) 17%, transparent), transparent 28%),
+    radial-gradient(circle at 12% 100%, color-mix(in srgb, var(--p-info) 12%, transparent), transparent 24%),
+    var(--p-surface);
 }
 
 .masugate-page-hero-grid {
@@ -639,7 +698,7 @@
 
 .masugate-stage-number {
   color: var(--p-info);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.1em;
@@ -673,7 +732,9 @@
   padding: 32px;
   border: 1px solid var(--p-line);
   border-left: 6px solid var(--p-info);
+  border-radius: 18px;
   background: var(--p-surface);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.18);
 }
 
 .masugate-contact-card a {
@@ -686,8 +747,13 @@
 
 .masugate-footer {
   padding: 54px 0 24px;
-  background: var(--p-ink);
-  color: var(--p-surface);
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 0%, color-mix(in srgb, var(--p-info) 15%, transparent), transparent 25%),
+    radial-gradient(circle at 84% 20%, color-mix(in srgb, var(--p-accent-violet) 20%, transparent), transparent 30%),
+    #05070d;
+  color: var(--p-ink);
 }
 
 .masugate-footer-grid {
@@ -698,7 +764,7 @@
 
 .masugate-footer p {
   max-width: 470px;
-  color: #c8d4d0;
+  color: var(--p-ink-soft);
 }
 
 .masugate-footer-nav,
@@ -714,12 +780,12 @@
 .masugate-footer-project strong,
 .masugate-footer-contact strong {
   margin-bottom: 5px;
-  color: #79d8ad;
+  color: var(--p-info);
 }
 
 .masugate-footer-contact span {
   margin-top: 8px;
-  color: #9fb3ad;
+  color: var(--p-ink-soft);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -732,8 +798,8 @@
   display: flex;
   justify-content: space-between;
   gap: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  color: #c8d4d0;
+  border-top: 1px solid var(--p-line);
+  color: var(--p-ink-soft);
   font-size: 0.75rem;
 }
 
@@ -754,7 +820,7 @@
     min-height: 44px;
     display: grid;
     place-items: center;
-    border: 1px solid var(--p-ink);
+    border: 1px solid var(--p-line-strong);
     cursor: pointer;
     font-size: 0.78rem;
     font-weight: 900;
@@ -773,7 +839,8 @@
     padding: 12px;
     display: grid;
     gap: 4px;
-    border: 1px solid var(--p-ink);
+    border: 1px solid var(--p-line-strong);
+    border-radius: 16px;
     background: var(--p-surface);
     box-shadow: var(--p-shadow);
   }
@@ -788,8 +855,8 @@
 
   .masugate-mobile-panel a:last-child {
     margin-top: 6px;
-    background: var(--p-ink);
-    color: var(--p-surface);
+    background: var(--p-info);
+    color: var(--p-on-accent);
   }
 }
 
@@ -820,7 +887,7 @@
 
 @media (max-width: 640px) {
   .masugate-shell {
-    width: min(100% - 28px, 1180px);
+    width: min(100% - 28px, 1240px);
   }
 
   .masugate-update-banner-inner,
@@ -1009,33 +1076,10 @@
   }
 }
 
-/* 2026 visual refresh: a technical, luminous system without changing content. */
-.masugate-site {
-  --p-ink: #0a1020;
-  --p-ink-soft: #536078;
-  --p-paper: #f3f6fb;
-  --p-surface: #fbfcff;
-  --p-surface-soft: #e9eef7;
-  --p-decision-allow: #087d6d;
-  --p-decision-deny: #d34e67;
-  --p-decision-escalate: #9b6c00;
-  --p-operation-committed: #087d6d;
-  --p-operation-denied: #d34e67;
-  --p-operation-pending: #9b6c00;
-  --p-allow-soft: #d8f7ef;
-  --p-deny-soft: #ffe2e8;
-  --p-pending-soft: #fff0bd;
-  --p-info: #5b4cdb;
-  --p-info-soft: #e8e6ff;
-  --p-line: rgba(21, 32, 57, 0.13);
-  --p-shadow: 0 24px 70px rgba(25, 40, 82, 0.14);
-  background: #f3f6fb;
-  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  text-rendering: optimizeLegibility;
-}
+/* Technical finish shared by the global chrome and route surfaces. */
 
 .masugate-site :where(h1, h2, h3) {
-  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--p-font-sans);
 }
 
 .masugate-shell {
@@ -1044,9 +1088,9 @@
 
 .masugate-header {
   border-top: 0;
-  border-bottom-color: rgba(159, 182, 255, 0.17);
-  background: rgba(5, 9, 20, 0.86);
-  color: #f5f7ff;
+  border-bottom-color: var(--p-line);
+  background: color-mix(in srgb, var(--p-paper) 88%, transparent);
+  color: var(--p-ink);
   backdrop-filter: blur(22px) saturate(135%);
 }
 
@@ -1055,21 +1099,21 @@
 }
 
 .masugate-update-banner {
-  border-bottom-color: rgba(255, 255, 255, 0.13);
+  border-bottom-color: var(--p-line);
   background:
-    linear-gradient(90deg, rgba(108, 87, 255, 0.28), transparent 42%),
-    #070b16;
+    linear-gradient(90deg, color-mix(in srgb, var(--p-accent-violet) 24%, transparent), transparent 42%),
+    var(--p-paper);
 }
 
 .masugate-update-meta span {
-  border: 1px solid rgba(123, 242, 214, 0.36);
+  border: 1px solid color-mix(in srgb, var(--p-allow) 38%, transparent);
   border-radius: 999px;
-  background: rgba(62, 225, 188, 0.12);
-  color: #7bf2d6;
+  background: color-mix(in srgb, var(--p-allow) 12%, transparent);
+  color: var(--p-allow);
 }
 
 .masugate-update-link > span {
-  color: #9ff4df;
+  color: var(--p-info);
 }
 
 .masugate-brand {
@@ -1077,43 +1121,43 @@
 }
 
 .masugate-brand-mark {
-  border-color: rgba(120, 234, 255, 0.52);
+  border-color: color-mix(in srgb, var(--p-info) 52%, transparent);
   border-radius: 9px;
-  background: linear-gradient(145deg, #6c57ff, #22c8d9);
-  color: #fff;
-  box-shadow: 0 0 26px rgba(74, 208, 232, 0.28);
-  font-family: inherit;
+  background: linear-gradient(145deg, var(--p-accent-violet), var(--p-info));
+  color: var(--p-on-accent);
+  box-shadow: 0 0 26px color-mix(in srgb, var(--p-info) 28%, transparent);
+  font-family: var(--p-font-sans);
   font-weight: 800;
 }
 
 .masugate-nav-link::after {
-  color: #6de8d0;
+  color: var(--p-info);
 }
 
 .masugate-nav-link:hover,
 .masugate-nav-menu:hover .masugate-nav-link,
 .masugate-nav-menu:focus-within .masugate-nav-link {
-  border-bottom-color: #6de8d0;
+  border-bottom-color: var(--p-info);
 }
 
 .masugate-nav-panel,
 .masugate-mobile-panel {
-  border-color: rgba(139, 163, 223, 0.28);
+  border-color: var(--p-line-strong);
   border-radius: 16px;
-  background: #0b1120;
-  color: #f5f7ff;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+  background: var(--p-surface);
+  color: var(--p-ink);
+  box-shadow: var(--p-shadow);
 }
 
 .masugate-nav-panel > p,
 .masugate-nav-panel span {
-  color: #9eaac2;
+  color: var(--p-ink-soft);
 }
 
 .masugate-nav-panel a:hover,
 .masugate-nav-panel a:focus-visible {
-  border-left-color: #6de8d0;
-  background: rgba(109, 232, 208, 0.09);
+  border-left-color: var(--p-info);
+  background: color-mix(in srgb, var(--p-info) 9%, transparent);
 }
 
 .masugate-header-action,
@@ -1124,27 +1168,28 @@
 
 .masugate-header-action,
 .masugate-button-primary {
-  border-color: #83f1dc;
-  background: #83f1dc;
-  color: #07101a !important;
-  box-shadow: 0 8px 26px rgba(80, 224, 202, 0.18);
+  border-color: var(--p-info);
+  background: var(--p-info);
+  color: var(--p-on-accent) !important;
+  box-shadow: 0 8px 26px color-mix(in srgb, var(--p-info) 18%, transparent);
 }
 
 .masugate-header-action:hover,
 .masugate-button-primary:hover {
-  border-color: #b4fff0;
-  background: #b4fff0;
+  border-color: color-mix(in srgb, var(--p-info) 76%, var(--p-ink));
+  background: color-mix(in srgb, var(--p-info) 76%, var(--p-ink));
   transform: translateY(-2px);
-  box-shadow: 0 12px 34px rgba(80, 224, 202, 0.28);
+  box-shadow: 0 12px 34px color-mix(in srgb, var(--p-info) 28%, transparent);
 }
 
 .masugate-button-secondary:hover {
-  background: rgba(91, 76, 219, 0.08);
+  border-color: var(--p-accent-violet);
+  background: var(--p-accent-violet-soft);
   transform: translateY(-2px);
 }
 
 .masugate-eyebrow {
-  color: #087d6d;
+  color: var(--p-allow);
   font-size: 0.69rem;
   letter-spacing: 0.18em;
 }
@@ -1157,7 +1202,7 @@
 .masugate-section h2,
 .masugate-page-hero h1,
 .masugate-hero h1 {
-  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--p-font-sans);
   font-weight: 560;
   letter-spacing: -0.055em;
   line-height: 0.98;
@@ -1165,22 +1210,22 @@
 
 .masugate-section-soft {
   background:
-    radial-gradient(circle at 90% 10%, rgba(91, 76, 219, 0.1), transparent 25%),
-    #edf3f9;
+    radial-gradient(circle at 90% 10%, color-mix(in srgb, var(--p-accent-violet) 10%, transparent), transparent 25%),
+    var(--p-surface);
 }
 
 .masugate-section-dark {
   background:
-    linear-gradient(rgba(114, 135, 197, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(114, 135, 197, 0.08) 1px, transparent 1px),
-    radial-gradient(circle at 74% 38%, rgba(91, 76, 219, 0.25), transparent 30%),
-    #070b16;
+    linear-gradient(color-mix(in srgb, var(--p-accent-violet) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--p-accent-violet) 8%, transparent) 1px, transparent 1px),
+    radial-gradient(circle at 74% 38%, color-mix(in srgb, var(--p-accent-violet) 22%, transparent), transparent 30%),
+    var(--p-paper);
   background-size: 48px 48px, 48px 48px, auto, auto;
-  color: #f6f8ff;
+  color: var(--p-ink);
 }
 
 .masugate-section-dark .masugate-eyebrow {
-  color: #71ead2;
+  color: var(--p-info);
 }
 
 .masugate-path,
@@ -1189,9 +1234,9 @@
 .masugate-contact-card,
 .masugate-shared-state,
 .masugate-empty-state {
-  border-color: rgba(35, 51, 89, 0.13);
+  border-color: var(--p-line);
   border-radius: 18px;
-  box-shadow: 0 14px 44px rgba(35, 51, 89, 0.07);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.18);
 }
 
 .masugate-card,
@@ -1204,16 +1249,16 @@
 .masugate-stage:hover,
 .masugate-contact-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(91, 76, 219, 0.24);
-  box-shadow: 0 22px 60px rgba(35, 51, 89, 0.12);
+  border-color: color-mix(in srgb, var(--p-accent-violet) 34%, transparent);
+  box-shadow: var(--p-shadow);
 }
 
 .masugate-page-hero {
   overflow: hidden;
   background:
-    radial-gradient(circle at 82% 20%, rgba(91, 76, 219, 0.17), transparent 28%),
-    radial-gradient(circle at 12% 100%, rgba(43, 211, 192, 0.12), transparent 24%),
-    #edf2f9;
+    radial-gradient(circle at 82% 20%, color-mix(in srgb, var(--p-accent-violet) 17%, transparent), transparent 28%),
+    radial-gradient(circle at 12% 100%, color-mix(in srgb, var(--p-info) 12%, transparent), transparent 24%),
+    var(--p-surface);
 }
 
 .masugate-status {
@@ -1224,15 +1269,15 @@
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 18% 0%, rgba(39, 215, 199, 0.15), transparent 25%),
-    radial-gradient(circle at 84% 20%, rgba(91, 76, 219, 0.22), transparent 30%),
-    #050814;
+    radial-gradient(circle at 18% 0%, color-mix(in srgb, var(--p-info) 15%, transparent), transparent 25%),
+    radial-gradient(circle at 84% 20%, color-mix(in srgb, var(--p-accent-violet) 20%, transparent), transparent 30%),
+    #05070d;
 }
 
 .masugate-footer-nav strong,
 .masugate-footer-project strong,
 .masugate-footer-contact strong {
-  color: #75ead3;
+  color: var(--p-info);
 }
 
 @media (max-width: 640px) {

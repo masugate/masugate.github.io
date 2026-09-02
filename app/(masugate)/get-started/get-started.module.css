@@ -10,7 +10,7 @@
 .hero {
   padding-top: clamp(54px, 7vw, 86px);
   background:
-    radial-gradient(circle at 88% 14%, rgba(64, 95, 190, 0.16), transparent 28%),
+    radial-gradient(circle at 88% 14%, color-mix(in srgb, var(--p-info) 16%, transparent), transparent 28%),
     linear-gradient(142deg, var(--p-surface-soft), var(--p-paper));
 }
 
@@ -25,7 +25,7 @@
 .sectionHeading h2,
 .verifyGrid h2,
 .nextGrid h2 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-weight: 400;
   letter-spacing: -0.04em;
   line-height: 1.04;
@@ -67,7 +67,7 @@
 
 .summary {
   padding: 24px;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
   border-top: 6px solid var(--p-allow);
   background: var(--p-surface);
   box-shadow: var(--p-shadow);
@@ -78,7 +78,7 @@
 .commandLabel,
 .resultCard > span {
   color: var(--p-allow);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -88,7 +88,7 @@
 .summary ol {
   margin: 14px 0;
   padding-left: 1.2rem;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.16rem;
   line-height: 1.38;
 }
@@ -154,7 +154,7 @@
 
 .requirementGrid h3 {
   margin: 12px 0 10px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.35rem;
   font-weight: 400;
   line-height: 1.15;
@@ -189,8 +189,8 @@
 
 .demoSection {
   background:
-    linear-gradient(rgba(9, 47, 40, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(9, 47, 40, 0.04) 1px, transparent 1px),
+    linear-gradient(var(--p-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--p-line) 1px, transparent 1px),
     var(--p-paper);
   background-size: 28px 28px;
 }
@@ -206,9 +206,9 @@
 
 .commandCard {
   min-width: 0;
-  border: 1px solid var(--p-ink);
-  background: var(--p-ink);
-  color: var(--p-surface);
+  border: 1px solid var(--p-line-strong);
+  background: var(--p-surface-soft);
+  color: var(--p-ink);
 }
 
 .requirementGrid + .commandCard {
@@ -217,16 +217,16 @@
 
 .commandLabel {
   padding: 14px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  color: #79d8ad;
+  border-bottom: 1px solid var(--p-line-strong);
+  color: var(--p-allow);
 }
 
 .commandCard pre {
   margin: 0;
   padding: 20px;
   overflow-x: auto;
-  color: #eef7f3;
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color: var(--p-ink);
+  font-family: var(--p-font-mono);
   font-size: clamp(0.72rem, 1.15vw, 0.85rem);
   line-height: 1.55;
   white-space: pre;
@@ -241,7 +241,7 @@
 
 .resultCard h3 {
   margin: 13px 0 12px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.48rem;
   font-weight: 400;
   line-height: 1.13;

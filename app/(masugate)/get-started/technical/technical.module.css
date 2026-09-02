@@ -9,7 +9,7 @@
 .hero {
   padding-top: clamp(54px, 7vw, 86px);
   background:
-    radial-gradient(circle at 90% 12%, rgba(64, 95, 190, 0.16), transparent 26%),
+    radial-gradient(circle at 90% 12%, color-mix(in srgb, var(--p-info) 16%, transparent), transparent 26%),
     var(--p-paper);
 }
 
@@ -33,7 +33,7 @@
 .hero h1,
 .heading h2,
 .openClawGrid h2 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-weight: 400;
   letter-spacing: -0.04em;
   line-height: 1.04;
@@ -60,7 +60,7 @@
 
 .statusCard {
   padding: 24px;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
   border-top: 6px solid var(--p-info);
   background: var(--p-surface);
   box-shadow: var(--p-shadow);
@@ -117,7 +117,7 @@
 .outcomeGrid article > span,
 .integrationList summary span {
   color: var(--p-allow);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.65rem;
   font-weight: 900;
   letter-spacing: 0.07em;
@@ -153,7 +153,7 @@
 
 .outcomeGrid h3 {
   margin: 12px 0 10px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.35rem;
   font-weight: 400;
 }
@@ -185,7 +185,7 @@
 }
 
 .integrationList summary strong {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.3rem;
   font-weight: 400;
 }
@@ -228,20 +228,20 @@
 }
 
 .openClawSection {
-  background: var(--p-ink);
-  color: var(--p-surface);
+  background: var(--p-paper);
+  color: var(--p-ink);
 }
 
 .openClawGrid p {
-  color: #c8d4d0;
+  color: var(--p-ink-soft);
 }
 
 .openClawGrid ul {
   margin: 0;
   padding: 20px 20px 20px 2.2rem;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.06);
-  color: #eef7f3;
+  border: 1px solid var(--p-line-strong);
+  background: var(--p-surface);
+  color: var(--p-ink);
   font-size: 0.84rem;
   line-height: 1.5;
 }
@@ -253,8 +253,8 @@
 .openClawGrid > a {
   grid-column: 1 / -1;
   justify-self: start;
-  background: #79d8ad;
-  color: var(--p-ink) !important;
+  background: var(--p-allow);
+  color: var(--p-on-accent) !important;
 }
 
 .troubleshootingGrid {

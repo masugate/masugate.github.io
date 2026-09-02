@@ -2,7 +2,7 @@
   padding: clamp(54px, 7vw, 88px) 0 clamp(50px, 6vw, 72px);
   border-bottom: 1px solid var(--p-line);
   background:
-    radial-gradient(circle at 90% 15%, rgba(64, 95, 190, 0.16), transparent 30%),
+    radial-gradient(circle at 90% 15%, color-mix(in srgb, var(--p-info) 16%, transparent), transparent 30%),
     linear-gradient(140deg, var(--p-surface-soft), var(--p-paper));
 }
 
@@ -26,7 +26,7 @@
 .hero h1 {
   max-width: 720px;
   margin: 0 0 20px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(2.7rem, 5vw, 5.1rem);
   font-weight: 400;
   letter-spacing: -0.045em;
@@ -54,7 +54,7 @@
 
 .disclosure {
   padding: 24px;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
   border-top: 6px solid var(--p-pending);
   background: var(--p-surface);
   box-shadow: var(--p-shadow);
@@ -88,8 +88,8 @@
 
 .demoSection {
   background:
-    linear-gradient(rgba(9, 47, 40, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(9, 47, 40, 0.04) 1px, transparent 1px),
+    linear-gradient(var(--p-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--p-line) 1px, transparent 1px),
     var(--p-paper);
   background-size: 28px 28px;
 }
@@ -113,7 +113,7 @@
 
 .sectionHeading h2 {
   margin: 0 0 18px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(2.25rem, 4.5vw, 4.3rem);
   font-weight: 400;
   letter-spacing: -0.035em;
@@ -133,7 +133,7 @@
   padding: 20px 24px;
   border-left: 6px solid var(--p-info);
   background: var(--p-info-soft);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(1.14rem, 2vw, 1.46rem);
   line-height: 1.4;
 }
@@ -141,7 +141,7 @@
 .ownershipHeading p,
 .transcriptGroup > summary > span {
   color: var(--p-allow);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.7rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -174,7 +174,7 @@
 
 .frameworkProfiles > div > span {
   color: var(--p-ink-soft);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.7rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -235,7 +235,7 @@
 
 .portabilityCard > span {
   color: var(--p-ink-soft);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.06em;
@@ -264,7 +264,7 @@
 
 .portabilityCard h3 {
   margin: 9px 0 15px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.45rem;
   font-weight: 400;
 }
@@ -352,7 +352,7 @@
   border: 1px solid currentColor;
   background: var(--p-info-soft);
   color: var(--p-info);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.3rem;
 }
 
@@ -363,7 +363,7 @@
 
 .ownershipCard[data-owner="provider"] .ownerGlyph {
   background: var(--p-pending-soft);
-  color: #8e6107;
+  color: var(--p-pending);
 }
 
 .ownershipHeading p {
@@ -372,7 +372,7 @@
 
 .ownershipHeading h3 {
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.5rem;
   font-weight: 400;
 }
@@ -427,8 +427,8 @@
 
 .ownershipCard[data-owner="provider"] .ownerFlow i,
 .ownershipCard[data-owner="provider"] .ownerFlow i::after {
-  background: #8e6107;
-  border-color: #8e6107;
+  background: var(--p-pending);
+  border-color: var(--p-pending);
 }
 
 .ownershipCard small {
@@ -565,7 +565,7 @@
 .candidateBridge h2 {
   max-width: 760px;
   margin: 0 0 16px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(2.25rem, 4.5vw, 4.3rem);
   font-weight: 400;
   letter-spacing: -0.035em;
@@ -586,7 +586,7 @@
 
 .candidateAction > span {
   color: var(--p-info);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -598,8 +598,8 @@
 }
 
 .ctaSection {
-  background: var(--p-ink);
-  color: var(--p-surface);
+  background: var(--p-surface-soft);
+  color: var(--p-ink);
 }
 
 .ctaGrid {
@@ -611,7 +611,7 @@
 
 .ctaGrid h2 {
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(2.35rem, 4.7vw, 4.8rem);
   font-weight: 400;
   letter-spacing: -0.04em;
@@ -620,7 +620,7 @@
 
 .ctaGrid p {
   max-width: 680px;
-  color: #c8d4d0;
+  color: var(--p-ink-soft);
   line-height: 1.6;
 }
 
@@ -634,14 +634,14 @@
 }
 
 .ctaActions a:first-child {
-  border-color: #79d8ad;
-  background: #79d8ad;
-  color: var(--p-ink) !important;
+  border-color: var(--p-allow);
+  background: var(--p-allow);
+  color: var(--p-on-accent) !important;
 }
 
 .ctaActions a:last-child {
-  border-color: rgba(255, 255, 255, 0.5);
-  color: var(--p-surface);
+  border-color: var(--p-line-strong);
+  color: var(--p-ink);
 }
 
 @media (max-width: 900px) {

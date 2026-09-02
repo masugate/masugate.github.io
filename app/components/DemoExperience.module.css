@@ -8,7 +8,7 @@
 .experience button,
 .controls a {
   min-height: 44px;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
   background: var(--p-surface);
   color: var(--p-ink);
   font: inherit;
@@ -41,7 +41,7 @@
 .experienceHeader h2 {
   max-width: 780px;
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(2.15rem, 4.6vw, 4.4rem);
   font-weight: 400;
   letter-spacing: -0.04em;
@@ -77,7 +77,7 @@
 .stageBrowserHeader span,
 .stagePanelHeader span {
   color: var(--p-ink-soft);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.67rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -86,7 +86,7 @@
 
 .stageBrowserHeader strong,
 .stagePanelHeader strong {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.25rem;
   font-weight: 400;
 }
@@ -146,7 +146,7 @@
 .inspectorHeader span,
 .policyCard header span,
 .recordCard header span {
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.68rem;
   font-style: normal;
   font-weight: 900;
@@ -156,7 +156,7 @@
 
 .stageNavigation strong {
   margin-top: 10px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.35rem;
   line-height: 1.08;
 }
@@ -179,7 +179,7 @@
 .stagePanel {
   margin-top: 16px;
   padding: 10px;
-  border: 2px solid var(--p-ink);
+  border: 2px solid var(--p-line-strong);
   background: var(--p-paper);
 }
 
@@ -288,7 +288,7 @@
 
 .requirementBlock h3 {
   margin: 12px 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(1.55rem, 2.6vw, 2.4rem);
   font-weight: 400;
   line-height: 1.08;
@@ -427,7 +427,7 @@
 
 .managementPlane li[data-management-state="active"]::before {
   background: var(--p-allow);
-  color: var(--p-surface);
+  color: var(--p-on-accent);
 }
 
 .managementPlane li:not(:last-child)::after {
@@ -455,7 +455,7 @@
   margin-top: 4px;
   display: block;
   color: var(--p-allow);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.72rem;
   line-height: 1.45;
 }
@@ -481,7 +481,7 @@
 
 .quickStart span {
   color: var(--p-info);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -502,7 +502,7 @@
   max-width: 580px;
   margin-top: 8px;
   display: block;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.08rem;
   font-weight: 400;
   line-height: 1.3;
@@ -555,7 +555,7 @@
 
 .flowStrip span {
   color: var(--p-info);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.65rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -615,7 +615,7 @@
 
 .regionHeading h3 {
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.35rem;
   font-weight: 400;
 }
@@ -650,7 +650,7 @@
 .traceList li > span {
   display: block;
   color: var(--p-ink-soft);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.62rem;
   font-weight: 900;
   letter-spacing: 0.05em;
@@ -763,7 +763,7 @@
   margin-top: 18px;
   display: flex;
   overflow: hidden;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
   background: var(--p-paper);
 }
 
@@ -780,7 +780,7 @@
 }
 
 .budgetAvailable {
-  background: #8bcdb6;
+  background: color-mix(in srgb, var(--p-allow) 52%, var(--p-surface-soft));
 }
 
 .resourceFacts {
@@ -805,7 +805,7 @@
   width: 11px;
   height: 11px;
   flex: 0 0 11px;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
 }
 
 .resourceFacts dd {
@@ -841,7 +841,7 @@
 }
 
 .calendarList li > span {
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.72rem;
   font-weight: 900;
 }
@@ -866,7 +866,7 @@
 
 .calendarProposal span {
   color: var(--p-info);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.64rem;
   font-weight: 900;
   letter-spacing: 0.05em;
@@ -1017,7 +1017,7 @@
 
 .takeaway p {
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.15rem;
   line-height: 1.35;
 }
@@ -1044,7 +1044,7 @@
   grid-template-columns: minmax(220px, 1.5fr) repeat(2, minmax(96px, auto)) minmax(150px, auto);
   gap: 8px;
   border: 1px solid var(--p-line);
-  background: var(--p-ink);
+  background: var(--p-surface-soft);
 }
 
 .controls button {
@@ -1062,14 +1062,15 @@
 
 .choiceJump {
   grid-column: 1 / -1;
-  border-color: #ffe29a !important;
-  background: #ffe29a !important;
-  color: var(--p-ink) !important;
+  border-color: var(--p-pending) !important;
+  background: var(--p-pending) !important;
+  color: var(--p-on-accent) !important;
 }
 
 .runButton {
-  background: #79d8ad !important;
-  color: var(--p-ink) !important;
+  border-color: var(--p-allow) !important;
+  background: var(--p-allow) !important;
+  color: var(--p-on-accent) !important;
 }
 
 .playbackGuide {
@@ -1079,18 +1080,18 @@
   grid-template-columns: auto minmax(0, 1fr);
   gap: 18px;
   align-items: baseline;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  color: #c8d4d0;
+  border-top: 1px solid var(--p-line);
+  color: var(--p-ink-soft);
 }
 
 .playbackGuide span {
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.7rem;
   font-weight: 800;
 }
 
 .playbackGuide strong {
-  color: var(--p-surface);
+  color: var(--p-ink);
   font-size: 0.78rem;
   line-height: 1.45;
 }
@@ -1102,7 +1103,7 @@
   align-items: center;
   justify-content: center;
   list-style: none;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
   background: var(--p-surface);
   color: var(--p-ink);
   cursor: pointer;
@@ -1123,7 +1124,7 @@
 
 .inspectorDisclosure {
   min-width: 0;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
   background: var(--p-surface);
 }
 
@@ -1140,7 +1141,7 @@
 
 .inspectorDisclosure > summary span {
   color: var(--p-info);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.66rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -1149,7 +1150,7 @@
 
 .inspectorDisclosure > summary strong {
   grid-column: 1;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.15rem;
   font-weight: 400;
 }
@@ -1160,11 +1161,11 @@
 }
 
 .inspector {
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
   border-inline: 0;
   border-bottom: 0;
-  background: var(--p-ink);
-  color: var(--p-surface);
+  background: var(--p-surface-soft);
+  color: var(--p-ink);
 }
 
 .inspectorHeader {
@@ -1174,12 +1175,12 @@
 }
 
 .inspectorHeader > div:first-child > span {
-  color: #79d8ad;
+  color: var(--p-allow);
 }
 
 .inspectorHeader h3 {
   margin: 7px 0 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.35rem;
   font-weight: 400;
 }
@@ -1192,14 +1193,14 @@
 
 .inspectorActions button {
   padding: 9px 10px;
-  border-color: rgba(255, 255, 255, 0.55);
+  border-color: var(--p-line-strong);
   background: transparent;
-  color: var(--p-surface);
+  color: var(--p-ink);
   font-size: 0.72rem;
 }
 
 .inspectorActions button:hover:not(:disabled):not([aria-disabled="true"]) {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--p-surface);
 }
 
 .tabList {
@@ -1211,43 +1212,43 @@
 
 .tabList button {
   padding: 9px 8px;
-  border-color: rgba(255, 255, 255, 0.45);
+  border-color: var(--p-line-strong);
   background: transparent;
-  color: var(--p-surface);
+  color: var(--p-ink);
   font-size: 0.72rem;
 }
 
 .tabList button[aria-selected="true"] {
-  border-color: #79d8ad;
-  background: #79d8ad;
-  color: var(--p-ink);
+  border-color: var(--p-allow);
+  background: var(--p-allow);
+  color: var(--p-on-accent);
 }
 
 .tabPanel {
   max-height: 1180px;
   overflow: auto;
   padding: 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.24);
-  background: #123d35;
+  border-top: 1px solid var(--p-line);
+  background: var(--p-paper);
 }
 
 .tabPanel:focus-visible,
 .policyCard pre:focus-visible,
 .copyFallback pre:focus-visible {
-  outline: 3px solid #ffe29a;
+  outline: 3px solid var(--p-pending);
   outline-offset: 3px;
 }
 
 .copyFallback {
   margin: 0 18px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #c8d4d0;
+  border: 1px solid var(--p-line-strong);
+  color: var(--p-ink-soft);
 }
 
 .copyFallback summary {
   padding: 10px 12px;
   cursor: pointer;
-  color: var(--p-surface);
+  color: var(--p-ink);
   font-size: 0.72rem;
   font-weight: 900;
 }
@@ -1257,9 +1258,9 @@
   margin: 0;
   padding: 12px;
   overflow: auto;
-  border-top: 1px solid rgba(255, 255, 255, 0.22);
-  background: #082d27;
-  color: #dce9e3;
+  border-top: 1px solid var(--p-line);
+  background: var(--p-surface);
+  color: var(--p-ink);
   font-size: 0.7rem;
   line-height: 1.55;
   white-space: pre-wrap;
@@ -1278,8 +1279,8 @@
 
 .artifactBanner article {
   padding: 10px 12px;
-  border: 1px solid rgba(121, 216, 173, 0.48);
-  background: rgba(121, 216, 173, 0.08);
+  border: 1px solid color-mix(in srgb, var(--p-allow) 48%, transparent);
+  background: var(--p-allow-soft);
 }
 
 .artifactBanner span,
@@ -1288,14 +1289,14 @@
 }
 
 .artifactBanner span {
-  color: var(--p-surface);
+  color: var(--p-ink);
   font-size: 0.78rem;
   font-weight: 900;
 }
 
 .artifactBanner strong {
   margin-top: 4px;
-  color: #a9beb7;
+  color: var(--p-ink-soft);
   font-size: 0.68rem;
 }
 
@@ -1307,11 +1308,11 @@
 
 .artifactBanner dl > div {
   padding-top: 7px;
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  border-top: 1px solid var(--p-line);
 }
 
 .artifactBanner dt {
-  color: #a9beb7;
+  color: var(--p-ink-soft);
   font-size: 0.65rem;
   font-weight: 900;
   letter-spacing: 0.05em;
@@ -1321,22 +1322,22 @@
 .artifactBanner dd {
   margin: 4px 0 0;
   overflow-wrap: anywhere;
-  color: var(--p-surface);
+  color: var(--p-ink);
   font-size: 0.72rem;
 }
 
 .referenceNotice {
   margin: 0;
   padding: 12px;
-  border-left: 4px solid #f1bd4b;
-  background: rgba(255, 255, 255, 0.08);
-  color: #dce9e3;
+  border-left: 4px solid var(--p-pending);
+  background: var(--p-pending-soft);
+  color: var(--p-ink);
   font-size: 0.78rem;
   line-height: 1.5;
 }
 
 .referenceNotice strong {
-  color: #ffe29a;
+  color: var(--p-pending);
 }
 
 .unchangedRow {
@@ -1346,8 +1347,8 @@
 
 .unchangedRow span {
   padding: 8px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.26);
-  color: #c8d4d0;
+  border: 1px solid var(--p-line);
+  color: var(--p-ink-soft);
   font-size: 0.72rem;
   font-weight: 800;
 }
@@ -1356,8 +1357,8 @@
 .recordCard {
   min-width: 0;
   padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--p-line);
+  background: var(--p-surface);
 }
 
 .policyCard header,
@@ -1375,7 +1376,7 @@
 
 .policyCard header > div > span,
 .recordCard header > div > span {
-  color: #79d8ad;
+  color: var(--p-allow);
 }
 
 .policyCard h4,
@@ -1392,7 +1393,7 @@
 }
 
 .policyStatus > strong {
-  color: #ffe29a;
+  color: var(--p-pending);
   font-size: 0.68rem;
   text-align: right;
 }
@@ -1400,9 +1401,9 @@
 .runtimeLink {
   margin: 12px 0 0;
   padding: 10px 12px;
-  border-left: 4px solid #ffe29a;
-  background: rgba(241, 189, 75, 0.12);
-  color: #f5e8c6 !important;
+  border-left: 4px solid var(--p-pending);
+  background: var(--p-pending-soft);
+  color: var(--p-ink) !important;
   font-size: 0.76rem;
   line-height: 1.45;
 }
@@ -1412,13 +1413,13 @@
   padding: 10px 12px;
   display: grid;
   gap: 5px;
-  border: 1px solid #ffe29a;
-  background: rgba(241, 189, 75, 0.1);
-  color: #f5e8c6 !important;
+  border: 1px solid var(--p-pending);
+  background: var(--p-pending-soft);
+  color: var(--p-ink) !important;
 }
 
 .activeClause span {
-  color: #ffe29a;
+  color: var(--p-pending);
   font-size: 0.65rem;
   font-weight: 900;
   letter-spacing: 0.06em;
@@ -1427,27 +1428,27 @@
 
 .activeClause code {
   overflow-wrap: anywhere;
-  color: var(--p-surface);
+  color: var(--p-ink);
   font-size: 0.76rem;
 }
 
 .activeDependency {
   padding: 6px;
-  border: 1px solid #ffe29a;
-  background: rgba(241, 189, 75, 0.1);
+  border: 1px solid var(--p-pending);
+  background: var(--p-pending-soft);
 }
 
 .policyCard > p {
-  color: #c8d4d0;
+  color: var(--p-ink-soft);
 }
 
 .policyCard pre {
   margin: 12px 0 0;
   padding: 12px;
   overflow: auto;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background: #082d27;
-  color: #dce9e3;
+  border: 1px solid var(--p-line);
+  background: var(--p-paper);
+  color: var(--p-ink);
   font-size: 0.7rem;
   line-height: 1.55;
   white-space: pre;
@@ -1467,7 +1468,7 @@
 .technicalBlock dl > div {
   min-width: 0;
   padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-top: 1px solid var(--p-line);
 }
 
 .artifactFacts dt,
@@ -1475,7 +1476,7 @@
 .configurationGrid dt,
 .traceList dt,
 .technicalBlock dt {
-  color: #a9beb7;
+  color: var(--p-ink-soft);
 }
 
 .artifactFacts dd,
@@ -1483,20 +1484,20 @@
 .configurationGrid dd,
 .traceList dd,
 .technicalBlock dd {
-  color: var(--p-surface);
+  color: var(--p-ink);
   font-size: 0.78rem;
 }
 
 .technicalBlock {
   margin-top: 12px;
   padding: 12px;
-  border: 1px dashed rgba(255, 255, 255, 0.35);
-  background: rgba(0, 0, 0, 0.12);
+  border: 1px dashed var(--p-line-strong);
+  background: var(--p-paper);
 }
 
 .technicalBlock h5 {
   margin: 0 0 8px;
-  color: #79d8ad;
+  color: var(--p-allow);
   font-size: 0.72rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1508,7 +1509,7 @@
 
 .technicalBlock p,
 .technicalBlock li {
-  color: #c8d4d0;
+  color: var(--p-ink-soft);
   font-size: 0.76rem;
   line-height: 1.45;
 }
@@ -1523,7 +1524,7 @@
 .traceList code,
 .configSection code {
   overflow-wrap: anywhere;
-  color: #ffe29a;
+  color: var(--p-pending);
 }
 
 .configurationGrid {
@@ -1532,7 +1533,7 @@
 
 .configSection {
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--p-line);
 }
 
 .configSection h4 {
@@ -1555,19 +1556,19 @@
 }
 
 .configSection li span {
-  color: #c8d4d0;
+  color: var(--p-ink-soft);
   font-size: 0.74rem;
   line-height: 1.4;
 }
 
 .configSection li span code {
-  color: #ffe29a;
+  color: var(--p-pending);
 }
 
 .routeOwnershipCard {
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--p-line);
+  background: var(--p-surface);
 }
 
 .routeOwnershipCard header {
@@ -1578,7 +1579,7 @@
 }
 
 .routeOwnershipCard header > strong {
-  color: #79d8ad;
+  color: var(--p-allow);
   font-size: 0.68rem;
   text-align: right;
 }
@@ -1593,11 +1594,11 @@
 .routeOwnershipFacts > div {
   min-width: 0;
   padding-top: 7px;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-top: 1px solid var(--p-line);
 }
 
 .routeOwnershipFacts dt {
-  color: #a9beb7;
+  color: var(--p-ink-soft);
   font-size: 0.62rem;
   font-weight: 900;
   letter-spacing: 0.05em;
@@ -1607,7 +1608,7 @@
 .routeOwnershipFacts dd {
   margin: 4px 0 0;
   overflow-wrap: anywhere;
-  color: var(--p-surface);
+  color: var(--p-ink);
   font-size: 0.7rem;
   line-height: 1.4;
 }
@@ -1615,14 +1616,14 @@
 .routeBindingStatus {
   margin-top: 10px;
   display: block;
-  color: #ffe29a;
+  color: var(--p-pending);
   font-size: 0.68rem;
 }
 
 .pendingPresentation {
-  border-left-color: #f1bd4b;
-  background: rgba(241, 189, 75, 0.13);
-  color: #f5e8c6;
+  border-left-color: var(--p-pending);
+  background: var(--p-pending-soft);
+  color: var(--p-ink);
 }
 
 .traceList {
@@ -1641,12 +1642,12 @@
 .traceGroup + .traceGroup {
   margin-top: 8px;
   padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  border-top: 1px solid var(--p-line);
 }
 
 .traceGroup h4 {
   margin: 0;
-  color: #79d8ad;
+  color: var(--p-allow);
   font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1654,16 +1655,16 @@
 
 .traceList li {
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--p-line);
 }
 
 .traceList li > span {
-  color: #c8d4d0;
+  color: var(--p-ink-soft);
 }
 
 .traceCurrent {
-  border: 2px solid #79d8ad !important;
-  background: rgba(121, 216, 173, 0.1);
+  border: 2px solid var(--p-allow) !important;
+  background: var(--p-allow-soft);
 }
 
 .traceList strong {
@@ -1673,13 +1674,13 @@
 
 .traceList p {
   margin: 5px 0;
-  color: #c8d4d0;
+  color: var(--p-ink-soft);
   font-size: 0.76rem;
   line-height: 1.45;
 }
 
 .traceList small {
-  color: #a9beb7;
+  color: var(--p-ink-soft);
 }
 
 .traceList dl {
@@ -1696,15 +1697,15 @@
 }
 
 .recordCard header > strong[data-operation-status="committed"] {
-  color: #79d8ad;
+  color: var(--p-operation-committed);
 }
 
 .recordCard header > strong[data-operation-status="pending"] {
-  color: #ffe29a;
+  color: var(--p-operation-pending);
 }
 
 .recordCard header > strong[data-operation-status="denied"] {
-  color: #ffb8ae;
+  color: var(--p-operation-denied);
 }
 
 .liveRegion {

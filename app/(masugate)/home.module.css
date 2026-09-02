@@ -8,8 +8,8 @@
   overflow: hidden;
   border-bottom: 1px solid var(--p-line);
   background:
-    radial-gradient(circle at 88% 16%, rgba(241, 189, 75, 0.26), transparent 25%),
-    linear-gradient(135deg, transparent 62%, rgba(121, 216, 173, 0.15));
+    radial-gradient(circle at 88% 16%, color-mix(in srgb, var(--p-pending) 26%, transparent), transparent 25%),
+    linear-gradient(135deg, transparent 62%, color-mix(in srgb, var(--p-allow) 15%, transparent));
 }
 
 .hero::after {
@@ -18,7 +18,7 @@
   inset: auto -10vw -26vw auto;
   width: 52vw;
   aspect-ratio: 1;
-  border: 1px solid rgba(9, 47, 40, 0.08);
+  border: 1px solid var(--p-line);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -35,7 +35,7 @@
 .heroCopy h1 {
   max-width: 700px;
   margin: 0 0 22px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(2.8rem, 5.1vw, 5.2rem);
   font-weight: 400;
   letter-spacing: -0.042em;
@@ -70,7 +70,7 @@
 .heroFigure {
   margin: 0;
   padding: 22px;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
   border-top: 6px solid var(--p-pending);
   background: var(--p-surface);
   box-shadow: var(--p-shadow);
@@ -80,7 +80,7 @@
 .agentSequence,
 .sharedState span,
 .proofLabel {
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.66rem;
   font-weight: 900;
   letter-spacing: 0.1em;
@@ -134,17 +134,17 @@
   top: 0;
   width: 25%;
   height: 24px;
-  border-bottom: 1px solid var(--p-ink);
+  border-bottom: 1px solid var(--p-line-strong);
 }
 
 .stateConnector::before {
   left: 25%;
-  border-left: 1px solid var(--p-ink);
+  border-left: 1px solid var(--p-line-strong);
 }
 
 .stateConnector::after {
   right: 25%;
-  border-right: 1px solid var(--p-ink);
+  border-right: 1px solid var(--p-line-strong);
 }
 
 .stateConnector span {
@@ -163,19 +163,19 @@
 
 .sharedState {
   padding: 18px;
-  border: 1px solid var(--p-ink);
-  background: var(--p-ink);
-  color: var(--p-surface);
+  border: 1px solid var(--p-line-strong);
+  background: var(--p-surface-soft);
+  color: var(--p-ink);
 }
 
 .sharedState span {
-  color: #9de1c2;
+  color: var(--p-allow);
 }
 
 .sharedState strong {
   display: block;
   margin-top: 8px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 2rem;
   font-weight: 400;
 }
@@ -183,8 +183,8 @@
 .ordering {
   margin: 12px 0 0;
   padding: 12px 0 0 1.2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  color: #d7e2de;
+  border-top: 1px solid var(--p-line);
+  color: var(--p-ink-soft);
   font-size: 0.78rem;
 }
 
@@ -231,7 +231,7 @@
 }
 
 .generalizationItem dt {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.55rem;
 }
 
@@ -272,7 +272,7 @@
 
 .boundaryDiagram h3 {
   margin: 0 0 12px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(1.55rem, 2.8vw, 2.35rem);
   font-weight: 400;
   letter-spacing: -0.03em;
@@ -318,7 +318,7 @@
 
 .cardIndex {
   color: var(--p-info);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.12em;
@@ -374,20 +374,20 @@
 
 .bridgeCopy > p:not(:first-child) {
   max-width: 480px;
-  color: #c8d4d0;
+  color: var(--p-ink-soft);
   font-size: 1rem;
 }
 
 .bridgeCopy .bridgeAction {
   margin-top: 26px;
-  border-color: #79d8ad;
-  background: #79d8ad;
-  color: var(--p-ink) !important;
+  border-color: var(--p-allow);
+  background: var(--p-allow);
+  color: var(--p-on-accent) !important;
 }
 
 .bridgeCopy .bridgeAction:hover {
-  background: #f1bd4b;
-  border-color: #f1bd4b;
+  background: var(--p-pending);
+  border-color: var(--p-pending);
 }
 
 .blogHeading {
@@ -434,7 +434,7 @@
   flex-wrap: wrap;
   gap: 8px;
   color: var(--p-ink-soft);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -443,7 +443,7 @@
 
 .blogCard h3 {
   margin: 18px 0 12px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(1.45rem, 2.5vw, 2rem);
   font-weight: 400;
   line-height: 1.12;
@@ -486,7 +486,7 @@
   display: inline-flex;
   align-items: center;
   padding: 10px 14px;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
   font-size: 0.82rem;
   font-weight: 900;
   white-space: nowrap;
@@ -515,7 +515,7 @@
 
 .teamPanel > h3 {
   margin: 7px 0 18px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.65rem;
   font-weight: 400;
 }
@@ -688,7 +688,12 @@
   left: 0;
   height: 80px;
   pointer-events: none;
-  background: linear-gradient(to bottom, transparent, rgba(111, 235, 217, 0.1), transparent);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--p-info) 10%, transparent),
+    transparent
+  );
   transform: translate3d(0, -100%, 0);
   animation: runtimeScan 6.8s 1.2s infinite ease-in-out;
 }
@@ -705,13 +710,13 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #9d91ff;
-  box-shadow: 0 0 12px rgba(157, 145, 255, 0.78);
+  background: var(--p-accent-violet);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--p-accent-violet) 78%, transparent);
 }
 
 .agentCard:nth-child(2)::after {
-  background: #70e8d2;
-  box-shadow: 0 0 12px rgba(112, 232, 210, 0.74);
+  background: var(--p-info);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--p-info) 74%, transparent);
 }
 
 :global([data-motion-visible="true"]) .generalizationItem,
@@ -824,15 +829,19 @@
   min-height: min(820px, calc(100vh - 74px));
   display: grid;
   align-items: center;
-  border-bottom-color: rgba(139, 163, 223, 0.18);
+  border-bottom-color: var(--p-line);
   background:
-    linear-gradient(rgba(117, 141, 207, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(117, 141, 207, 0.08) 1px, transparent 1px),
-    radial-gradient(circle at 82% 23%, rgba(91, 76, 219, 0.34), transparent 30%),
-    radial-gradient(circle at 54% 82%, rgba(41, 211, 195, 0.16), transparent 28%),
-    #050814;
+    linear-gradient(var(--p-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--p-line) 1px, transparent 1px),
+    radial-gradient(
+      circle at 82% 23%,
+      color-mix(in srgb, var(--p-accent-violet) 34%, transparent),
+      transparent 30%
+    ),
+    radial-gradient(circle at 54% 82%, color-mix(in srgb, var(--p-info) 16%, transparent), transparent 28%),
+    var(--p-paper);
   background-size: 52px 52px, 52px 52px, auto, auto, auto;
-  color: #f7f9ff;
+  color: var(--p-ink);
 }
 
 .hero::before {
@@ -840,25 +849,25 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(90deg, #050814 0%, transparent 42%, transparent 76%, #050814 100%);
+  background: linear-gradient(90deg, var(--p-paper) 0%, transparent 42%, transparent 76%, var(--p-paper) 100%);
 }
 
 .hero::after {
   inset: 8% -7% auto auto;
   width: min(620px, 58vw);
-  border-color: rgba(121, 232, 216, 0.14);
+  border-color: color-mix(in srgb, var(--p-info) 14%, transparent);
   box-shadow:
-    0 0 0 44px rgba(91, 76, 219, 0.035),
-    0 0 0 96px rgba(91, 76, 219, 0.022);
+    0 0 0 44px color-mix(in srgb, var(--p-accent-violet) 3.5%, transparent),
+    0 0 0 96px color-mix(in srgb, var(--p-accent-violet) 2.2%, transparent);
 }
 
 .heroCopy :global(.masugate-eyebrow) {
-  color: #79ead5;
+  color: var(--p-info);
 }
 
 .heroCopy h1 {
   max-width: 780px;
-  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(3.4rem, 6.7vw, 6.8rem);
   font-weight: 560;
   letter-spacing: -0.068em;
@@ -868,38 +877,38 @@
 
 .heroLede {
   max-width: 650px;
-  color: #aeb9d0;
+  color: var(--p-ink-soft);
   line-height: 1.58;
 }
 
 .heroActions :global(.masugate-button-primary) {
-  border-color: #83f1dc;
-  background: #83f1dc;
-  color: #07101a !important;
+  border-color: var(--p-info);
+  background: var(--p-info);
+  color: var(--p-on-accent) !important;
 }
 
 .quietLink {
   position: relative;
-  border-bottom-color: rgba(255, 255, 255, 0.34);
-  color: #eef2ff;
+  border-bottom-color: var(--p-line-strong);
+  color: var(--p-ink);
 }
 
 .quietLink::after {
   content: "↗";
   margin-left: 9px;
-  color: #79ead5;
+  color: var(--p-info);
 }
 
 .heroFigure {
   position: relative;
   padding: 20px;
-  border-color: rgba(153, 175, 231, 0.28);
-  border-top: 1px solid rgba(153, 175, 231, 0.28);
+  border-color: var(--p-line-strong);
+  border-top: 1px solid var(--p-line-strong);
   border-radius: 22px;
-  background: linear-gradient(155deg, rgba(18, 27, 49, 0.88), rgba(7, 12, 25, 0.93));
+  background: linear-gradient(155deg, var(--p-surface-soft), var(--p-surface));
   box-shadow:
-    0 28px 90px rgba(0, 0, 0, 0.42),
-    0 0 80px rgba(91, 76, 219, 0.13);
+    var(--p-shadow),
+    0 0 80px color-mix(in srgb, var(--p-accent-violet) 13%, transparent);
   backdrop-filter: blur(18px);
 }
 
@@ -907,8 +916,8 @@
   content: "●  RUNTIME / LIVE MODEL";
   display: block;
   margin: -4px 0 16px;
-  color: #77e9d4;
-  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  color: var(--p-info);
+  font-family: var(--p-font-mono);
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.11em;
@@ -916,73 +925,81 @@
 
 .figureLabel,
 .heroFigure figcaption {
-  color: #96a3bc;
+  color: var(--p-ink-soft);
 }
 
 .agentCard {
-  border-color: rgba(148, 168, 219, 0.21);
+  border-color: var(--p-line);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.045);
+  background: var(--p-surface);
 }
 
 .agentCard small,
 .stateConnector span {
-  color: #9ca8c0;
+  color: var(--p-ink-soft);
 }
 
 .agentSequence {
-  color: #9f93ff;
+  color: var(--p-accent-violet);
 }
 
 .stateConnector::before,
 .stateConnector::after {
-  border-color: rgba(118, 233, 214, 0.5);
+  border-color: color-mix(in srgb, var(--p-info) 50%, transparent);
 }
 
 .stateConnector span {
-  background: #0c1425;
+  background: var(--p-surface-soft);
 }
 
 .sharedState {
-  border-color: rgba(123, 241, 216, 0.37);
+  border-color: color-mix(in srgb, var(--p-info) 37%, transparent);
   border-radius: 14px;
   background:
-    radial-gradient(circle at 90% 0%, rgba(91, 76, 219, 0.24), transparent 36%),
-    rgba(4, 10, 20, 0.88);
-  color: #f7f9ff;
-  box-shadow: inset 0 0 40px rgba(93, 80, 220, 0.06);
+    radial-gradient(
+      circle at 90% 0%,
+      color-mix(in srgb, var(--p-accent-violet) 24%, transparent),
+      transparent 36%
+    ),
+    var(--p-paper);
+  color: var(--p-ink);
+  box-shadow: inset 0 0 40px color-mix(in srgb, var(--p-accent-violet) 6%, transparent);
 }
 
 .sharedState span {
-  color: #7af0d8;
+  color: var(--p-info);
 }
 
 .sharedState strong {
-  font-family: Inter, ui-sans-serif, sans-serif;
+  font-family: var(--p-font-sans);
   font-weight: 560;
   letter-spacing: -0.04em;
 }
 
 .ordering {
-  border-top-color: rgba(159, 181, 224, 0.2);
-  color: #b1bdd2;
+  border-top-color: var(--p-line);
+  color: var(--p-ink-soft);
 }
 
 .sectionMuted {
   background:
-    radial-gradient(circle at 10% 10%, rgba(43, 211, 192, 0.08), transparent 25%),
-    #e9eef7;
+    radial-gradient(circle at 10% 10%, color-mix(in srgb, var(--p-info) 8%, transparent), transparent 25%),
+    var(--p-surface-soft);
 }
 
 .sectionWhite {
-  background: #fbfcff;
+  background: var(--p-surface);
 }
 
 .sectionRule {
   background:
-    linear-gradient(90deg, #5b4cdb 0 5px, transparent 5px),
-    radial-gradient(circle at 90% 14%, rgba(91, 76, 219, 0.1), transparent 25%),
-    #f3f6fb;
+    linear-gradient(90deg, var(--p-accent-violet) 0 5px, transparent 5px),
+    radial-gradient(
+      circle at 90% 14%,
+      color-mix(in srgb, var(--p-accent-violet) 10%, transparent),
+      transparent 25%
+    ),
+    var(--p-paper);
 }
 
 .generalizationGrid,
@@ -991,9 +1008,9 @@
 .evidenceStrip,
 .teamPanel,
 .contactCard {
-  border-color: rgba(35, 51, 89, 0.13);
+  border-color: var(--p-line);
   border-radius: 18px;
-  box-shadow: 0 14px 44px rgba(35, 51, 89, 0.06);
+  box-shadow: var(--p-shadow);
 }
 
 .generalizationGrid {
@@ -1004,7 +1021,7 @@
 .boundaryDiagram h3,
 .blogCard h3,
 .teamPanel > h3 {
-  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--p-font-sans);
   font-weight: 600;
   letter-spacing: -0.04em;
 }
@@ -1019,33 +1036,37 @@
 .blogCard:hover,
 .contactCard:hover {
   transform: translateY(-5px);
-  border-color: rgba(91, 76, 219, 0.25);
-  box-shadow: 0 24px 64px rgba(35, 51, 89, 0.12);
+  border-color: color-mix(in srgb, var(--p-accent-violet) 42%, transparent);
+  box-shadow: var(--p-shadow);
 }
 
 .bridgeCopy .bridgeAction {
-  border-color: #83f1dc;
-  background: #83f1dc;
-  color: #07101a !important;
+  border-color: var(--p-info);
+  background: var(--p-info);
+  color: var(--p-on-accent) !important;
 }
 
 .blogCard {
-  border-top-color: #5b4cdb;
-  background: linear-gradient(150deg, #ffffff, #f4f6ff);
+  border-top-color: var(--p-accent-violet);
+  background: linear-gradient(150deg, var(--p-surface), var(--p-surface-soft));
 }
 
 .blogIndexLink,
 .blogCardLink,
 .contactCard a,
 .sharedInbox a {
-  color: #4d3fd0;
+  color: var(--p-accent-violet);
 }
 
 .evidenceStrip {
-  border-left-color: #5b4cdb;
+  border-left-color: var(--p-accent-violet);
   background:
-    radial-gradient(circle at 95% 0%, rgba(91, 76, 219, 0.13), transparent 35%),
-    #fbfcff;
+    radial-gradient(
+      circle at 95% 0%,
+      color-mix(in srgb, var(--p-accent-violet) 13%, transparent),
+      transparent 35%
+    ),
+    var(--p-surface);
 }
 
 @media (max-width: 900px) {

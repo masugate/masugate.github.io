@@ -44,7 +44,7 @@
 .budgetPath > span,
 .boundaryStep > span {
   color: var(--p-ink-soft);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.68rem;
   font-style: normal;
   font-weight: 900;
@@ -60,7 +60,7 @@
 
 .articleCard h2 {
   margin: 28px 0 14px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(2rem, 3.5vw, 3.2rem);
   font-weight: 400;
   letter-spacing: -0.035em;
@@ -126,7 +126,7 @@
 
 .metadataCard {
   padding: 24px;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
   border-top: 6px solid var(--p-info);
   background: var(--p-surface);
 }
@@ -206,7 +206,7 @@
 
 .articleBody h2 {
   margin: 0 0 28px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(2.2rem, 4.5vw, 4rem);
   font-weight: 400;
   letter-spacing: -0.035em;
@@ -285,7 +285,7 @@
   left: 16px;
   color: var(--p-info);
   content: counter(article-step, decimal-leading-zero);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.72rem;
   font-weight: 900;
 }
@@ -354,9 +354,9 @@
 .codeFigure {
   margin: 34px 0;
   overflow: hidden;
-  border: 1px solid var(--p-ink);
-  background: var(--p-ink);
-  color: var(--p-surface);
+  border: 1px solid var(--p-line-strong);
+  background: var(--p-surface-soft);
+  color: var(--p-ink);
 }
 
 .codeFigure figcaption {
@@ -364,11 +364,11 @@
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+  border-bottom: 1px solid var(--p-line-strong);
 }
 
 .codeFigure figcaption span {
-  color: #79d8ad;
+  color: var(--p-allow);
 }
 
 .codeControls {
@@ -384,9 +384,9 @@
 .codeControls button {
   min-height: 36px;
   padding: 7px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  border: 1px solid var(--p-line-strong);
   background: transparent;
-  color: var(--p-surface);
+  color: var(--p-ink);
   cursor: pointer;
   font: inherit;
   font-size: 0.7rem;
@@ -394,15 +394,15 @@
 }
 
 .codeControls button:hover {
-  border-color: #79d8ad;
-  color: #79d8ad;
+  border-color: var(--p-allow);
+  color: var(--p-allow);
 }
 
 .codeFigure pre {
   margin: 0;
   padding: 26px;
   overflow-x: auto;
-  color: #f7f2e8;
+  color: var(--p-ink);
   font-size: 0.9rem;
   line-height: 1.8;
 }
@@ -413,12 +413,12 @@
   justify-content: space-between;
   gap: 20px;
   align-items: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  border-top: 1px solid var(--p-line-strong);
 }
 
 .codeContext p {
   margin: 0;
-  color: #c8d4d0;
+  color: var(--p-ink-soft);
   font-size: 0.8rem;
   line-height: 1.55;
 }
@@ -426,7 +426,7 @@
 .codeContext a {
   flex: 0 0 auto;
   border-bottom: 1px solid currentColor;
-  color: #79d8ad;
+  color: var(--p-allow);
   font-size: 0.75rem;
   font-weight: 900;
 }
@@ -443,7 +443,7 @@
 }
 
 .figureHeading h3 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(1.5rem, 3vw, 2.3rem);
   font-weight: 400;
 }
@@ -510,7 +510,7 @@
 
 .budgetState {
   padding: 18px;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
   background: var(--p-paper);
   text-align: center;
 }
@@ -518,7 +518,7 @@
 .budgetState b {
   margin-top: 6px;
   display: block;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: 1.8rem;
   font-weight: 400;
 }
@@ -640,7 +640,7 @@
   left: 18px;
   color: var(--p-info);
   content: "[" counter(source) "]";
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.72rem;
   font-weight: 900;
 }

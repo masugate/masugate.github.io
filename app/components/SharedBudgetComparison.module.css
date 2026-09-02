@@ -1,5 +1,5 @@
 .comparison {
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
   background: var(--p-surface);
   box-shadow: var(--p-shadow);
 }
@@ -24,7 +24,7 @@
 .outcome > span {
   display: block;
   color: var(--p-ink-soft);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -34,7 +34,7 @@
 .fixture strong {
   display: block;
   margin-top: 8px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(1.6rem, 3vw, 2.7rem);
   font-weight: 400;
   line-height: 1.05;
@@ -116,7 +116,7 @@
 .playbackControls button {
   min-height: 44px;
   padding: 9px 13px;
-  border: 1px solid var(--p-ink);
+  border: 1px solid var(--p-line-strong);
   background: transparent;
   color: var(--p-ink);
   cursor: pointer;
@@ -126,8 +126,8 @@
 }
 
 .pathButton[aria-pressed="true"] {
-  background: var(--p-ink);
-  color: var(--p-surface);
+  background: var(--p-info);
+  color: var(--p-on-accent);
 }
 
 .pathButton:hover,
@@ -162,7 +162,7 @@
 .stepCount {
   min-width: 92px;
   color: var(--p-ink-soft);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.7rem;
   font-weight: 800;
 }
@@ -185,7 +185,7 @@
 
 .progressSummary span {
   color: var(--p-info);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.66rem;
   font-weight: 900;
   letter-spacing: 0.06em;
@@ -241,7 +241,7 @@
 
 .pathHeader h3 {
   margin: 10px 0 8px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--p-font-sans);
   font-size: clamp(1.55rem, 2.5vw, 2.2rem);
   font-weight: 400;
   line-height: 1.08;
@@ -302,7 +302,7 @@
 .eventMeta {
   margin-bottom: 7px;
   color: var(--p-ink-soft);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-family: var(--p-font-mono);
   font-size: 0.64rem;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -462,7 +462,7 @@
 
   .outcomeSummaryItem > span {
     display: block;
-    font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    font-family: var(--p-font-mono);
     font-size: 0.62rem;
     font-weight: 900;
     letter-spacing: 0.06em;
