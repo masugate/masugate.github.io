@@ -16,6 +16,17 @@ type BlogArticlePageProps = {
   params: Promise<{ slug: string }>;
 };
 
+const articleDate = new Intl.DateTimeFormat("en-US", {
+  day: "numeric",
+  month: "long",
+  timeZone: "UTC",
+  year: "numeric",
+});
+
+function formatArticleDate(value: string) {
+  return articleDate.format(new Date(`${value}T00:00:00Z`));
+}
+
 export function generateStaticParams() {
   return publishedArticles.map(({ slug }) => ({ slug }));
 }
@@ -50,9 +61,12 @@ export default async function BlogArticlePage({
   return (
     <main className="masugate-main" id="masugate-main">
       <article>
-        <header className="masugate-page-hero">
+        <header className={`masugate-page-hero ${styles.articleHero}`}>
           <div className={`masugate-shell ${styles.articleHeroGrid}`}>
             <div className={styles.articleHeroCopy}>
+              <Link className={styles.articleBackLink} href="/blog/">
+                <span aria-hidden="true">←</span> Blog &amp; Updates
+              </Link>
               <p className="masugate-eyebrow">
                 {article.publicationType === "announcement"
                   ? "MasuGate announcement"
@@ -67,6 +81,10 @@ export default async function BlogArticlePage({
               </ul>
             </div>
             <aside className={styles.metadataCard} aria-label="Article metadata">
+              <div className={styles.metadataHeading}>
+                <span>Article record</span>
+                <strong>{article.readingMinutes} min</strong>
+              </div>
               <dl>
                 <div>
                   <dt>For</dt>
@@ -75,14 +93,18 @@ export default async function BlogArticlePage({
                 <div>
                   <dt>Published</dt>
                   <dd>
-                    <time dateTime={article.publishedAt}>{article.publishedAt}</time>
+                    <time dateTime={article.publishedAt}>
+                      {formatArticleDate(article.publishedAt)}
+                    </time>
                   </dd>
                 </div>
                 {article.updatedAt ? (
                   <div>
                     <dt>Updated</dt>
                     <dd>
-                      <time dateTime={article.updatedAt}>{article.updatedAt}</time>
+                      <time dateTime={article.updatedAt}>
+                        {formatArticleDate(article.updatedAt)}
+                      </time>
                     </dd>
                   </div>
                 ) : null}
@@ -121,10 +143,10 @@ export default async function BlogArticlePage({
           </div>
         </header>
 
-        <div className="masugate-section">
+        <div className={`masugate-section ${styles.articleSection}`}>
           <div className="masugate-shell">
             <ArticleBody article={article} />
-            <div className="masugate-actions">
+            <div className={`masugate-actions ${styles.articleFooterAction}`}>
               <Link
                 className="masugate-button masugate-button-secondary"
                 href="/blog/"

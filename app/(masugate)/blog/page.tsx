@@ -11,25 +11,41 @@ export const metadata: Metadata = createMasuGatePageMetadata({
   path: "/blog/",
 });
 
+const articleDate = new Intl.DateTimeFormat("en-US", {
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+  year: "numeric",
+});
+
+function formatArticleDate(value: string) {
+  return articleDate.format(new Date(`${value}T00:00:00Z`));
+}
+
 export default function BlogIndexPage() {
   const publications = selectBlogIndexPublications();
 
   return (
     <main className="masugate-main" id="masugate-main">
-      <section className="masugate-page-hero">
-        <div className="masugate-shell">
-          <p className="masugate-eyebrow">Blog &amp; Updates</p>
+      <section className={`masugate-page-hero ${styles.indexHero}`}>
+        <div className={`masugate-shell ${styles.indexHeroGrid}`}>
           <div className={styles.indexIntro}>
+            <p className="masugate-eyebrow">Blog &amp; Updates</p>
             <h1>Technical thinking and project updates, in one place.</h1>
             <p className="masugate-page-intro">
               Read the current explainers and return here for future MasuGate
               releases, studies, and project announcements.
             </p>
           </div>
+          <aside className={styles.indexLedger} aria-label="Publication count">
+            <span>Publication ledger</span>
+            <strong>{String(publications.length).padStart(2, "0")}</strong>
+            <small>Current entries</small>
+          </aside>
         </div>
       </section>
 
-      <section className="masugate-section">
+      <section className={`masugate-section ${styles.indexSection}`}>
         <div className="masugate-shell">
           {publications.length === 0 ? (
             <div className="masugate-empty-state">
@@ -57,12 +73,16 @@ export default function BlogIndexPage() {
             </div>
           ) : (
             <div className={styles.indexGrid}>
-              {publications.map((article) => (
+              {publications.map((article, index) => (
                 <article
+                  aria-labelledby={`publication-${article.slug}`}
                   className={styles.articleCard}
                   data-publication-type={article.publicationType}
                   key={article.slug}
                 >
+                  <span className={styles.cardIndex} aria-hidden="true">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
                   <div className={styles.cardTopline}>
                     <span className={styles.cardKicker}>
                       {article.publicationType === "announcement"
@@ -73,11 +93,17 @@ export default function BlogIndexPage() {
                         ? "Reference"
                         : "Verified"}
                     </span>
-                    <time dateTime={article.publishedAt}>
-                      {article.publishedAt} · {article.readingMinutes} min
-                    </time>
+                    <span className={styles.cardTiming}>
+                      <time dateTime={article.updatedAt ?? article.publishedAt}>
+                        {article.updatedAt ? "Updated" : "Published"} {" "}
+                        {formatArticleDate(
+                          article.updatedAt ?? article.publishedAt,
+                        )}
+                      </time>
+                      <span>{article.readingMinutes} min read</span>
+                    </span>
                   </div>
-                  <h2>{article.title}</h2>
+                  <h2 id={`publication-${article.slug}`}>{article.title}</h2>
                   <p>{article.summary}</p>
                   <p className={styles.cardAudience}>For {article.audience}</p>
                   <ul className={styles.labelList} aria-label="Topics">

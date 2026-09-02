@@ -232,13 +232,30 @@ export function ArticleBody({ article }: { article: PublishedArticle }) {
       <aside className={styles.tableOfContents} aria-label="In this article">
         <span>In this article</span>
         <nav>
-          {article.sections.map((section, index) => (
-            <a href={`#${section.id}`} key={section.id}>
-              {String(index + 1).padStart(2, "0")} · {section.title}
-            </a>
-          ))}
-          <a href="#evidence-and-limitations">Evidence and limitations</a>
-          <a href="#sources">Sources</a>
+          <ol className={styles.contentsList}>
+            {article.sections.map((section, index) => (
+              <li key={section.id}>
+                <a href={`#${section.id}`}>
+                  <span aria-hidden="true">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  {section.title}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a href="#evidence-and-limitations">
+                <span aria-hidden="true">→</span>
+                Evidence and limitations
+              </a>
+            </li>
+            <li>
+              <a href="#sources">
+                <span aria-hidden="true">→</span>
+                Sources
+              </a>
+            </li>
+          </ol>
         </nav>
       </aside>
 
