@@ -179,6 +179,31 @@ function assertMasuGateChrome(html, path) {
   assert.doesNotMatch(html, /<header\b[^>]*class="site-header"/i, path);
   assert.doesNotMatch(html, /<footer\b[^>]*class="site-footer"/i, path);
 
+  assert.equal(
+    countMatches(
+      html,
+      /<select\b(?=[^>]*aria-label="Color theme")[^>]*>/gi,
+    ),
+    1,
+    `${path}: expected one time-aware theme control`,
+  );
+  for (const [value, label] of [
+    ["auto", "Auto"],
+    ["light", "Light"],
+    ["dark", "Dark"],
+  ]) {
+    assert.match(
+      html,
+      new RegExp(`<option\\b[^>]*value="${value}"[^>]*>${label}<\\/option>`, "i"),
+      `${path}: expected the ${label} theme choice`,
+    );
+  }
+  assert.match(
+    html,
+    /masugate-theme-preference/,
+    `${path}: expected the pre-paint theme initializer`,
+  );
+
   const primaryNavigation = navigationMarkup(html, "Primary navigation");
   const desktopLinks = linksWithClassIn(primaryNavigation, "masugate-nav-link");
   const mobileLinks = linksIn(navigationMarkup(html, "Mobile navigation"));

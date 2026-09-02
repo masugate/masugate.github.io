@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { createThemeBootScript } from "./data/theme";
 import "./globals.css";
 
 const GOOGLE_ANALYTICS_ID = "G-ZWBT158GJT";
@@ -31,8 +32,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: createThemeBootScript(),
+          }}
+        />
         <script
           async
           src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS_ID}`}

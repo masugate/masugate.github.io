@@ -30,6 +30,14 @@ function colorVariable(css, name) {
   return match[1];
 }
 
+function darkThemeBlock(css) {
+  const match = css.match(
+    /:root\[data-masugate-theme="dark"\] \.masugate-site\s*\{([\s\S]*?)\}/,
+  );
+  assert.ok(match, "missing dark theme token override");
+  return match[1];
+}
+
 test("MasuGate chrome retains visible focus, skip-link, and reduced-motion rules", async () => {
   const css = await readFile("app/(masugate)/primary.css", "utf8");
 
@@ -56,6 +64,10 @@ test("core semantic color pairs retain WCAG AA text contrast", async () => {
       "p-pending-soft",
       "p-info",
       "p-info-soft",
+      "p-footer-bg",
+      "p-footer-ink",
+      "p-footer-ink-soft",
+      "p-footer-accent",
     ].map((name) => [name, colorVariable(css, name)]),
   );
   const pairs = [
@@ -66,6 +78,9 @@ test("core semantic color pairs retain WCAG AA text contrast", async () => {
     ["p-decision-escalate", "p-pending-soft"],
     ["p-info", "p-info-soft"],
     ["p-surface", "p-ink"],
+    ["p-footer-ink", "p-footer-bg"],
+    ["p-footer-ink-soft", "p-footer-bg"],
+    ["p-footer-accent", "p-footer-bg"],
   ];
 
   for (const [foreground, background] of pairs) {
@@ -74,4 +89,56 @@ test("core semantic color pairs retain WCAG AA text contrast", async () => {
       `${foreground} on ${background} must meet 4.5:1`,
     );
   }
+});
+
+test("dark semantic colors retain text and control-boundary contrast", async () => {
+  const css = darkThemeBlock(
+    await readFile("app/(masugate)/primary.css", "utf8"),
+  );
+  const colors = Object.fromEntries(
+    [
+      "p-ink",
+      "p-ink-soft",
+      "p-paper",
+      "p-surface",
+      "p-decision-allow",
+      "p-decision-deny",
+      "p-decision-escalate",
+      "p-deny-soft",
+      "p-pending-soft",
+      "p-info",
+      "p-info-soft",
+      "p-accent-violet",
+      "p-accent-violet-soft",
+      "p-line-strong",
+      "p-footer-bg",
+      "p-footer-ink",
+      "p-footer-ink-soft",
+      "p-footer-accent",
+    ].map((name) => [name, colorVariable(css, name)]),
+  );
+  const textPairs = [
+    ["p-ink", "p-paper"],
+    ["p-ink-soft", "p-paper"],
+    ["p-decision-allow", "p-paper"],
+    ["p-decision-deny", "p-deny-soft"],
+    ["p-decision-escalate", "p-pending-soft"],
+    ["p-info", "p-info-soft"],
+    ["p-accent-violet", "p-accent-violet-soft"],
+    ["p-footer-ink", "p-footer-bg"],
+    ["p-footer-ink-soft", "p-footer-bg"],
+    ["p-footer-accent", "p-footer-bg"],
+  ];
+
+  for (const [foreground, background] of textPairs) {
+    assert.ok(
+      contrastRatio(colors[foreground], colors[background]) >= 4.5,
+      `dark ${foreground} on ${background} must meet 4.5:1`,
+    );
+  }
+
+  assert.ok(
+    contrastRatio(colors["p-line-strong"], colors["p-surface"]) >= 3,
+    "dark control boundaries must meet 3:1",
+  );
 });

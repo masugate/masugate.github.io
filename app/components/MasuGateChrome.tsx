@@ -7,6 +7,7 @@ import {
   masugateSite,
   selectPrimaryNavigation,
 } from "../data/masugate-site";
+import { ThemeControl } from "./ThemeControl";
 
 const navigationMaps: Record<
   NavigationItemId,
@@ -182,6 +183,7 @@ export function MasuGateHeader() {
             );
           })}
         </nav>
+        <ThemeControl />
         <Link className="masugate-header-action" href={contactAction.href}>
           {contactAction.label}
         </Link>
