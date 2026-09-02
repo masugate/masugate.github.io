@@ -18,6 +18,34 @@ export type {
   PublishedArticle,
 } from "./article-types";
 
+export interface BlogPresentationContract {
+  index: Readonly<{
+    ledgerLabel: string;
+    entriesLabel: string;
+    updatedLabel: string;
+    publishedLabel: string;
+  }>;
+  article: Readonly<{
+    backLabel: string;
+    recordLabel: string;
+    minuteLabel: string;
+  }>;
+}
+
+export const blogPresentation = {
+  index: {
+    ledgerLabel: "Publication ledger",
+    entriesLabel: "Current entries",
+    updatedLabel: "Updated",
+    publishedLabel: "Published",
+  },
+  article: {
+    backLabel: "Blog & Updates",
+    recordLabel: "Article record",
+    minuteLabel: "min",
+  },
+} as const satisfies BlogPresentationContract;
+
 // Planned topics stay in planning/README.md. An entry belongs here only after
 // its complete body, evidence boundary, limitations, sources, and related
 // links are ready for publication.

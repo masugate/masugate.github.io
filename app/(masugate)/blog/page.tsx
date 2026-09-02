@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { selectBlogIndexPublications } from "../../data/articles";
+import {
+  blogPresentation,
+  selectBlogIndexPublications,
+} from "../../data/articles";
 import { createMasuGatePageMetadata } from "../../data/metadata";
 import styles from "./blog.module.css";
 
@@ -38,9 +41,9 @@ export default function BlogIndexPage() {
             </p>
           </div>
           <aside className={styles.indexLedger} aria-label="Publication count">
-            <span>Publication ledger</span>
+            <span>{blogPresentation.index.ledgerLabel}</span>
             <strong>{String(publications.length).padStart(2, "0")}</strong>
-            <small>Current entries</small>
+            <small>{blogPresentation.index.entriesLabel}</small>
           </aside>
         </div>
       </section>
@@ -95,7 +98,9 @@ export default function BlogIndexPage() {
                     </span>
                     <span className={styles.cardTiming}>
                       <time dateTime={article.updatedAt ?? article.publishedAt}>
-                        {article.updatedAt ? "Updated" : "Published"} {" "}
+                        {article.updatedAt
+                          ? blogPresentation.index.updatedLabel
+                          : blogPresentation.index.publishedLabel}{" "}
                         {formatArticleDate(
                           article.updatedAt ?? article.publishedAt,
                         )}

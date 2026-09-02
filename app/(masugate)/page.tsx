@@ -325,8 +325,8 @@ export default function MasuGateHomePage() {
                     <p>
                       <span>
                         {article.publicationType === "announcement"
-                          ? "Announcement"
-                          : "Article"}
+                          ? closing.publicationLabels.announcement
+                          : closing.publicationLabels.article}
                       </span>
                       <time dateTime={article.updatedAt ?? article.publishedAt}>
                         {formatArticleDate(

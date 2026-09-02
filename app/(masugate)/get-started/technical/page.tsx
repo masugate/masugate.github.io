@@ -24,6 +24,7 @@ function titleCase(value: string) {
 
 export default function TechnicalReferencePage() {
   const guide = getStartedGuide;
+  const hero = guide.technicalPage.hero;
   const openClaw = guide.openClawContinuation;
 
   return (
@@ -34,12 +35,9 @@ export default function TechnicalReferencePage() {
             <Link className={styles.backLink} href="/get-started/">
               ← Back to Get Started
             </Link>
-            <p className="masugate-eyebrow">Technical reference</p>
-            <h1>Profiles, outcomes, and integration boundaries.</h1>
-            <p className={styles.intro}>
-              Use the exact environment profile, operation outcomes, host
-              boundaries, and troubleshooting checks for the research preview.
-            </p>
+            <p className="masugate-eyebrow">{hero.eyebrow}</p>
+            <h1>{hero.title}</h1>
+            <p className={styles.intro}>{hero.intro}</p>
           </div>
           <aside className={styles.statusCard} aria-label="Reference status">
             <div className="masugate-status-stack">

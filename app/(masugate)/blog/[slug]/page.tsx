@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArticleBody } from "../ArticleBody";
 import {
+  blogPresentation,
   getPublishedArticle,
   publishedArticles,
 } from "../../../data/articles";
@@ -65,7 +66,8 @@ export default async function BlogArticlePage({
           <div className={`masugate-shell ${styles.articleHeroGrid}`}>
             <div className={styles.articleHeroCopy}>
               <Link className={styles.articleBackLink} href="/blog/">
-                <span aria-hidden="true">←</span> Blog &amp; Updates
+                <span aria-hidden="true">←</span>{" "}
+                {blogPresentation.article.backLabel}
               </Link>
               <p className="masugate-eyebrow">
                 {article.publicationType === "announcement"
@@ -82,8 +84,10 @@ export default async function BlogArticlePage({
             </div>
             <aside className={styles.metadataCard} aria-label="Article metadata">
               <div className={styles.metadataHeading}>
-                <span>Article record</span>
-                <strong>{article.readingMinutes} min</strong>
+                <span>{blogPresentation.article.recordLabel}</span>
+                <strong>
+                  {article.readingMinutes} {blogPresentation.article.minuteLabel}
+                </strong>
               </div>
               <dl>
                 <div>

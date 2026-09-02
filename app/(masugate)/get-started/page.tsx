@@ -33,18 +33,16 @@ python3 scripts/prepare-reference-demo.py \\
 export default function GetStartedPage() {
   const source = masugateSite.sourceRepository;
   const documentation = getStartedGuide.availability.publicDocumentation;
+  const hero = getStartedGuide.quickStartPage.hero;
 
   return (
     <main className="masugate-main" id="masugate-main">
       <section className={styles.hero}>
         <div className={`masugate-shell ${styles.heroGrid}`}>
           <div>
-            <p className="masugate-eyebrow">Get Started</p>
-            <h1>Run the reference demo.</h1>
-            <p className={styles.intro}>
-              Prepare the supported workspace once, then run and verify one
-              governed procurement scenario in under five minutes.
-            </p>
+            <p className="masugate-eyebrow">{hero.eyebrow}</p>
+            <h1>{hero.title}</h1>
+            <p className={styles.intro}>{hero.intro}</p>
             <div className={styles.heroActions}>
               {isAvailable(source) ? (
                 <a

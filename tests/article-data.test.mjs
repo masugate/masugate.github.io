@@ -22,6 +22,7 @@ async function importBundled(entryPoint) {
 const articleModule = await importBundled("app/data/articles.ts");
 const {
   articleValidationErrors,
+  blogPresentation,
   getPublishedArticle,
   hasPublishedArticles,
   publishedArticles,
@@ -30,6 +31,17 @@ const {
   selectLatestAnnouncement,
   validatePublishedArticles,
 } = articleModule;
+
+test("blog presentation labels live with the typed publication contract", () => {
+  assert.deepEqual(blogPresentation.index, {
+    ledgerLabel: "Publication ledger",
+    entriesLabel: "Current entries",
+    updatedLabel: "Updated",
+    publishedLabel: "Published",
+  });
+  assert.equal(blogPresentation.article.backLabel, "Blog & Updates");
+  assert.equal(blogPresentation.article.recordLabel, "Article record");
+});
 
 test("the publication manifest contains the release announcement and editorial series", () => {
   assert.equal(hasPublishedArticles, true);

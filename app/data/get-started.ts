@@ -140,7 +140,19 @@ export interface GetStartedGuide {
     evidence: Evidence;
   }>;
   paths: readonly GetStartedPath[];
+  quickStartPage: Readonly<{
+    hero: Readonly<{
+      eyebrow: string;
+      title: string;
+      intro: string;
+    }>;
+  }>;
   technicalPage: Readonly<{
+    hero: Readonly<{
+      eyebrow: string;
+      title: string;
+      intro: string;
+    }>;
     runtimeSection: Readonly<{
       eyebrow: string;
       title: string;
@@ -313,7 +325,21 @@ export const getStartedGuide = {
       cta: pathCtas.contact,
     },
   ],
+  quickStartPage: {
+    hero: {
+      eyebrow: "Get Started",
+      title: "Run the reference demo.",
+      intro:
+        "Prepare the supported workspace once, then run and verify one governed procurement scenario in under five minutes.",
+    },
+  },
   technicalPage: {
+    hero: {
+      eyebrow: "Technical reference",
+      title: "Profiles, outcomes, and integration boundaries.",
+      intro:
+        "Use the exact environment profile, operation outcomes, host boundaries, and troubleshooting checks for the research preview.",
+    },
     runtimeSection: {
       eyebrow: "Governed runtime anatomy",
       title: "Inspect the complete protected path.",

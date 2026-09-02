@@ -110,6 +110,10 @@ export interface HomepageContentContract {
     contactCopy: string;
     disclosureHint: string;
     teamLabel: string;
+    publicationLabels: Readonly<{
+      announcement: string;
+      article: string;
+    }>;
   }>;
 }
 
@@ -272,5 +276,9 @@ export const homepageContent = {
       "Tell us the action, policy, and shared state. We will scope it.",
     disclosureHint: "Opens a prepared email draft",
     teamLabel: "Project team",
+    publicationLabels: {
+      announcement: "Announcement",
+      article: "Article",
+    },
   },
 } as const satisfies HomepageContentContract;

@@ -43,6 +43,16 @@ test("Get Started satisfies its release-safe data contract", () => {
   );
 });
 
+test("Get Started route heroes live in the typed guide", () => {
+  assert.equal(getStartedGuide.quickStartPage.hero.title, "Run the reference demo.");
+  assert.equal(
+    getStartedGuide.technicalPage.hero.title,
+    "Profiles, outcomes, and integration boundaries.",
+  );
+  assert.match(getStartedGuide.quickStartPage.hero.intro, /under five minutes/i);
+  assert.match(getStartedGuide.technicalPage.hero.intro, /research preview/i);
+});
+
 test("three current paths lead only to approved internal destinations", () => {
   assert.deepEqual(
     getStartedGuide.paths.map(({ id, cta }) => ({ id, href: cta.href })),
