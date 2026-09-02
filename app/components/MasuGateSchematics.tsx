@@ -1,4 +1,5 @@
 import { getPolicyArtifact } from "../data/policies";
+import { homepageContent } from "../data/homepage";
 import {
   type PaperFigureAttribution,
   type SchematicProfile,
@@ -169,9 +170,102 @@ export function GovernedActionExplainer() {
   );
 }
 
-export function GovernedRuntimeSchematic() {
+export function GovernedRuntimeSchematic({
+  presentation = "standard",
+}: {
+  presentation?: "standard" | "compact";
+} = {}) {
   const { governedRuntime: profile } = selectHomepageSchematicProfiles();
   const source = profile.sourceFigures[0];
+
+  if (presentation === "compact") {
+    const content = homepageContent.mechanism;
+
+    return (
+      <figure
+        aria-labelledby="governed-runtime-schematic-compact-title"
+        className={`${styles.figure} ${styles.compactFigure}`}
+        data-schematic-profile={profile.id}
+        id="governed-runtime-schematic-compact"
+      >
+        <div className={styles.figureHeader}>
+          <div>
+            <p className={styles.figureKicker}>{content.figureKicker}</p>
+            <h3
+              className={styles.lifecycleTitle}
+              id="governed-runtime-schematic-compact-title"
+            >
+              {content.figureTitle}
+            </h3>
+          </div>
+        </div>
+
+        <div className={styles.compactFlow}>
+          <article
+            aria-labelledby="governed-runtime-compact-step-1"
+            className={`${styles.compactStep} ${styles.compactRequestStep}`}
+          >
+            <span className={styles.compactStepNumber}>01</span>
+            <h4 id="governed-runtime-compact-step-1">
+              {content.steps[0].label}
+            </h4>
+            <p>{content.steps[0].detail}</p>
+          </article>
+
+          <div
+            aria-labelledby="governed-runtime-compact-boundary"
+            className={styles.compactBoundary}
+            role="group"
+          >
+            <span
+              className={styles.compactBoundaryLabel}
+              id="governed-runtime-compact-boundary"
+            >
+              {content.boundaryLabel}
+            </span>
+            <div className={styles.compactProtectedSteps}>
+              {content.steps.slice(1).map((step, index) => (
+                <article
+                  aria-labelledby={`governed-runtime-compact-step-${index + 2}`}
+                  className={styles.compactStep}
+                  key={step.label}
+                >
+                  <span className={styles.compactStepNumber}>
+                    {String(index + 2).padStart(2, "0")}
+                  </span>
+                  <h4 id={`governed-runtime-compact-step-${index + 2}`}>
+                    {step.label}
+                  </h4>
+                  <p>{step.detail}</p>
+                  {index === 1 ? (
+                    <div className={styles.compactOutcomeSet}>
+                      <span>{content.outcomesLabel}</span>
+                      <ul>
+                        {content.outcomes.map((outcome) => (
+                          <li data-outcome={outcome.toLowerCase()} key={outcome}>
+                            {outcome}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.compactNotes}>
+          <p>{content.scopeNote}</p>
+          <p>{content.recordNote}</p>
+        </div>
+        <TextEquivalent profile={profile} />
+        <figcaption className={styles.caption}>
+          <FigureAttribution source={source} />
+        </figcaption>
+      </figure>
+    );
+  }
 
   return (
     <figure

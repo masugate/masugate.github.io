@@ -140,6 +140,13 @@ export interface GetStartedGuide {
     evidence: Evidence;
   }>;
   paths: readonly GetStartedPath[];
+  technicalPage: Readonly<{
+    runtimeSection: Readonly<{
+      eyebrow: string;
+      title: string;
+      intro: string;
+    }>;
+  }>;
   baseline: Readonly<{
     target: Readonly<{
       os: string;
@@ -306,6 +313,14 @@ export const getStartedGuide = {
       cta: pathCtas.contact,
     },
   ],
+  technicalPage: {
+    runtimeSection: {
+      eyebrow: "Governed runtime anatomy",
+      title: "Inspect the complete protected path.",
+      intro:
+        "The canonical view keeps host, policy, coordination, provider effect, and governance record responsibilities explicit.",
+    },
+  },
   baseline: {
     target: {
       os: masugateRelease.referenceEnvironment.os,

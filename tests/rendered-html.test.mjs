@@ -775,12 +775,13 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
     "Both requests fit. Together, they do not.",
     "Shared state is more than a budget.",
     "Keep the decision connected to the effect.",
-    "One decision needs one protected path",
-    "The MasuGate boundary",
-    "One complete path, from selected request to governed result.",
-    "Agent environment",
-    "Policy environment",
-    "Provider environment",
+    "Request → live decision → governed effect",
+    "MasuGate protected path",
+    "Policy decision",
+    "Governed effect",
+    "Committed",
+    "Denied",
+    "Pending",
     "From stateful policy to governed concurrent execution.",
     "Keep OpenClaw in control. Protect the consequential action.",
     "Blog & announcements",
@@ -891,16 +892,15 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
     html,
     "Keep the decision connected to the effect.",
   );
-  assert.match(html, /Figure 1/i);
-  assert.match(html, /2608\.02764v1/i);
-  assert.match(html, /Text equivalent/i);
-  assert.match(textContent(staleAuthorization), /Detached check/i);
-  assert.match(html, /Governed action/i);
-  assert.match(html, /Canonical governed-action path/i);
-  assert.match(html, /Figure 4/i);
-  assert.match(html, /OpenClaw orchestration/i);
-  assert.match(html, /Reviewed policy program/i);
-  assert.match(html, /State views and effect/i);
+  assert.match(staleAuthorization, /Figure 4/i);
+  assert.match(staleAuthorization, /2608\.02764v1/i);
+  assert.match(staleAuthorization, /Text equivalent/i);
+  assert.match(textContent(staleAuthorization), /Request/);
+  assert.match(textContent(staleAuthorization), /Policy decision/);
+  assert.match(textContent(staleAuthorization), /Governed effect/);
+  assert.match(textContent(staleAuthorization), /Committed/);
+  assert.match(textContent(staleAuthorization), /Denied/);
+  assert.match(textContent(staleAuthorization), /Pending/);
 
   assert.match(text, /categorized-purchase@v2/);
 
@@ -1085,6 +1085,13 @@ test("keeps detailed technical material on the Get Started subpage", async () =>
   for (const requiredCopy of [
     "Technical reference",
     "Profiles, outcomes, and integration boundaries.",
+    "Governed runtime anatomy",
+    "Inspect the complete protected path.",
+    "One decision needs one protected path",
+    "Canonical governed-action path",
+    "Agent environment",
+    "Policy environment",
+    "Provider environment",
     "Reference environment",
     "Operation outcomes",
     "Reference integration profiles",
@@ -1094,6 +1101,9 @@ test("keeps detailed technical material on the Get Started subpage", async () =>
   ]) {
     assert.ok(text.includes(requiredCopy), `Technical reference is missing: ${requiredCopy}`);
   }
+  assert.match(html, /Figure 1/i);
+  assert.match(html, /Figure 4/i);
+  assert.match(html, /2608\.02764v1/i);
   assert.match(html, /href="\/get-started\/"/i);
   assert.match(html, /href="\/demo\/openclaw-reference\/"/i);
 });

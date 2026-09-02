@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import {
+  GovernedActionExplainer,
+  GovernedRuntimeSchematic,
+} from "../../../components/MasuGateSchematics";
 import { getStartedGuide } from "../../../data/get-started";
 import { createMasuGatePageMetadata } from "../../../data/metadata";
 import styles from "./technical.module.css";
@@ -54,6 +58,22 @@ export default function TechnicalReferencePage() {
               integration boundary, and evidence status before adapting it.
             </p>
           </aside>
+        </div>
+      </section>
+
+      <section className={styles.sectionSoft} id="governed-runtime">
+        <div className="masugate-shell">
+          <div className={styles.heading}>
+            <p className="masugate-eyebrow">
+              {guide.technicalPage.runtimeSection.eyebrow}
+            </p>
+            <h2>{guide.technicalPage.runtimeSection.title}</h2>
+            <p>{guide.technicalPage.runtimeSection.intro}</p>
+          </div>
+          <div className={styles.runtimeFigures}>
+            <GovernedActionExplainer />
+            <GovernedRuntimeSchematic />
+          </div>
         </div>
       </section>
 

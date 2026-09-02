@@ -45,3 +45,16 @@ test("homepage problem and shared-state copy stays scan-friendly", () => {
     );
   }
 });
+
+test("homepage mechanism is one bounded three-step flow", () => {
+  const { mechanism } = homepageContent;
+
+  assert.ok(wordCount(mechanism.title) <= 10);
+  assert.ok(wordCount(mechanism.intro) <= 25);
+  assert.deepEqual(
+    mechanism.steps.map(({ label }) => label),
+    ["Request", "Policy decision", "Governed effect"],
+  );
+  assert.deepEqual(mechanism.outcomes, ["Committed", "Denied", "Pending"]);
+  assert.match(mechanism.boundaryLabel, /protected path/i);
+});

@@ -49,6 +49,23 @@ export interface HomepageContentContract {
       caption: string;
     }>[];
   }>;
+  mechanism: Readonly<{
+    eyebrow: string;
+    title: string;
+    intro: string;
+    figureKicker: string;
+    figureTitle: string;
+    boundaryLabel: string;
+    steps: readonly [
+      Readonly<{ label: string; detail: string }>,
+      Readonly<{ label: string; detail: string }>,
+      Readonly<{ label: string; detail: string }>,
+    ];
+    outcomesLabel: string;
+    outcomes: readonly ["Committed", "Denied", "Pending"];
+    scopeNote: string;
+    recordNote: string;
+  }>;
 }
 
 export const homepageContent = {
@@ -122,5 +139,34 @@ export const homepageContent = {
         caption: "Files and workspaces changed by many agents.",
       },
     ],
+  },
+  mechanism: {
+    eyebrow: "How it works",
+    title: "Keep the decision connected to the effect.",
+    intro:
+      "Request, live policy decision, and governed effect travel one protected path.",
+    figureKicker: "One protected path",
+    figureTitle: "Request → live decision → governed effect",
+    boundaryLabel: "MasuGate protected path",
+    steps: [
+      {
+        label: "Request",
+        detail: "A selected consequential action enters.",
+      },
+      {
+        label: "Policy decision",
+        detail: "The rule reads live shared state.",
+      },
+      {
+        label: "Governed effect",
+        detail: "The provider returns one authoritative outcome.",
+      },
+    ],
+    outcomesLabel: "Authoritative outcome",
+    outcomes: ["Committed", "Denied", "Pending"],
+    scopeNote:
+      "MasuGate governs configured consequential routes; the host keeps orchestration and model behavior.",
+    recordNote:
+      "The receipt keeps the revision, state facts, decision, and outcome linked.",
   },
 } as const satisfies HomepageContentContract;

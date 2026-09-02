@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ConcurrentStateHero } from "../components/ConcurrentStateHero";
 import { CustomizedDemoRequestForm } from "../components/CustomizedDemoRequestForm";
 import {
-  GovernedActionExplainer,
   GovernedRuntimeSchematic,
   OpenClawBridgeSchematic,
 } from "../components/MasuGateSchematics";
@@ -214,34 +213,17 @@ export default function MasuGateHomePage() {
 
       <section
         className={`masugate-section ${styles.sectionWhite}`}
-        id="governed-action-explainer"
+        id="governed-action-path"
       >
         <div className="masugate-shell">
           <div className="masugate-section-heading">
-            <p className="masugate-eyebrow">Why stateful checks are not enough</p>
-            <h2>Keep the decision connected to the effect.</h2>
+            <p className="masugate-eyebrow">
+              {homepageContent.mechanism.eyebrow}
+            </p>
+            <h2>{homepageContent.mechanism.title}</h2>
+            <p>{homepageContent.mechanism.intro}</p>
           </div>
-          <p className={styles.definition}>
-            <strong>Stale authorization</strong> occurs when the state that
-            justified a decision changes before the associated effect happens.
-          </p>
-          <p className={styles.distinction}>
-            Reading mutable state determines what appears permissible now.
-            Coordination determines whether that decision remains valid through
-            the governed effect.
-          </p>
-          <GovernedActionExplainer />
-          <div className={styles.boundaryDiagram}>
-            <div>
-              <p className="masugate-eyebrow">The MasuGate boundary</p>
-              <h3>One complete path, from selected request to governed result.</h3>
-              <p>
-                The detailed view shows which responsibilities stay with the
-                host and provider, and which travel through MasuGate together.
-              </p>
-            </div>
-            <GovernedRuntimeSchematic />
-          </div>
+          <GovernedRuntimeSchematic presentation="compact" />
         </div>
       </section>
 

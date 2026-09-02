@@ -85,6 +85,11 @@
   margin-bottom: 32px;
 }
 
+.runtimeFigures {
+  display: grid;
+  gap: 18px;
+}
+
 .heading h2,
 .openClawGrid h2 {
   margin: 0 0 14px;
