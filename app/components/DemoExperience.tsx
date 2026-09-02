@@ -13,16 +13,16 @@ import type {
   BudgetSnapshot,
   CalendarSnapshot,
   ResourceSnapshot,
-  ScenarioEvent,
   WorkspaceSnapshot,
 } from "../data/scenario";
 import type {
-  DemoArtifact,
+  DemoClientArtifact,
+  DemoClientEvent,
   DemoClientModel,
+  DemoClientPolicy,
   DemoOperationDefinition,
 } from "../data/demo";
 import type { Money, PolicyDecision } from "../data/contracts";
-import type { PolicyArtifact } from "../data/policies";
 import {
   createDemoState,
   demoChoicePoints,
@@ -69,20 +69,20 @@ function titleCase(value: string): string {
     .join(" ");
 }
 
-function artifactStatus(artifact?: DemoArtifact) {
+function artifactStatus(artifact?: DemoClientArtifact) {
   return {
     presentation: titleCase(artifact?.presentationOrigin ?? "simulated"),
     evidence: titleCase(artifact?.evidence.status ?? "reference"),
   };
 }
 
-function artifactReleaseRevision(artifact?: DemoArtifact): string {
+function artifactReleaseRevision(artifact?: DemoClientArtifact): string {
   return artifact?.release.immutableRevision.state === "available"
     ? artifact.release.immutableRevision.value
     : "Pending release alignment";
 }
 
-function policyReleaseRevision(policy: PolicyArtifact): string {
+function policyReleaseRevision(policy: DemoClientPolicy): string {
   if (policy.releaseRevision.state !== "available") {
     return "Pending release alignment";
   }
@@ -90,11 +90,11 @@ function policyReleaseRevision(policy: PolicyArtifact): string {
   return `${policy.releaseRevision.value.releaseId} · ${policy.releaseRevision.value.immutablePolicyId}`;
 }
 
-function actorLabel(model: DemoClientModel, actorId: ScenarioEvent["actorId"]) {
+function actorLabel(model: DemoClientModel, actorId: DemoClientEvent["actorId"]) {
   const agent = model.scenario.agents.find(({ id }) => id === actorId);
   if (agent) return agent.shortName;
 
-  const labels: Partial<Record<ScenarioEvent["actorId"], string>> = {
+  const labels: Partial<Record<DemoClientEvent["actorId"], string>> = {
     user: "User",
     reviewer: "Human reviewer",
     masugate: "MasuGate",
@@ -117,7 +117,7 @@ function credentialEnvironmentLabel(
 function activeTimeline(
   stage: DemoStage,
   state: DemoMachineState,
-): readonly ScenarioEvent[] {
+): readonly DemoClientEvent[] {
   if (stage.id === "stage-1") return stage.timelines.primary;
 
   if (stage.id === "stage-2") {
@@ -143,7 +143,7 @@ function activeTimeline(
 
 function eventAnnouncement(
   stage: DemoStage,
-  events: readonly ScenarioEvent[],
+  events: readonly DemoClientEvent[],
   index: number,
 ): string {
   const event = events[index];
@@ -166,7 +166,7 @@ function setResource(ledger: ResourceLedger, snapshot: ResourceSnapshot) {
 
 function resourceLedger(
   stage: DemoStage,
-  events: readonly ScenarioEvent[],
+  events: readonly DemoClientEvent[],
   eventIndex: number,
 ): ResourceLedger {
   const ledger: ResourceLedger = {};
@@ -193,12 +193,12 @@ function resourceLedger(
 }
 
 interface OperationHistory {
-  operation: NonNullable<ScenarioEvent["operation"]>;
-  event: ScenarioEvent;
+  operation: NonNullable<DemoClientEvent["operation"]>;
+  event: DemoClientEvent;
   policyDecision?: PolicyDecision;
 }
 
-function operationHistories(events: readonly ScenarioEvent[]): OperationHistory[] {
+function operationHistories(events: readonly DemoClientEvent[]): OperationHistory[] {
   const histories = new Map<string, OperationHistory>();
 
   for (const event of events) {
@@ -224,13 +224,13 @@ function operationDefinition(
 function policyForOperation(
   stage: DemoStage,
   definition: DemoOperationDefinition | undefined,
-): PolicyArtifact | undefined {
+): DemoClientPolicy | undefined {
   return definition
     ? stage.policies.find(({ id }) => id === definition.policyArtifactId)
     : undefined;
 }
 
-function policyRevisionLabel(policy: PolicyArtifact): string {
+function policyRevisionLabel(policy: DemoClientPolicy): string {
   if (policy.source.form !== "diff") return policy.scenarioRevision;
   const base = policy.source.baseArtifactId.replace(/-v(\d+)$/, "@v$1");
   const next = policy.scenarioRevision.split("@")[1];
@@ -308,7 +308,7 @@ function CalendarResource({
 }: {
   snapshot: CalendarSnapshot;
   model: DemoClientModel;
-  currentEvent?: ScenarioEvent;
+  currentEvent?: DemoClientEvent;
 }) {
   const calendarDate = model.scenario.calendar.dateAndOffset;
   const conflictVisible =
@@ -407,7 +407,7 @@ function ResourceRegion({
 }: {
   ledger: ResourceLedger;
   model: DemoClientModel;
-  currentEvent?: ScenarioEvent;
+  currentEvent?: DemoClientEvent;
 }) {
   return (
     <section className={styles.resourceRegion} aria-labelledby="demo-resource-title">
@@ -437,7 +437,7 @@ function ConversationRegion({
   model,
 }: {
   stage: DemoStage;
-  events: readonly ScenarioEvent[];
+  events: readonly DemoClientEvent[];
   eventIndex: number;
   model: DemoClientModel;
 }) {
@@ -713,7 +713,7 @@ function OutcomeRegion({
 }: {
   stage: DemoStage;
   histories: OperationHistory[];
-  latestDecision?: ScenarioEvent;
+  latestDecision?: DemoClientEvent;
   model: DemoClientModel;
   choice: ReactNode;
   choiceRef: RefObject<HTMLDivElement | null>;
@@ -794,7 +794,7 @@ function PolicyInspector({
 }: {
   stage: DemoStage;
   technical: boolean;
-  currentEvent?: ScenarioEvent;
+  currentEvent?: DemoClientEvent;
 }) {
   const evidence = stage.policies.every(
     (policy) => policy.provenance.evidence.status === "verified",
@@ -1116,7 +1116,7 @@ function TraceInspector({
   stage,
   technical,
 }: {
-  events: readonly ScenarioEvent[];
+  events: readonly DemoClientEvent[];
   eventIndex: number;
   model: DemoClientModel;
   stage: DemoStage;
@@ -1126,7 +1126,7 @@ function TraceInspector({
     stage.artifacts.find(({ kind }) => kind === "runtime-trace"),
   );
   const groups = events.reduce<
-    { kind: ResourceSnapshot["kind"]; events: ScenarioEvent[] }[]
+    { kind: ResourceSnapshot["kind"]; events: DemoClientEvent[] }[]
   >((result, event) => {
     const kind = event.resourceSnapshot.kind;
     const current = result.at(-1);
@@ -1278,7 +1278,7 @@ function RecordInspector({
 function copyExcerpt(
   stage: DemoStage,
   inspector: DemoInspectorId,
-  events: readonly ScenarioEvent[],
+  events: readonly DemoClientEvent[],
   eventIndex: number,
   histories: OperationHistory[],
   model: DemoClientModel,

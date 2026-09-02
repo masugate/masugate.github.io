@@ -28,7 +28,7 @@
   margin: 0 0 20px;
   font-family: var(--p-font-sans);
   font-size: clamp(2.7rem, 5vw, 5.1rem);
-  font-weight: 400;
+  font-weight: 560;
   letter-spacing: -0.045em;
   line-height: 0.98;
 }
@@ -55,6 +55,7 @@
 .disclosure {
   padding: 24px;
   border: 1px solid var(--p-line-strong);
+  border-radius: 18px;
   border-top: 6px solid var(--p-pending);
   background: var(--p-surface);
   box-shadow: var(--p-shadow);
@@ -88,8 +89,8 @@
 
 .demoSection {
   background:
-    linear-gradient(var(--p-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--p-line) 1px, transparent 1px),
+    linear-gradient(color-mix(in srgb, var(--p-line) 70%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--p-line) 70%, transparent) 1px, transparent 1px),
     var(--p-paper);
   background-size: 28px 28px;
 }
@@ -115,7 +116,7 @@
   margin: 0 0 18px;
   font-family: var(--p-font-sans);
   font-size: clamp(2.25rem, 4.5vw, 4.3rem);
-  font-weight: 400;
+  font-weight: 560;
   letter-spacing: -0.035em;
   line-height: 1.04;
 }
@@ -132,6 +133,7 @@
   margin: 0;
   padding: 20px 24px;
   border-left: 6px solid var(--p-info);
+  border-radius: 0 14px 14px 0;
   background: var(--p-info-soft);
   font-family: var(--p-font-sans);
   font-size: clamp(1.14rem, 2vw, 1.46rem);
@@ -161,6 +163,7 @@
   display: grid;
   gap: 16px;
   border: 1px solid var(--p-line);
+  border-radius: 18px;
   border-top: 5px solid var(--p-info);
   background: var(--p-surface);
 }
@@ -206,14 +209,19 @@
   place-items: center;
   gap: 9px;
   border: 1px solid var(--p-line);
+  border-radius: 12px;
   background: var(--p-paper);
   text-align: center;
 }
 
 .profileMarks img {
+  box-sizing: content-box;
   width: auto;
   height: 36px;
-  max-width: 126px;
+  max-width: calc(100% - 16px);
+  padding: 6px;
+  border-radius: 8px;
+  background: #ffffff;
   object-fit: contain;
 }
 
@@ -254,6 +262,7 @@
 .portabilityCard {
   padding: 22px;
   border: 1px solid var(--p-line);
+  border-radius: 14px;
   background: var(--p-surface);
 }
 
@@ -289,6 +298,7 @@
   gap: 20px;
   align-items: center;
   border-left: 5px solid var(--p-pending);
+  border-radius: 0 12px 12px 0;
   background: var(--p-pending-soft);
 }
 
@@ -322,6 +332,7 @@
   grid-template-rows: auto 1fr auto;
   gap: 16px;
   border: 1px solid var(--p-line);
+  border-radius: 16px;
   background: var(--p-surface);
 }
 
@@ -350,6 +361,7 @@
   display: grid;
   place-items: center;
   border: 1px solid currentColor;
+  border-radius: 12px;
   background: var(--p-info-soft);
   color: var(--p-info);
   font-family: var(--p-font-sans);
@@ -392,6 +404,7 @@
   display: grid;
   place-items: center;
   border: 1px solid var(--p-line);
+  border-radius: 10px;
   background: var(--p-paper);
   font-size: 0.7rem;
   font-weight: 900;
@@ -442,6 +455,7 @@
   margin: 12px 0 24px;
   padding: 12px 16px;
   border-left: 5px solid var(--p-pending);
+  border-radius: 0 12px 12px 0;
   background: var(--p-pending-soft);
   color: var(--p-ink-soft);
   font-size: 0.84rem;
@@ -461,6 +475,7 @@
 
 .transcriptGroup {
   border: 1px solid var(--p-line);
+  border-radius: 14px;
   background: var(--p-paper);
 }
 
@@ -497,6 +512,7 @@
 .branch {
   padding: 18px;
   border: 1px solid var(--p-line);
+  border-radius: 12px;
   background: var(--p-surface);
 }
 
@@ -543,6 +559,7 @@
   margin-top: 18px;
   padding: 16px 18px;
   border-left: 5px solid var(--p-pending);
+  border-radius: 0 12px 12px 0;
   background: var(--p-pending-soft);
 }
 
@@ -567,7 +584,7 @@
   margin: 0 0 16px;
   font-family: var(--p-font-sans);
   font-size: clamp(2.25rem, 4.5vw, 4.3rem);
-  font-weight: 400;
+  font-weight: 560;
   letter-spacing: -0.035em;
   line-height: 1.04;
 }
@@ -613,7 +630,7 @@
   margin: 0;
   font-family: var(--p-font-sans);
   font-size: clamp(2.35rem, 4.7vw, 4.8rem);
-  font-weight: 400;
+  font-weight: 560;
   letter-spacing: -0.04em;
   line-height: 1.02;
 }

@@ -1,6 +1,7 @@
 .experience {
   padding: clamp(30px, 5vw, 54px);
   border: 1px solid var(--p-line);
+  border-radius: 20px;
   background: var(--p-surface);
   box-shadow: var(--p-shadow);
 }
@@ -9,6 +10,7 @@
 .controls a {
   min-height: 44px;
   border: 1px solid var(--p-line-strong);
+  border-radius: 10px;
   background: var(--p-surface);
   color: var(--p-ink);
   font: inherit;
@@ -43,7 +45,7 @@
   margin: 0;
   font-family: var(--p-font-sans);
   font-size: clamp(2.15rem, 4.6vw, 4.4rem);
-  font-weight: 400;
+  font-weight: 560;
   letter-spacing: -0.04em;
   line-height: 1.02;
 }
@@ -51,6 +53,7 @@
 .stageBrowser {
   margin-top: 38px;
   border: 1px solid var(--p-line);
+  border-radius: 16px;
   background: var(--p-surface-soft);
 }
 
@@ -88,7 +91,7 @@
 .stagePanelHeader strong {
   font-family: var(--p-font-sans);
   font-size: 1.25rem;
-  font-weight: 400;
+  font-weight: 560;
 }
 
 .stageBrowserHeader p,
@@ -180,12 +183,14 @@
   margin-top: 16px;
   padding: 10px;
   border: 2px solid var(--p-line-strong);
+  border-radius: 18px;
   background: var(--p-paper);
 }
 
 .stagePanelHeader {
   margin-bottom: 10px;
   border: 1px solid var(--p-line);
+  border-radius: 12px;
   border-left: 6px solid var(--p-info);
   background: var(--p-info-soft);
 }
@@ -200,6 +205,7 @@
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   border: 1px solid var(--p-line);
+  border-radius: 14px;
 }
 
 .contextOverview {
@@ -290,7 +296,7 @@
   margin: 12px 0;
   font-family: var(--p-font-sans);
   font-size: clamp(1.55rem, 2.6vw, 2.4rem);
-  font-weight: 400;
+  font-weight: 560;
   line-height: 1.08;
 }
 
@@ -354,6 +360,7 @@
   gap: 24px;
   align-items: center;
   border: 1px solid var(--p-line);
+  border-radius: 12px;
   border-left: 6px solid var(--p-allow);
   background: var(--p-allow-soft);
 }
@@ -361,6 +368,7 @@
 .managementDisclosure {
   margin: 18px 0;
   border: 1px solid var(--p-line);
+  border-radius: 12px;
   background: var(--p-surface-soft);
 }
 
@@ -475,6 +483,7 @@
   gap: 22px;
   align-items: center;
   border: 1px solid var(--p-line);
+  border-radius: 12px;
   border-left: 6px solid var(--p-info);
   background: var(--p-info-soft);
 }
@@ -532,6 +541,7 @@
   display: grid;
   gap: 5px;
   border: 1px solid var(--p-line);
+  border-radius: 10px;
   background: var(--p-surface);
   color: var(--p-ink-soft);
 }
@@ -587,6 +597,7 @@
 .outcomeRegion {
   padding: 20px;
   border: 1px solid var(--p-line);
+  border-radius: 16px;
   background: var(--p-paper);
 }
 
@@ -617,7 +628,7 @@
   margin: 0;
   font-family: var(--p-font-sans);
   font-size: 1.35rem;
-  font-weight: 400;
+  font-weight: 560;
 }
 
 .agentLanes {
@@ -632,6 +643,7 @@
   min-width: 0;
   padding: 12px;
   border: 1px solid var(--p-line);
+  border-radius: 10px;
   background: var(--p-surface);
 }
 
@@ -683,6 +695,7 @@
 .conversationList li {
   padding: 13px 14px;
   border: 1px solid var(--p-line);
+  border-radius: 10px;
   background: var(--p-surface);
 }
 
@@ -739,6 +752,7 @@
   min-width: 0;
   padding: 16px;
   border: 1px solid var(--p-line);
+  border-radius: 12px;
   background: var(--p-surface);
 }
 
@@ -764,6 +778,7 @@
   display: flex;
   overflow: hidden;
   border: 1px solid var(--p-line-strong);
+  border-radius: 999px;
   background: var(--p-paper);
 }
 
@@ -838,6 +853,7 @@
   grid-template-columns: auto 1fr;
   gap: 12px;
   border: 1px solid var(--p-line);
+  border-radius: 10px;
 }
 
 .calendarList li > span {
@@ -855,6 +871,7 @@
   margin-top: 9px;
   padding: 12px;
   border: 2px dashed var(--p-info);
+  border-radius: 10px;
   background: var(--p-info-soft);
 }
 
@@ -891,6 +908,7 @@
   min-width: 0;
   padding: 10px;
   border: 1px solid var(--p-line);
+  border-radius: 10px;
 }
 
 .workspaceList code {
@@ -915,6 +933,7 @@
   min-width: 0;
   padding: 16px;
   border: 1px solid var(--p-line);
+  border-radius: 12px;
   background: var(--p-surface);
 }
 
@@ -955,6 +974,7 @@
   margin: 12px 0 0;
   padding: 18px;
   border: 2px solid var(--p-pending);
+  border-radius: 14px;
   background: var(--p-pending-soft);
 }
 
@@ -1012,6 +1032,7 @@
   margin: 14px 0 0;
   padding: 16px 18px;
   border-left: 5px solid var(--p-allow);
+  border-radius: 0 12px 12px 0;
   background: var(--p-allow-soft);
 }
 
@@ -1044,6 +1065,7 @@
   grid-template-columns: minmax(220px, 1.5fr) repeat(2, minmax(96px, auto)) minmax(150px, auto);
   gap: 8px;
   border: 1px solid var(--p-line);
+  border-radius: 14px;
   background: var(--p-surface-soft);
 }
 
@@ -1125,6 +1147,7 @@
 .inspectorDisclosure {
   min-width: 0;
   border: 1px solid var(--p-line-strong);
+  border-radius: 16px;
   background: var(--p-surface);
 }
 
@@ -1182,7 +1205,7 @@
   margin: 7px 0 0;
   font-family: var(--p-font-sans);
   font-size: 1.35rem;
-  font-weight: 400;
+  font-weight: 560;
 }
 
 .inspectorActions {
@@ -1242,6 +1265,7 @@
 .copyFallback {
   margin: 0 18px 18px;
   border: 1px solid var(--p-line-strong);
+  border-radius: 12px;
   color: var(--p-ink-soft);
 }
 
@@ -1280,6 +1304,7 @@
 .artifactBanner article {
   padding: 10px 12px;
   border: 1px solid color-mix(in srgb, var(--p-allow) 48%, transparent);
+  border-radius: 10px;
   background: var(--p-allow-soft);
 }
 
@@ -1358,6 +1383,7 @@
   min-width: 0;
   padding: 14px;
   border: 1px solid var(--p-line);
+  border-radius: 12px;
   background: var(--p-surface);
 }
 
@@ -1492,6 +1518,7 @@
   margin-top: 12px;
   padding: 12px;
   border: 1px dashed var(--p-line-strong);
+  border-radius: 10px;
   background: var(--p-paper);
 }
 
@@ -1534,6 +1561,7 @@
 .configSection {
   padding: 12px;
   border: 1px solid var(--p-line);
+  border-radius: 10px;
 }
 
 .configSection h4 {
@@ -1568,6 +1596,7 @@
 .routeOwnershipCard {
   padding: 12px;
   border: 1px solid var(--p-line);
+  border-radius: 10px;
   background: var(--p-surface);
 }
 
@@ -1656,6 +1685,7 @@
 .traceList li {
   padding: 12px;
   border: 1px solid var(--p-line);
+  border-radius: 10px;
 }
 
 .traceList li > span {

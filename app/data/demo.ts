@@ -582,34 +582,334 @@ export function selectDemoExperience() {
 
 export type DemoExperienceModel = ReturnType<typeof selectDemoExperience>;
 
+type DemoClientAvailability<Value> =
+  | Readonly<{ state: "available"; value: Value }>
+  | Readonly<{ state: "unavailable" }>;
+
+type DemoStageModel = DemoExperienceModel["stages"][number];
+type DemoPolicyModel = DemoStageModel["policies"][number];
+type DemoRouteModel = DemoStageModel["routes"][number];
+
+export type DemoClientEvent = Omit<ScenarioEvent, "branch" | "stageId">;
+
+export type DemoClientArtifact = Readonly<{
+  id: string;
+  kind: DemoArtifactKind;
+  label: string;
+  release: Readonly<{
+    immutableRevision: DemoClientAvailability<string>;
+  }>;
+  source: DemoClientAvailability<Readonly<{ locator: string }>>;
+  presentationOrigin: PresentationOrigin;
+  evidence: Readonly<{ status: Evidence["status"] }>;
+  integrationProfile: Readonly<{
+    id: DemoArtifact["integrationProfile"]["id"];
+    publication: DemoArtifact["integrationProfile"]["publication"];
+    hostPins: DemoArtifact["integrationProfile"]["hostPins"];
+  }>;
+}>;
+
+export type DemoClientPolicy = Readonly<{
+  id: DemoPolicyModel["id"];
+  scenarioRevision: DemoPolicyModel["scenarioRevision"];
+  releaseRevision: DemoClientAvailability<
+    Readonly<{
+      releaseId: string;
+      immutablePolicyId: string;
+    }>
+  >;
+  source: DemoPolicyModel["source"];
+  dependencies: readonly Pick<
+    DemoPolicyModel["dependencies"][number],
+    "access" | "logicalScope" | "referenceView"
+  >[];
+  validation: Readonly<
+    Pick<DemoPolicyModel["validation"], "displayLabel" | "result">
+  >;
+  tests: Readonly<{
+    cases: DemoPolicyModel["tests"]["cases"];
+  }>;
+  review: Readonly<Pick<DemoPolicyModel["review"], "status">>;
+  provenance: Readonly<{
+    presentationOrigin: PresentationOrigin;
+    evidence: Readonly<{ status: Evidence["status"] }>;
+  }>;
+}>;
+
+export type DemoClientRoute = Readonly<{
+  id: DemoRouteModel["id"];
+  label: string;
+  releaseBinding: Readonly<{ state: "available" | "unavailable" }>;
+  provider: Readonly<{
+    label: string;
+    stateViews: DemoRouteModel["provider"]["stateViews"];
+    governedEffectLabel: string;
+    releaseBinding: Readonly<{ state: "available" | "unavailable" }>;
+  }>;
+  connector: Readonly<{
+    owner: DemoRouteModel["connector"]["owner"];
+    label: string;
+    credentialBoundary: string;
+    releaseBinding: Readonly<{ state: "available" | "unavailable" }>;
+  }>;
+  execution: Readonly<{
+    boundary: string;
+    releasePosition: Readonly<{ state: "available" | "unavailable" }>;
+  }>;
+}>;
+
+export type DemoClientStage = Readonly<{
+  id: DemoStageModel["id"];
+  productVersion: DemoStageModel["productVersion"];
+  title: string;
+  requirement: string;
+  baselineLabel: string;
+  presentation: DemoStageModel["presentation"];
+  policies: readonly DemoClientPolicy[];
+  artifacts: readonly DemoClientArtifact[];
+  routes: readonly DemoClientRoute[];
+  timelines: Readonly<{
+    primary: readonly DemoClientEvent[];
+    alternate: readonly DemoClientEvent[];
+    counterfactual: readonly DemoClientEvent[];
+    probe: readonly DemoClientEvent[];
+  }>;
+}>;
+
 /**
  * The counterfactual is review material rendered by the server transcript. It
  * is intentionally excluded from the interactive client payload because the
- * Milestone 3 state machine never enters that branch.
+ * Milestone 3 state machine never enters that branch. The rest of this view
+ * model also carries only fields that the interactive inspector renders; the
+ * complete authored contracts remain available to server transcripts and
+ * validators without being serialized into the browser handoff.
  */
-export type DemoClientModel = Pick<
-  DemoExperienceModel,
-  "scenario" | "integration" | "operations" | "stages"
->;
+export interface DemoClientModel {
+  scenario: Readonly<{
+    id: DemoExperienceModel["scenario"]["id"];
+    owner: Readonly<{ id: DemoExperienceModel["scenario"]["owner"]["id"] }>;
+    policyOwner: Readonly<{
+      label: DemoExperienceModel["scenario"]["policyOwner"]["label"];
+    }>;
+    agents: readonly Pick<
+      DemoExperienceModel["scenario"]["agents"][number],
+      "displayName" | "id" | "shortName"
+    >[];
+    calendar: Readonly<{
+      timezone: DemoExperienceModel["scenario"]["calendar"]["timezone"];
+      dateAndOffset: DemoClientAvailability<
+        Readonly<{ date: IsoDate; utcOffset: string }>
+      >;
+    }>;
+  }>;
+  integration: Readonly<{
+    name: DemoExperienceModel["integration"]["name"];
+    hostPins: DemoExperienceModel["integration"]["hostPins"];
+    adapter: Readonly<{
+      packageName: DemoClientAvailability<string>;
+    }>;
+    deploymentOwnedConfiguration: DemoExperienceModel["integration"]["deploymentOwnedConfiguration"];
+    replacementBoundary: string;
+    exclusions: DemoExperienceModel["integration"]["exclusions"];
+  }>;
+  operations: readonly DemoOperationDefinition[];
+  stages: readonly DemoClientStage[];
+}
+
+function clientAvailability<Input, Output>(
+  value: Availability<Input>,
+  selectValue: (input: Input) => Output,
+): DemoClientAvailability<Output> {
+  return value.state === "available"
+    ? { state: "available", value: selectValue(value.value) }
+    : { state: "unavailable" };
+}
+
+function selectDemoClientPolicy(policy: DemoPolicyModel): DemoClientPolicy {
+  return {
+    id: policy.id,
+    scenarioRevision: policy.scenarioRevision,
+    releaseRevision: clientAvailability(
+      policy.releaseRevision,
+      ({ releaseId, immutablePolicyId }) => ({
+        releaseId,
+        immutablePolicyId,
+      }),
+    ),
+    source: policy.source,
+    dependencies: policy.dependencies.map(
+      ({ access, logicalScope, referenceView }) => ({
+        access,
+        logicalScope,
+        referenceView,
+      }),
+    ),
+    validation: {
+      result: policy.validation.result,
+      displayLabel: policy.validation.displayLabel,
+    },
+    tests: { cases: policy.tests.cases },
+    review: { status: policy.review.status },
+    provenance: {
+      presentationOrigin: policy.provenance.presentationOrigin,
+      evidence: { status: policy.provenance.evidence.status },
+    },
+  };
+}
+
+function selectDemoClientArtifact(
+  artifact: DemoArtifact,
+): DemoClientArtifact {
+  return {
+    id: artifact.id,
+    kind: artifact.kind,
+    label: artifact.label,
+    release: {
+      immutableRevision: clientAvailability(
+        artifact.release.immutableRevision,
+        (revision) => revision,
+      ),
+    },
+    source: clientAvailability(artifact.source, ({ locator }) => ({ locator })),
+    presentationOrigin: artifact.presentationOrigin,
+    evidence: { status: artifact.evidence.status },
+    integrationProfile: {
+      id: artifact.integrationProfile.id,
+      publication: artifact.integrationProfile.publication,
+      hostPins: artifact.integrationProfile.hostPins,
+    },
+  };
+}
+
+function selectDemoClientRoute(route: DemoRouteModel): DemoClientRoute {
+  return {
+    id: route.id,
+    label: route.label,
+    releaseBinding: { state: route.releaseBinding.state },
+    provider: {
+      label: route.provider.label,
+      stateViews: route.provider.stateViews,
+      governedEffectLabel: route.provider.governedEffectLabel,
+      releaseBinding: { state: route.provider.releaseBinding.state },
+    },
+    connector: {
+      owner: route.connector.owner,
+      label: route.connector.label,
+      credentialBoundary: route.connector.credentialBoundary,
+      releaseBinding: { state: route.connector.releaseBinding.state },
+    },
+    execution: {
+      boundary: route.execution.boundary,
+      releasePosition: { state: route.execution.releasePosition.state },
+    },
+  };
+}
+
+function selectDemoClientEvent(
+  event: ScenarioEvent,
+  snapshots: Map<string, ScenarioEvent["resourceSnapshot"]>,
+): DemoClientEvent {
+  const snapshotKey = JSON.stringify(event.resourceSnapshot);
+  const resourceSnapshot = snapshots.get(snapshotKey) ?? event.resourceSnapshot;
+  snapshots.set(snapshotKey, resourceSnapshot);
+
+  return {
+    id: event.id,
+    actorId: event.actorId,
+    kind: event.kind,
+    label: event.label,
+    description: event.description,
+    resourceSnapshot,
+    ...(event.policy ? { policy: event.policy } : {}),
+    ...(event.policyContext ? { policyContext: event.policyContext } : {}),
+    ...(event.operation ? { operation: event.operation } : {}),
+    artifactRefs: event.artifactRefs,
+    announcement: event.announcement,
+  };
+}
 
 export function selectDemoClientExperience(
   model: DemoExperienceModel = selectDemoExperience(),
 ): DemoClientModel {
+  const snapshots = new Map<string, ScenarioEvent["resourceSnapshot"]>();
+  const policies = new Map(
+    model.stages.flatMap((stage) =>
+      stage.policies.map(
+        (policy) => [policy.id, selectDemoClientPolicy(policy)] as const,
+      ),
+    ),
+  );
+  const routes = new Map(
+    model.stages.flatMap((stage) =>
+      stage.routes.map(
+        (route) => [route.id, selectDemoClientRoute(route)] as const,
+      ),
+    ),
+  );
+
   return {
-    scenario: model.scenario,
-    integration: model.integration,
+    scenario: {
+      id: model.scenario.id,
+      owner: { id: model.scenario.owner.id },
+      policyOwner: { label: model.scenario.policyOwner.label },
+      agents: model.scenario.agents.map(
+        ({ displayName, id, shortName }) => ({ displayName, id, shortName }),
+      ),
+      calendar: {
+        timezone: model.scenario.calendar.timezone,
+        dateAndOffset: clientAvailability(
+          model.scenario.calendar.dateAndOffset,
+          ({ date, utcOffset }) => ({ date, utcOffset }),
+        ),
+      },
+    },
+    integration: {
+      name: model.integration.name,
+      hostPins: model.integration.hostPins,
+      adapter: {
+        packageName: clientAvailability(
+          model.integration.adapter.packageName,
+          (packageName) => packageName,
+        ),
+      },
+      deploymentOwnedConfiguration:
+        model.integration.deploymentOwnedConfiguration,
+      replacementBoundary: model.integration.replacementBoundary,
+      exclusions: model.integration.exclusions,
+    },
     operations: model.operations,
     stages: model.stages.map((stage) => ({
-      ...stage,
+      id: stage.id,
+      productVersion: stage.productVersion,
+      title: stage.title,
+      requirement: stage.requirement,
+      baselineLabel: stage.baselineLabel,
+      presentation: stage.presentation,
+      policies: stage.policies.map((policy) => {
+        const selected = policies.get(policy.id);
+        if (!selected) throw new Error(`Unknown Demo client policy: ${policy.id}`);
+        return selected;
+      }),
+      artifacts: stage.artifacts.map(selectDemoClientArtifact),
+      routes: stage.routes.map((route) => {
+        const selected = routes.get(route.id);
+        if (!selected) throw new Error(`Unknown Demo client route: ${route.id}`);
+        return selected;
+      }),
       timelines: {
-        ...stage.timelines,
-        alternate:
-          stage.id === "stage-2"
-            ? stage.timelines.alternate.slice(
-                demoTransitionPoints.stage2BranchStart,
-              )
-            : stage.timelines.alternate,
-        counterfactual: [] as readonly ScenarioEvent[],
+        primary: stage.timelines.primary.map((event) =>
+          selectDemoClientEvent(event, snapshots),
+        ),
+        alternate: (stage.id === "stage-2"
+          ? stage.timelines.alternate.slice(
+              demoTransitionPoints.stage2BranchStart,
+            )
+          : stage.timelines.alternate
+        ).map((event) => selectDemoClientEvent(event, snapshots)),
+        counterfactual: [] as readonly DemoClientEvent[],
+        probe: stage.timelines.probe.map((event) =>
+          selectDemoClientEvent(event, snapshots),
+        ),
       },
     })),
   };
