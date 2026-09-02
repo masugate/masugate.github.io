@@ -299,7 +299,7 @@ test("server-renders the MasuGate primary routes through one gated shell", async
   const routes = [
     [
       "/",
-      /Many agents, governed by shared rules\./,
+      /Many agents\. One changing state\./,
     ],
     [
       "/demo/",
@@ -771,7 +771,7 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
   assert.equal(response.status, 200);
 
   for (const requiredCopy of [
-    "Many agents, governed by shared rules.",
+    "Many agents. One changing state.",
     "Both requests fit. Together, they do not.",
     "Shared state is more than a budget.",
     "Keep the decision connected to the effect.",
@@ -791,14 +791,36 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
     "Request a customized demo",
     "Open email draft",
     "Prefer webmail? Copy masugate.governance@gmail.com into a new message.",
-    "See the shared-budget problem",
-    "View source on GitHub",
-    "Review MasuGate · 15–60 min",
+    "See it happen",
     "Follow the full OpenClaw demo",
     "Open the OpenClaw developer demo",
   ]) {
     assert.ok(text.includes(requiredCopy), `Home is missing: ${requiredCopy}`);
   }
+
+  const hero = sectionContaining(html, "Many agents. One changing state.");
+  assert.deepEqual(headingsIn(hero, 1), ["Many agents. One changing state."]);
+  assert.deepEqual(linksIn(hero), [
+    { href: "#shared-budget", label: "See it happen" },
+    { href: "https://github.com/masugate/masugate", label: "GitHub" },
+  ]);
+  assert.match(
+    hero,
+    /<svg\b(?=[^>]*role="img")(?=[^>]*aria-labelledby="concurrent-state-hero-title")(?=[^>]*aria-describedby="concurrent-state-hero-description")[^>]*>/i,
+  );
+  assert.match(
+    hero,
+    /<title\b[^>]*id="concurrent-state-hero-title"[^>]*>Two concurrent agents act on one changing budget<\/title>/i,
+  );
+  assert.match(
+    hero,
+    /<desc\b[^>]*id="concurrent-state-hero-description"[^>]*>[^<]*later decision sees the lower balance[^<]*<\/desc>/i,
+  );
+  assert.match(
+    hero,
+    /<input\b(?=[^>]*aria-label="Pause motion")(?=[^>]*type="checkbox")[^>]*>/i,
+  );
+  assert.doesNotMatch(hero, /Open the demo|Review MasuGate/i);
 
   for (const comparisonCopy of [
     "Without coordination",

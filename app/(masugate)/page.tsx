@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ConcurrentStateHero } from "../components/ConcurrentStateHero";
 import { CustomizedDemoRequestForm } from "../components/CustomizedDemoRequestForm";
 import {
   GovernedActionExplainer,
@@ -10,6 +11,7 @@ import { SharedBudgetComparison } from "../components/SharedBudgetComparison";
 import { contactContract } from "../data/contact";
 import { selectHomepageArticles } from "../data/articles";
 import { isAvailable } from "../data/contracts";
+import { homepageContent } from "../data/homepage";
 import { selectHomepageIntegrationBridge } from "../data/integrations";
 import { createMasuGatePageMetadata } from "../data/metadata";
 import { masugateSite } from "../data/masugate-site";
@@ -60,6 +62,12 @@ export default function MasuGateHomePage() {
   const [travelRequest, workRequest] = comparison.requests;
   const [independentPath, governedPath] = comparison.paths;
   const paper = masugateSite.researchPaper;
+  const hero = homepageContent.hero;
+  const remainingCapacity = {
+    ...comparison.capacity,
+    minorUnits:
+      comparison.capacity.minorUnits - travelRequest.amount.minorUnits,
+  };
 
   return (
     <main className="masugate-main" id="masugate-main">
@@ -67,85 +75,51 @@ export default function MasuGateHomePage() {
         <div className={`masugate-shell ${styles.heroGrid}`}>
           <div className={styles.heroCopy}>
             <p className="masugate-eyebrow">
-              Stateful governance for concurrent agents
+              {hero.eyebrow}
             </p>
-            <h1>Many agents, governed by shared rules.</h1>
-            <p className={styles.heroLede}>
-              MasuGate keeps policy, changing state, and consequential effects
-              on one protected path—even when agents act at the same time.
-            </p>
+            <h1>{hero.title}</h1>
+            <p className={styles.heroLede}>{hero.lede}</p>
             <div className={styles.heroActions}>
               <Link
                 className="masugate-button masugate-button-primary"
-                href="#shared-budget"
+                href={hero.primaryAction.href}
               >
-                See the shared-budget problem
-              </Link>
-              <Link className={styles.quietLink} href="/demo/">
-                Open the demo
+                {hero.primaryAction.label}
               </Link>
               {isAvailable(masugateSite.sourceRepository) ? (
-                <>
-                  <a
-                    className={styles.quietLink}
-                    href={masugateSite.sourceRepository.value.href}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    View source on GitHub
-                  </a>
-                  <a
-                    className={styles.quietLink}
-                    href={masugateSite.sourceRepository.value.reviewHref}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    Review MasuGate · 15–60 min
-                  </a>
-                </>
+                <a
+                  className={styles.quietLink}
+                  href={masugateSite.sourceRepository.value.href}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {hero.sourceActionLabel}
+                </a>
               ) : null}
             </div>
           </div>
 
-          <figure className={styles.heroFigure}>
-            <p className={styles.figureLabel}>One shared fact</p>
-            <div className={styles.heroAgents}>
-              <div className={styles.agentCard}>
-                <span className={styles.agentSequence}>Decision</span>
-                <strong>{shortAgentName(travelRequest.agentId)}</strong>
-                <small>{travelRequest.label}</small>
-              </div>
-              <div className={styles.agentCard}>
-                <span className={styles.agentSequence}>Decision</span>
-                <strong>{shortAgentName(workRequest.agentId)}</strong>
-                <small>{workRequest.label}</small>
-              </div>
-            </div>
-            <div className={styles.stateConnector} aria-hidden="true">
-              <span>both depend on</span>
-            </div>
-            <div className={styles.sharedState}>
-              <span>Shared mutable state</span>
-              <strong>
-                {comparison.category} budget ·{" "}
-                {formatMinorUnits(comparison.capacity.minorUnits)}
-              </strong>
-              <ol className={styles.ordering}>
-                <li>Both decisions read {formatMinorUnits(comparison.capacity.minorUnits)}.</li>
-                <li>
-                  The first effect leaves{" "}
-                  {formatMinorUnits(
-                    comparison.capacity.minorUnits -
-                      travelRequest.amount.minorUnits,
-                  )}
-                  {" "}before the second decision is used.
-                </li>
-              </ol>
-            </div>
-            <figcaption>
-              Two agents depend on one changing business fact.
-            </figcaption>
-          </figure>
+          <ConcurrentStateHero
+            categoryLabel={comparison.category}
+            initialCapacityLabel={formatMinorUnits(
+              comparison.capacity.minorUnits,
+            )}
+            remainingCapacityLabel={formatMinorUnits(
+              remainingCapacity.minorUnits,
+            )}
+            requests={[
+              {
+                agentLabel: shortAgentName(travelRequest.agentId),
+                actionLabel: travelRequest.label,
+                amountLabel: formatMinorUnits(travelRequest.amount.minorUnits),
+              },
+              {
+                agentLabel: shortAgentName(workRequest.agentId),
+                actionLabel: workRequest.label,
+                amountLabel: formatMinorUnits(workRequest.amount.minorUnits),
+              },
+            ]}
+          />
         </div>
       </section>
 

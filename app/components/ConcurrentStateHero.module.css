@@ -1,0 +1,346 @@
+.figure {
+  min-width: 0;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--p-line-strong);
+  border-radius: 22px;
+  background:
+    radial-gradient(
+      circle at 82% 10%,
+      color-mix(in srgb, var(--p-accent-violet) 20%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(155deg, var(--p-surface-soft), var(--p-surface));
+  box-shadow:
+    var(--p-shadow),
+    0 0 80px color-mix(in srgb, var(--p-accent-violet) 13%, transparent);
+}
+
+.figureHeader {
+  min-height: 30px;
+  padding: 0 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--p-info);
+  font-family: var(--p-font-mono);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.liveLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.motionToggle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.motionControl {
+  min-height: 30px;
+  padding: 5px 9px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--p-line);
+  border-radius: 999px;
+  color: var(--p-ink-soft);
+  cursor: pointer;
+  letter-spacing: 0.04em;
+}
+
+.motionControl::before {
+  content: "Ⅱ";
+  margin-right: 6px;
+  color: var(--p-info);
+}
+
+.motionToggle:checked + .figureHeader .motionControl::before {
+  content: "▶";
+}
+
+.motionToggle:focus-visible + .figureHeader .motionControl {
+  outline: 3px solid var(--p-info);
+  outline-offset: 3px;
+}
+
+.liveDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--p-info);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--p-info) 72%, transparent);
+}
+
+.viewport {
+  overflow-x: auto;
+  border: 1px solid var(--p-line);
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--p-paper) 92%, transparent);
+  overscroll-behavior-inline: contain;
+  scrollbar-color: var(--p-line-strong) transparent;
+}
+
+.viewport:focus-visible {
+  outline: 3px solid var(--p-info);
+  outline-offset: 3px;
+}
+
+.diagram {
+  width: 100%;
+  min-width: 650px;
+  height: auto;
+  display: block;
+  color: var(--p-info);
+  font-family: var(--p-font-sans);
+}
+
+.grid {
+  opacity: 0.36;
+}
+
+.gridLine {
+  fill: none;
+  stroke: var(--p-line);
+  stroke-width: 1;
+}
+
+.flowLine {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 7 9;
+  vector-effect: non-scaling-stroke;
+}
+
+.readLine {
+  stroke: var(--p-info);
+}
+
+.readLineSecond {
+}
+
+.commitLine {
+  stroke: var(--p-allow);
+}
+
+.denyLine {
+  stroke: var(--p-deny);
+}
+
+.arrowHead {
+  fill: currentColor;
+}
+
+.agentNode rect,
+.outcomeNode rect,
+.stateNode rect {
+  fill: var(--p-surface);
+  stroke: var(--p-line-strong);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.stateNode rect {
+  fill: var(--p-paper);
+  stroke: var(--p-info);
+  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--p-info) 18%, transparent));
+}
+
+.committedNode rect {
+  stroke: var(--p-allow);
+}
+
+.deniedNode rect {
+  stroke: var(--p-deny);
+}
+
+.microText {
+  fill: var(--p-ink-soft);
+  font-family: var(--p-font-mono);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nodeTitle,
+.stateTitle,
+.outcomeTitle {
+  fill: var(--p-ink);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.nodeDetail,
+.outcomeDetail,
+.stateCaption {
+  fill: var(--p-ink-soft);
+  font-size: 10px;
+}
+
+.amountText {
+  fill: var(--p-accent-violet);
+  font-family: var(--p-font-mono);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.initialAmount {
+  fill: var(--p-ink);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.protectedAmount {
+  fill: var(--p-pending);
+  font-family: var(--p-font-mono);
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.stateDivider {
+  stroke: var(--p-line);
+  stroke-width: 1;
+}
+
+.committedNode .microText,
+.committedNode .outcomeTitle {
+  fill: var(--p-allow);
+}
+
+.deniedNode .microText,
+.deniedNode .outcomeTitle {
+  fill: var(--p-deny);
+}
+
+.timeline line {
+  stroke: var(--p-line-strong);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.timeline circle {
+  fill: var(--p-paper);
+  stroke: var(--p-info);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.timeline text {
+  fill: var(--p-ink-soft);
+  font-family: var(--p-font-mono);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.figure figcaption {
+  margin: 12px 6px 2px;
+  color: var(--p-ink-soft);
+  font-size: 0.72rem;
+}
+
+@keyframes dataFlow {
+  to {
+    stroke-dashoffset: -64;
+  }
+}
+
+@keyframes stateSignal {
+  0%,
+  58%,
+  100% {
+    stroke-width: 1.5;
+  }
+  70% {
+    stroke-width: 3;
+  }
+}
+
+@keyframes caughtSignal {
+  0%,
+  64%,
+  100% {
+    stroke-width: 1.5;
+  }
+  76% {
+    stroke-width: 3;
+  }
+}
+
+@keyframes livePulse {
+  0% {
+    opacity: 0.48;
+    transform: scale(0.76);
+  }
+  52% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.55;
+    transform: scale(0.8);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .liveDot {
+    animation: livePulse 2.4s infinite ease-out;
+  }
+
+  .flowLine {
+    animation: dataFlow 3.8s infinite linear;
+  }
+
+  .readLineSecond {
+    animation-delay: -1.1s;
+  }
+
+  .commitLine {
+    animation-delay: -2s;
+  }
+
+  .denyLine {
+    animation-delay: -2.8s;
+  }
+
+  .stateNode rect {
+    animation: stateSignal 5.4s infinite ease-in-out;
+  }
+
+  .deniedNode rect {
+    animation: caughtSignal 5.4s 1.8s infinite ease-in-out;
+  }
+
+  .figure:has(.motionToggle:checked) :is(
+    .liveDot,
+    .flowLine,
+    .stateNode rect,
+    .deniedNode rect
+  ) {
+    animation-play-state: paused;
+  }
+}
+
+@media (max-width: 700px) {
+  .figure {
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  .diagram {
+    min-width: 620px;
+  }
+}
