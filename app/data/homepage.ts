@@ -28,6 +28,27 @@ export interface HomepageContentContract {
       caption: string;
     }>;
   }>;
+  problem: Readonly<{
+    eyebrow: string;
+    title: string;
+    independentDescription: string;
+    governedDescription: string;
+    outcomeLabels: Readonly<{
+      independent: string;
+      governed: string;
+    }>;
+    recordNote: string;
+    action: Readonly<{ label: string; href: "/demo/" }>;
+  }>;
+  sharedState: Readonly<{
+    eyebrow: string;
+    title: string;
+    items: readonly Readonly<{
+      id: "capacity" | "time" | "work";
+      label: string;
+      caption: string;
+    }>[];
+  }>;
 }
 
 export const homepageContent = {
@@ -65,5 +86,41 @@ export const homepageContent = {
       caption:
         "One changing fact stays connected to both decisions and outcomes.",
     },
+  },
+  problem: {
+    eyebrow: "The problem",
+    title: "Both requests fit. Together, they do not.",
+    independentDescription: "Both checks trust the same original observation.",
+    governedDescription: "Protected capacity updates the later decision.",
+    outcomeLabels: {
+      independent: "Rule broken",
+      governed: "Rule preserved",
+    },
+    recordNote: "Separate records retain the committed and denied operations.",
+    action: {
+      label: "Run the complete demo",
+      href: "/demo/",
+    },
+  },
+  sharedState: {
+    eyebrow: "It is everywhere",
+    title: "Shared state is more than a budget.",
+    items: [
+      {
+        id: "capacity",
+        label: "Capacity",
+        caption: "Inventory, budgets, quotas, and service limits.",
+      },
+      {
+        id: "time",
+        label: "Time",
+        caption: "Calendar commitments shared across assistants.",
+      },
+      {
+        id: "work",
+        label: "Work",
+        caption: "Files and workspaces changed by many agents.",
+      },
+    ],
   },
 } as const satisfies HomepageContentContract;

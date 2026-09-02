@@ -8,6 +8,7 @@ import {
   OpenClawBridgeSchematic,
 } from "../components/MasuGateSchematics";
 import { SharedBudgetComparison } from "../components/SharedBudgetComparison";
+import { SharedStateStrip } from "../components/SharedStateStrip";
 import { contactContract } from "../data/contact";
 import { selectHomepageArticles } from "../data/articles";
 import { isAvailable } from "../data/contracts";
@@ -129,14 +130,8 @@ export default function MasuGateHomePage() {
       >
         <div className="masugate-shell">
           <div className="masugate-section-heading">
-            <p className="masugate-eyebrow">One shared rule</p>
-            <h2>Both requests fit. Together, they do not.</h2>
-            <p>
-              The {comparison.category.toLowerCase()} budget has{" "}
-              {formatMinorUnits(comparison.capacity.minorUnits)} available. Both
-              agents submit {formatMinorUnits(travelRequest.amount.minorUnits)}
-              {" "}requests at nearly the same time.
-            </p>
+            <p className="masugate-eyebrow">{homepageContent.problem.eyebrow}</p>
+            <h2>{homepageContent.problem.title}</h2>
           </div>
 
           <SharedBudgetComparison
@@ -147,8 +142,7 @@ export default function MasuGateHomePage() {
                 id: independentPath.id,
                 label: independentPath.label,
                 title: independentPath.heading,
-                description:
-                  "Both reviews use the original capacity without protecting it.",
+                description: homepageContent.problem.independentDescription,
                 events: independentPath.events.map(
                   ({ id, label, description, announcement }) => ({
                     id,
@@ -158,7 +152,7 @@ export default function MasuGateHomePage() {
                   }),
                 ),
                 outcome: {
-                  label: "Rule broken",
+                  label: homepageContent.problem.outcomeLabels.independent,
                   detail: independentPath.outcome,
                 },
               },
@@ -166,8 +160,7 @@ export default function MasuGateHomePage() {
                 id: governedPath.id,
                 label: governedPath.label,
                 title: governedPath.heading,
-                description:
-                  "Escalate makes the first operation pending; deny stops the overlap before the approved effect is committed.",
+                description: homepageContent.problem.governedDescription,
                 events: governedPath.events.map(
                   ({ id, label, description, announcement }) => ({
                     id,
@@ -177,8 +170,8 @@ export default function MasuGateHomePage() {
                   }),
                 ),
                 outcome: {
-                  label: "Rule preserved",
-                  detail: `${governedPath.outcome} Separate records retain the committed and denied operations.`,
+                  label: homepageContent.problem.outcomeLabels.governed,
+                  detail: governedPath.outcome,
                 },
               },
             ]}
@@ -188,15 +181,20 @@ export default function MasuGateHomePage() {
               actionLabel: request.label,
               amount: request.amount,
             }))}
+            presentation="compact"
             reviewAtOrAbove={comparison.reviewAtOrAbove}
           />
+
+          <p className={styles.problemRecordNote}>
+            {homepageContent.problem.recordNote}
+          </p>
 
           <div className="masugate-actions">
             <Link
               className="masugate-button masugate-button-primary"
-              href="/demo/"
+              href={homepageContent.problem.action.href}
             >
-              Follow the full OpenClaw demo
+              {homepageContent.problem.action.label}
             </Link>
           </div>
         </div>
@@ -205,35 +203,12 @@ export default function MasuGateHomePage() {
       <section className={`masugate-section ${styles.sectionMuted}`}>
         <div className="masugate-shell">
           <div className="masugate-section-heading">
-            <p className="masugate-eyebrow">The same shape appears elsewhere</p>
-            <h2>Shared state is more than a budget.</h2>
+            <p className="masugate-eyebrow">
+              {homepageContent.sharedState.eyebrow}
+            </p>
+            <h2>{homepageContent.sharedState.title}</h2>
           </div>
-          <dl className={styles.generalizationGrid}>
-            <div className={styles.generalizationItem}>
-              <dt>Capacity</dt>
-              <dd>
-                Several agents consume the same inventory, quota, or service
-                limit.
-              </dd>
-            </div>
-            <div className={styles.generalizationItem}>
-              <dt>Time</dt>
-              <dd>
-                Multiple assistants schedule against protected calendar
-                commitments.
-              </dd>
-            </div>
-            <div className={styles.generalizationItem}>
-              <dt>Work</dt>
-              <dd>
-                Agents create or replace files under shared workspace rules.
-              </dd>
-            </div>
-          </dl>
-          <p className={styles.generalizationClose}>
-            In each case, an action changes a fact that a concurrent decision
-            may depend on.
-          </p>
+          <SharedStateStrip />
         </div>
       </section>
 

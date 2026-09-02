@@ -212,6 +212,19 @@
     var(--p-paper);
 }
 
+.problemRecordNote {
+  width: max-content;
+  max-width: 100%;
+  margin: 18px 0 0;
+  padding: 8px 11px;
+  border-left: 3px solid var(--p-info);
+  background: var(--p-info-soft);
+  color: var(--p-ink);
+  font-family: var(--p-font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
 .generalizationGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

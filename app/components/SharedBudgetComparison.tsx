@@ -51,6 +51,7 @@ export interface SharedBudgetComparisonProps {
   reviewAtOrAbove: Money;
   requests: readonly SharedBudgetRequest[];
   paths: readonly [SharedBudgetPath, SharedBudgetPath];
+  presentation?: "standard" | "compact";
 }
 
 type PlaybackState = "idle" | "playing" | "paused" | "complete";
@@ -100,6 +101,7 @@ export function SharedBudgetComparison({
   reviewAtOrAbove,
   requests,
   paths,
+  presentation = "standard",
 }: SharedBudgetComparisonProps) {
   const comparisonId = useId();
   const pathsRef = useRef<HTMLDivElement>(null);
@@ -116,6 +118,7 @@ export function SharedBudgetComparison({
   const currentEventIndex = progress[selectedPath.id];
   const finalEventIndex = Math.max(selectedPath.events.length - 1, 0);
   const isPlaying = playbackState === "playing" && !reducedMotion;
+  const isCompact = presentation === "compact";
 
   useEffect(() => {
     if (
@@ -239,7 +242,10 @@ export function SharedBudgetComparison({
   }
 
   return (
-    <div className={styles.comparison}>
+    <div
+      className={`${styles.comparison} ${isCompact ? styles.compact : ""}`}
+      data-presentation={presentation}
+    >
       <div className={styles.fixture}>
         <div>
           <span className={styles.fixtureLabel}>Shared scenario fixture</span>
@@ -406,7 +412,7 @@ export function SharedBudgetComparison({
               <header className={styles.pathHeader}>
                 <span>{path.label}</span>
                 <h3>{path.title}</h3>
-                <p>{path.description}</p>
+                {!isCompact && <p>{path.description}</p>}
               </header>
 
               <ol className={styles.events}>
@@ -431,21 +437,23 @@ export function SharedBudgetComparison({
                 })}
               </ol>
 
-              <details className={styles.eventTranscript}>
-                <summary>Full transcript</summary>
-                <ol>
-                  {path.events.map((event) => (
-                    <li key={`${event.id}-transcript`}>
-                      <strong>{event.label}:</strong> {event.description}
-                    </li>
-                  ))}
-                </ol>
-              </details>
+              {!isCompact && (
+                <details className={styles.eventTranscript}>
+                  <summary>Full transcript</summary>
+                  <ol>
+                    {path.events.map((event) => (
+                      <li key={`${event.id}-transcript`}>
+                        <strong>{event.label}:</strong> {event.description}
+                      </li>
+                    ))}
+                  </ol>
+                </details>
+              )}
 
               <div className={styles.outcome}>
-                <span>Outcome</span>
+                <span>{isCompact ? `${path.label} outcome` : "Outcome"}</span>
                 <strong>{path.outcome.label}</strong>
-                <p>{path.outcome.detail}</p>
+                {!isCompact && <p>{path.outcome.detail}</p>}
               </div>
             </article>
           );
@@ -464,7 +472,7 @@ export function SharedBudgetComparison({
           >
             <span>{path.label}</span>
             <strong>{path.outcome.label}</strong>
-            <p>{path.outcome.detail}</p>
+            {!isCompact && <p>{path.outcome.detail}</p>}
           </div>
         ))}
       </div>

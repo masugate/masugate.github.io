@@ -27,3 +27,21 @@ test("homepage hero diagram explains the changing-state outcome", () => {
   assert.equal(diagram.timelineLabels.length, 3);
   assert.equal(diagram.motionControlLabel, "Pause motion");
 });
+
+test("homepage problem and shared-state copy stays scan-friendly", () => {
+  const { problem, sharedState } = homepageContent;
+
+  assert.ok(wordCount(problem.title) <= 10);
+  assert.deepEqual(problem.outcomeLabels, {
+    independent: "Rule broken",
+    governed: "Rule preserved",
+  });
+  assert.equal(sharedState.items.length, 3);
+
+  for (const item of sharedState.items) {
+    assert.ok(
+      wordCount(item.caption) <= 8,
+      `${item.id} caption must stay within 8 words`,
+    );
+  }
+});

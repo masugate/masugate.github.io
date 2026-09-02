@@ -1,0 +1,214 @@
+.strip {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  list-style: none;
+}
+
+.item {
+  position: relative;
+  min-width: 0;
+  min-height: 230px;
+  padding: 22px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 18px;
+  overflow: hidden;
+  border: 1px solid var(--p-line);
+  border-radius: 18px;
+  background:
+    linear-gradient(var(--p-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--p-line) 1px, transparent 1px),
+    var(--p-surface);
+  background-size: 24px 24px, 24px 24px, auto;
+  box-shadow: var(--p-shadow);
+}
+
+.index {
+  color: var(--p-info);
+  font-family: var(--p-font-mono);
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.glyph {
+  position: relative;
+  width: 104px;
+  height: 82px;
+  display: block;
+  color: var(--p-info);
+}
+
+.glyph::before,
+.glyph::after,
+.glyph i {
+  position: absolute;
+  display: block;
+  content: "";
+}
+
+.glyph[data-state-kind="capacity"] {
+  height: 68px;
+  border: 1px solid var(--p-line-strong);
+  border-radius: 10px;
+  background: var(--p-paper);
+}
+
+.glyph[data-state-kind="capacity"]::before {
+  inset: 9px 31px 9px 9px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--p-allow) 0 64%, var(--p-surface-soft) 64%);
+}
+
+.glyph[data-state-kind="capacity"]::after {
+  top: 22px;
+  right: -8px;
+  width: 7px;
+  height: 22px;
+  border: 1px solid var(--p-line-strong);
+  border-left: 0;
+  border-radius: 0 5px 5px 0;
+}
+
+.glyph[data-state-kind="capacity"] i {
+  right: 12px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--p-info);
+}
+
+.glyph[data-state-kind="capacity"] i:nth-child(1) {
+  top: 10px;
+}
+
+.glyph[data-state-kind="capacity"] i:nth-child(2) {
+  top: 29px;
+  background: var(--p-pending);
+}
+
+.glyph[data-state-kind="capacity"] i:nth-child(3) {
+  top: 48px;
+  background: var(--p-deny);
+}
+
+.glyph[data-state-kind="time"] {
+  width: 82px;
+  border: 1px solid var(--p-line-strong);
+  border-radius: 50%;
+  background: var(--p-paper);
+}
+
+.glyph[data-state-kind="time"]::before,
+.glyph[data-state-kind="time"]::after {
+  left: 40px;
+  bottom: 40px;
+  width: 2px;
+  border-radius: 99px;
+  background: var(--p-info);
+  transform-origin: 50% 100%;
+}
+
+.glyph[data-state-kind="time"]::before {
+  height: 25px;
+  rotate: 34deg;
+}
+
+.glyph[data-state-kind="time"]::after {
+  height: 18px;
+  rotate: 128deg;
+  background: var(--p-accent-violet);
+}
+
+.glyph[data-state-kind="time"] i {
+  inset: 7px;
+  border: 1px dashed var(--p-line-strong);
+  border-radius: 50%;
+}
+
+.glyph[data-state-kind="time"] i:nth-child(2),
+.glyph[data-state-kind="time"] i:nth-child(3) {
+  display: none;
+}
+
+.glyph[data-state-kind="work"] i {
+  width: 70px;
+  height: 48px;
+  border: 1px solid var(--p-line-strong);
+  border-radius: 7px;
+  background: var(--p-paper);
+  box-shadow: inset 4px 0 0 var(--p-accent-violet);
+}
+
+.glyph[data-state-kind="work"] i:nth-child(1) {
+  top: 0;
+  left: 0;
+}
+
+.glyph[data-state-kind="work"] i:nth-child(2) {
+  top: 15px;
+  left: 15px;
+  box-shadow: inset 4px 0 0 var(--p-info);
+}
+
+.glyph[data-state-kind="work"] i:nth-child(3) {
+  top: 30px;
+  left: 30px;
+  box-shadow: inset 4px 0 0 var(--p-allow);
+}
+
+.item h3 {
+  margin: 0 0 7px;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  font-weight: 650;
+  letter-spacing: -0.04em;
+}
+
+.item p {
+  max-width: 260px;
+  margin: 0;
+  color: var(--p-ink-soft);
+  font-size: 0.88rem;
+}
+
+:global([data-motion-visible="true"]) .item {
+  animation: itemArrive 560ms both cubic-bezier(0.2, 0.78, 0.25, 1);
+}
+
+:global([data-motion-visible="true"]) .item:nth-child(2) {
+  animation-delay: 80ms;
+}
+
+:global([data-motion-visible="true"]) .item:nth-child(3) {
+  animation-delay: 160ms;
+}
+
+@keyframes itemArrive {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 700px) {
+  .strip {
+    grid-template-columns: 1fr;
+  }
+
+  .item {
+    min-height: 190px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global([data-motion-visible="true"]) .item {
+    animation: none;
+  }
+}

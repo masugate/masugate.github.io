@@ -1,4 +1,7 @@
 .comparison {
+  min-width: 0;
+  max-width: 100%;
+  overflow: clip;
   border: 1px solid var(--p-line-strong);
   background: var(--p-surface);
   box-shadow: var(--p-shadow);
@@ -16,6 +19,12 @@
   padding: 24px;
   border-bottom: 1px solid var(--p-line);
   background: var(--p-surface-soft);
+}
+
+.compact .fixture {
+  grid-template-columns: minmax(190px, 0.65fr) minmax(0, 1.35fr);
+  gap: 16px;
+  padding: 18px 20px;
 }
 
 .fixtureLabel,
@@ -38,6 +47,10 @@
   font-size: clamp(1.6rem, 3vw, 2.7rem);
   font-weight: 400;
   line-height: 1.05;
+}
+
+.compact .fixture strong {
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
 }
 
 .fixture small {
@@ -63,6 +76,10 @@
   gap: 4px 12px;
   border: 1px solid var(--p-line);
   background: var(--p-surface);
+}
+
+.compact .requests li {
+  padding: 10px 12px;
 }
 
 .requests span,
@@ -96,6 +113,10 @@
   justify-content: space-between;
   gap: 16px;
   border-bottom: 1px solid var(--p-line);
+}
+
+.compact .controls {
+  padding: 12px 16px;
 }
 
 .pathSelector,
@@ -183,6 +204,10 @@
   background: var(--p-info-soft);
 }
 
+.compact .progressSummary {
+  padding: 10px 20px;
+}
+
 .progressSummary span {
   color: var(--p-info);
   font-family: var(--p-font-mono);
@@ -199,6 +224,7 @@
 .paths {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 100%;
 }
 
 .paths:focus-visible {
@@ -214,6 +240,12 @@
   padding: 26px;
   border-top: 6px solid var(--p-line);
   scroll-margin-top: 96px;
+}
+
+.compact .path {
+  display: flex;
+  flex-direction: column;
+  padding: 22px 20px;
 }
 
 .path + .path {
@@ -239,12 +271,39 @@
   border-bottom: 1px solid var(--p-line);
 }
 
+.compact .pathHeader {
+  min-height: 0;
+  padding-bottom: 16px;
+}
+
+.compact .pathHeader > span {
+  width: max-content;
+  max-width: 100%;
+  padding: 5px 8px;
+  border: 1px solid currentColor;
+}
+
+.compact .independent .pathHeader > span {
+  color: var(--p-deny);
+  background: var(--p-deny-soft);
+}
+
+.compact .governed .pathHeader > span {
+  color: var(--p-allow);
+  background: var(--p-allow-soft);
+}
+
 .pathHeader h3 {
   margin: 10px 0 8px;
   font-family: var(--p-font-sans);
   font-size: clamp(1.55rem, 2.5vw, 2.2rem);
   font-weight: 400;
   line-height: 1.08;
+}
+
+.compact .pathHeader h3 {
+  margin-bottom: 0;
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
 }
 
 .pathHeader p {
@@ -260,6 +319,14 @@
   list-style: none;
 }
 
+.compact .events {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 16px 0 18px;
+  border: 1px solid var(--p-line);
+  background: var(--p-line);
+}
+
 .event {
   min-width: 0;
   padding: 14px 15px;
@@ -269,12 +336,23 @@
   transition: border-color 220ms ease, background 220ms ease, box-shadow 220ms ease, transform 220ms ease;
 }
 
+.compact .event {
+  min-height: 72px;
+  padding: 11px 12px;
+  border: 0;
+  background: var(--p-surface);
+}
+
 .event.currentEvent {
   border-color: var(--p-info);
   border-left-color: var(--p-info);
   background: var(--p-info-soft);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--p-info) 32%, transparent);
   animation: current-event-signal 1.4s infinite alternate ease-in-out;
+}
+
+.compact .event.currentEvent {
+  box-shadow: inset 0 0 0 2px var(--p-info);
 }
 
 @keyframes comparison-arrive {
@@ -347,6 +425,32 @@
   border-left-width: 6px;
 }
 
+.compact .outcome {
+  position: relative;
+  margin-top: auto;
+  min-height: 94px;
+  padding: 18px 68px 18px 18px;
+}
+
+.compact .outcome::after {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  font-family: var(--p-font-sans);
+  font-size: 2.7rem;
+  font-weight: 900;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.compact .independent .outcome::after {
+  content: "×";
+}
+
+.compact .governed .outcome::after {
+  content: "✓";
+}
+
 .independent .outcome {
   color: var(--p-deny);
   background: var(--p-deny-soft);
@@ -364,6 +468,11 @@
 .outcome strong {
   display: block;
   margin-top: 7px;
+}
+
+.compact .outcome strong {
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
+  line-height: 1.05;
 }
 
 .outcome p {
@@ -407,7 +516,8 @@
 }
 
 @media (max-width: 760px) {
-  .fixture {
+  .fixture,
+  .compact .fixture {
     grid-template-columns: 1fr;
   }
 
@@ -483,7 +593,10 @@
 @media (max-width: 560px) {
   .fixture,
   .controls,
-  .path {
+  .path,
+  .compact .fixture,
+  .compact .controls,
+  .compact .path {
     padding-right: 16px;
     padding-left: 16px;
   }

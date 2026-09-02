@@ -1744,18 +1744,13 @@ const homepageBudgetEventIds = {
   independent: [
     "counterfactual-travel-check",
     "counterfactual-work-check",
-    "counterfactual-reviews-approved",
     "counterfactual-travel-committed",
     "counterfactual-work-stale-effect",
-    "counterfactual-rule-broken",
   ],
   governed: [
-    "stage-2-travel-request",
     "stage-2-travel-escalated",
     "stage-2-capacity-protected",
-    "stage-2-work-request",
     "stage-2-work-denied",
-    "stage-2-review-approved",
     "stage-2-travel-committed",
   ],
 } as const;

@@ -792,7 +792,7 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
     "Open email draft",
     "Prefer webmail? Copy masugate.governance@gmail.com into a new message.",
     "See it happen",
-    "Follow the full OpenClaw demo",
+    "Run the complete demo",
     "Open the OpenClaw developer demo",
   ]) {
     assert.ok(text.includes(requiredCopy), `Home is missing: ${requiredCopy}`);
@@ -825,13 +825,26 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
   for (const comparisonCopy of [
     "Without coordination",
     "With MasuGate",
-    "Each decision looked reasonable alone. Their combined result broke the rule.",
-    "The later decision reflects the state protected by the earlier operation.",
+    "Rule broken",
+    "Rule preserved",
   ]) {
     assert.ok(
       text.includes(comparisonCopy),
       `Home comparison is missing: ${comparisonCopy}`,
     );
+  }
+
+  const sharedStateStrip = sectionContaining(
+    html,
+    "Shared state is more than a budget.",
+  );
+  assert.deepEqual(headingsIn(sharedStateStrip, 3), [
+    "Capacity",
+    "Time",
+    "Work",
+  ]);
+  for (const kind of ["capacity", "time", "work"]) {
+    assert.match(sharedStateStrip, new RegExp(`data-state-kind="${kind}"`, "i"));
   }
 
   for (const controlLabel of ["Play", "Pause", "Previous", "Next", "Replay"]) {
