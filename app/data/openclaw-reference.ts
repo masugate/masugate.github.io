@@ -47,6 +47,19 @@ export interface OpenClawReferenceCandidate {
   releaseState: "unreleased";
   maturity: "experimental";
   evidence: ReferenceEvidence;
+  presentation: Readonly<{
+    hero: Readonly<{
+      intro: string;
+    }>;
+    identityDisclosure: Readonly<{
+      eyebrow: string;
+      title: string;
+    }>;
+    coverageDisclosure: Readonly<{
+      eyebrow: string;
+      title: string;
+    }>;
+  }>;
   identity: Readonly<{
     releaseId: "masugate-openclaw-reference/0.1.0";
     releaseChannel: "research-preview";
@@ -143,6 +156,20 @@ export const openClawReferenceCandidate = {
       "masugate/masugate@6b3852ecb70bd55cb22bf78769028b9b52af9735/release/reference-release.json",
     note:
       "Exact Git-backed candidate metadata; supported-runtime output, a public release, and public evidence destinations are absent.",
+  },
+  presentation: {
+    hero: {
+      intro:
+        "Map the pinned OpenClaw purchase candidate to the website story without treating the simulation as recorded or verified execution.",
+    },
+    identityDisclosure: {
+      eyebrow: "Secondary candidate detail",
+      title: "Environment, source lineage, and publication state",
+    },
+    coverageDisclosure: {
+      eyebrow: "Relationship to the three-stage walkthrough",
+      title: "No website stage is release-backed yet.",
+    },
   },
   identity: {
     releaseId: "masugate-openclaw-reference/0.1.0",
@@ -391,6 +418,17 @@ export function validateOpenClawReferenceCandidate(
 ): readonly string[] {
   const errors: string[] = [];
   const stageIds = new Set<ScenarioStageId>();
+  const presentationCopy = [
+    candidate.presentation.hero.intro,
+    candidate.presentation.identityDisclosure.eyebrow,
+    candidate.presentation.identityDisclosure.title,
+    candidate.presentation.coverageDisclosure.eyebrow,
+    candidate.presentation.coverageDisclosure.title,
+  ];
+
+  if (presentationCopy.some((value) => value.trim().length === 0)) {
+    errors.push("The OpenClaw reference presentation copy is incomplete.");
+  }
 
   for (const stage of candidate.stageCoverage) {
     if (stageIds.has(stage.stageId)) {

@@ -31,11 +31,7 @@ export default function OpenClawReferenceCandidatePage() {
             </Link>
             <p className="masugate-eyebrow">Milestone 3B · OpenClaw reference candidate</p>
             <h1>Inspect the candidate-backed purchase path.</h1>
-            <p className={styles.intro}>
-              This companion view maps the pinned Git-backed OpenClaw purchase
-              candidate to the website story without relabeling the
-              deterministic simulation as recorded or verified execution.
-            </p>
+            <p className={styles.intro}>{candidate.presentation.hero.intro}</p>
           </div>
           <aside className={styles.disclosure} aria-label="Candidate evidence boundary">
             <div className="masugate-status-stack">
@@ -73,23 +69,35 @@ export default function OpenClawReferenceCandidatePage() {
               release-tree realization are deliberately shown separately.
             </p>
           </div>
-          <dl className={styles.identityGrid}>
+          <dl className={styles.primaryIdentityGrid}>
             <div><dt>Candidate release</dt><dd><code>{candidate.identity.releaseId}</code></dd></div>
-            <div><dt>Channel</dt><dd>{candidate.identity.releaseChannel}</dd></div>
             <div><dt>Candidate repository</dt><dd><code>{candidate.identity.repository.replace("https://", "")}</code></dd></div>
-            <div><dt>Visibility</dt><dd>{titleCase(candidate.identity.repositoryVisibility)} as observed {candidate.identity.visibilityObservedAt}</dd></div>
-            <div><dt>Origin implementation snapshot</dt><dd><code>{candidate.identity.originImplementationRevision}</code></dd></div>
             <div><dt>Release-tree commit</dt><dd><code>{candidate.identity.releaseTreeRevision}</code></dd></div>
-            <div><dt>Release-tree object</dt><dd><code>{candidate.identity.releaseTree}</code></dd></div>
-            <div><dt>Release tag</dt><dd>{titleCase(candidate.identity.releaseTag)}</dd></div>
-            <div><dt>Target</dt><dd>{candidate.environment.os}/{candidate.environment.architecture} · CPython {candidate.environment.python} (tested {candidate.environment.testedPython})</dd></div>
-            <div><dt>JavaScript toolchain</dt><dd>Node {candidate.environment.node} · npm {candidate.environment.npm}</dd></div>
-            <div><dt>Source toolchain</dt><dd>Git {candidate.environment.git} · uv {candidate.environment.uv}</dd></div>
-            <div><dt>Container toolchain</dt><dd>Docker {candidate.environment.docker} · Compose {candidate.environment.compose}</dd></div>
             <div><dt>Host pin</dt><dd>{candidate.integration.host} {candidate.integration.hostVersion}</dd></div>
             <div><dt>Adapter pin</dt><dd><code>{candidate.integration.adapterPackage}@{candidate.integration.adapterVersion}</code></dd></div>
-            <div><dt>Reference deployment</dt><dd>{candidate.integration.referenceDistribution} {candidate.integration.referenceDistributionVersion}</dd></div>
+            <div>
+              <dt>Governed route</dt>
+              <dd><code>{candidate.integration.tool}</code> → {candidate.integration.route} → {candidate.integration.action}</dd>
+            </div>
           </dl>
+          <details className={styles.identityDisclosure}>
+            <summary>
+              <span>{candidate.presentation.identityDisclosure.eyebrow}</span>
+              <strong>{candidate.presentation.identityDisclosure.title}</strong>
+            </summary>
+            <dl className={styles.identityGrid}>
+              <div><dt>Channel</dt><dd>{candidate.identity.releaseChannel}</dd></div>
+              <div><dt>Visibility</dt><dd>{titleCase(candidate.identity.repositoryVisibility)} as observed {candidate.identity.visibilityObservedAt}</dd></div>
+              <div><dt>Origin implementation snapshot</dt><dd><code>{candidate.identity.originImplementationRevision}</code></dd></div>
+              <div><dt>Release-tree object</dt><dd><code>{candidate.identity.releaseTree}</code></dd></div>
+              <div><dt>Release tag</dt><dd>{titleCase(candidate.identity.releaseTag)}</dd></div>
+              <div><dt>Target</dt><dd>{candidate.environment.os}/{candidate.environment.architecture} · CPython {candidate.environment.python} (tested {candidate.environment.testedPython})</dd></div>
+              <div><dt>JavaScript toolchain</dt><dd>Node {candidate.environment.node} · npm {candidate.environment.npm}</dd></div>
+              <div><dt>Source toolchain</dt><dd>Git {candidate.environment.git} · uv {candidate.environment.uv}</dd></div>
+              <div><dt>Container toolchain</dt><dd>Docker {candidate.environment.docker} · Compose {candidate.environment.compose}</dd></div>
+              <div><dt>Reference deployment</dt><dd>{candidate.integration.referenceDistribution} {candidate.integration.referenceDistributionVersion}</dd></div>
+            </dl>
+          </details>
           <div className={styles.auditCallout}>
             <div>
               <span>Source intake · {candidate.sourceAudit.checkedAt}</span>
@@ -194,32 +202,31 @@ export default function OpenClawReferenceCandidatePage() {
               </article>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className={styles.coverageSection}>
-        <div className="masugate-shell">
-          <div className={styles.sectionHeading}>
-            <p className="masugate-eyebrow">Relationship to the three-stage walkthrough</p>
-            <h2>No website stage is release-backed yet.</h2>
-            <p>
-              Candidate overlap is shown as related—not exact—until identifiers,
-              driver, policy, outcome, and retained evidence all match.
-            </p>
-          </div>
-          <div className={styles.coverageGrid}>
-            {candidate.stageCoverage.map((stage) => (
-              <article data-alignment={stage.alignment} key={stage.stageId}>
-                <span>{stage.stageId.replace("stage-", "Stage ")} · {stage.statusLabel}</span>
-                <h3>{stage.stageLabel}</h3>
-                <p>{stage.relationship}</p>
-                <div>
-                  <strong>Why this is not exact</strong>
-                  <p>{stage.mismatch}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+          <details className={styles.coverageDisclosure}>
+            <summary>
+              <span>{candidate.presentation.coverageDisclosure.eyebrow}</span>
+              <strong>{candidate.presentation.coverageDisclosure.title}</strong>
+            </summary>
+            <div className={styles.coverageBody}>
+              <p className={styles.coverageIntro}>
+                Candidate overlap is shown as related—not exact—until identifiers,
+                driver, policy, outcome, and retained evidence all match.
+              </p>
+              <div className={styles.coverageGrid}>
+                {candidate.stageCoverage.map((stage) => (
+                  <article data-alignment={stage.alignment} key={stage.stageId}>
+                    <span>{stage.stageId.replace("stage-", "Stage ")} · {stage.statusLabel}</span>
+                    <h3>{stage.stageLabel}</h3>
+                    <p>{stage.relationship}</p>
+                    <div>
+                      <strong>Why this is not exact</strong>
+                      <p>{stage.mismatch}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </details>
         </div>
       </section>
 

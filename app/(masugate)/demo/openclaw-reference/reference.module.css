@@ -1,16 +1,24 @@
 .hero {
+  position: relative;
+  overflow: hidden;
   padding: clamp(54px, 7vw, 88px) 0 clamp(50px, 6vw, 72px);
   border-bottom: 1px solid var(--p-line);
   background:
-    radial-gradient(circle at 88% 18%, color-mix(in srgb, var(--p-pending) 18%, transparent), transparent 30%),
-    linear-gradient(140deg, var(--p-surface-soft), var(--p-paper));
+    linear-gradient(var(--p-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--p-line) 1px, transparent 1px),
+    radial-gradient(circle at 86% 16%, color-mix(in srgb, var(--p-accent-violet) 20%, transparent), transparent 27%),
+    radial-gradient(circle at 16% 100%, color-mix(in srgb, var(--p-info) 10%, transparent), transparent 24%),
+    var(--p-paper);
+  background-size: 52px 52px, 52px 52px, auto, auto, auto;
 }
 
 .heroGrid {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
   gap: clamp(40px, 7vw, 88px);
-  align-items: end;
+  align-items: center;
 }
 
 .backLink {
@@ -28,15 +36,16 @@
 .gatesGrid h2,
 .ctaGrid h2 {
   font-family: var(--p-font-sans);
-  font-weight: 400;
-  letter-spacing: -0.04em;
-  line-height: 1.02;
+  font-weight: 560;
+  letter-spacing: -0.055em;
+  line-height: 0.99;
+  text-wrap: balance;
 }
 
 .hero h1 {
   max-width: 760px;
   margin: 0 0 20px;
-  font-size: clamp(2.7rem, 5vw, 5.05rem);
+  font-size: clamp(3rem, 5.35vw, 5.4rem);
 }
 
 .intro {
@@ -51,7 +60,10 @@
   padding: 24px;
   border: 1px solid var(--p-line-strong);
   border-top: 6px solid var(--p-pending);
-  background: var(--p-surface);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--p-pending) 13%, transparent), transparent 34%),
+    linear-gradient(155deg, var(--p-surface), var(--p-surface-soft));
   box-shadow: var(--p-shadow);
 }
 
@@ -69,7 +81,6 @@
 .identitySection,
 .routeSection,
 .evidenceSection,
-.coverageSection,
 .gatesSection,
 .ctaSection {
   padding: clamp(64px, 8vw, 102px) 0;
@@ -81,8 +92,7 @@
   background: var(--p-surface);
 }
 
-.routeSection,
-.coverageSection {
+.routeSection {
   background: var(--p-paper);
 }
 
@@ -95,7 +105,7 @@
 .gatesGrid h2,
 .ctaGrid h2 {
   margin: 0 0 16px;
-  font-size: clamp(2.25rem, 4.5vw, 4.25rem);
+  font-size: clamp(2.2rem, 4.35vw, 4.15rem);
 }
 
 .sectionHeading > p:last-child,
@@ -105,11 +115,86 @@
   line-height: 1.6;
 }
 
+.primaryIdentityGrid,
 .identityGrid {
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.primaryIdentityGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.primaryIdentityGrid > div {
+  min-width: 0;
+  min-height: 118px;
+  padding: 20px;
   border: 1px solid var(--p-line);
+  border-radius: 14px;
+  background: linear-gradient(155deg, var(--p-surface), var(--p-surface-soft));
+}
+
+.identityDisclosure {
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid var(--p-line);
+  border-radius: 14px;
+  background: var(--p-surface);
+}
+
+.identityDisclosure > summary,
+.coverageDisclosure > summary {
+  position: relative;
+  padding: 18px 54px 18px 20px;
+  display: grid;
+  gap: 5px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.identityDisclosure > summary::-webkit-details-marker,
+.coverageDisclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.identityDisclosure > summary::after,
+.coverageDisclosure > summary::after {
+  content: "+";
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  color: var(--p-info);
+  font-family: var(--p-font-mono);
+  font-size: 1.1rem;
+  transform: translateY(-50%);
+}
+
+.identityDisclosure[open] > summary::after,
+.coverageDisclosure[open] > summary::after {
+  content: "−";
+}
+
+.identityDisclosure > summary > span,
+.coverageDisclosure > summary > span {
+  color: var(--p-allow);
+  font-family: var(--p-font-mono);
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.identityDisclosure > summary > strong,
+.coverageDisclosure > summary > strong {
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.identityGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--p-line);
+  background: var(--p-paper);
 }
 
 .identityGrid > div {
@@ -126,6 +211,7 @@
   border-bottom: 0;
 }
 
+.primaryIdentityGrid dt,
 .identityGrid dt,
 .routeGrid span,
 .evidenceGrid header span,
@@ -139,12 +225,15 @@
   text-transform: uppercase;
 }
 
+.primaryIdentityGrid dd,
 .identityGrid dd {
   margin: 6px 0 0;
   overflow-wrap: anywhere;
   font-weight: 800;
+  line-height: 1.45;
 }
 
+.primaryIdentityGrid code,
 .identityGrid code {
   color: var(--p-info);
 }
@@ -158,6 +247,7 @@
   align-items: start;
   border: 1px solid var(--p-line);
   border-left: 6px solid var(--p-pending);
+  border-radius: 14px;
   background: var(--p-pending-soft);
 }
 
@@ -200,8 +290,10 @@
 
 .codeCard {
   min-width: 0;
+  overflow: hidden;
   border: 1px solid var(--p-line-strong);
-  background: var(--p-surface-soft);
+  border-radius: 16px;
+  background: linear-gradient(150deg, var(--p-surface-soft), var(--p-surface));
   color: var(--p-ink);
 }
 
@@ -211,6 +303,7 @@
   justify-content: space-between;
   gap: 16px;
   border-bottom: 1px solid var(--p-line-strong);
+  background: color-mix(in srgb, var(--p-info) 6%, transparent);
 }
 
 .codeCard header span {
@@ -232,6 +325,11 @@
   line-height: 1.55;
 }
 
+.codeCard pre:focus-visible {
+  outline: 3px solid var(--p-info);
+  outline-offset: -4px;
+}
+
 .codeBoundary {
   margin: 0;
   padding: 16px 20px;
@@ -245,7 +343,8 @@
   padding: 22px;
   border: 1px solid var(--p-line);
   border-top: 6px solid var(--p-allow);
-  background: var(--p-surface);
+  border-radius: 16px;
+  background: linear-gradient(155deg, var(--p-surface), var(--p-allow-soft));
 }
 
 .providerCard > span {
@@ -314,6 +413,7 @@
 .coverageGrid > article {
   padding: 20px;
   border: 1px solid var(--p-line);
+  border-radius: 14px;
   background: var(--p-surface);
 }
 
@@ -335,8 +435,29 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.coverageDisclosure {
+  margin-top: 18px;
+  overflow: hidden;
+  border: 1px solid var(--p-line);
+  border-radius: 16px;
+  background: var(--p-surface-soft);
+}
+
+.coverageBody {
+  padding: 20px;
+  border-top: 1px solid var(--p-line);
+}
+
+.coverageIntro {
+  max-width: 760px;
+  margin: 0 0 18px;
+  color: var(--p-ink-soft);
+  line-height: 1.55;
+}
+
 .evidenceGrid > article {
   border-top: 6px solid var(--p-info);
+  background: linear-gradient(155deg, var(--p-surface), var(--p-info-soft));
 }
 
 .evidenceGrid ul {
@@ -360,6 +481,7 @@
 .coverageGrid article > div {
   padding: 14px;
   border-left: 5px solid var(--p-pending);
+  border-radius: 10px;
   background: var(--p-pending-soft);
 }
 
@@ -395,7 +517,9 @@
 }
 
 .gatesSection {
-  background: var(--p-pending-soft);
+  background:
+    radial-gradient(circle at 12% 22%, color-mix(in srgb, var(--p-pending) 10%, transparent), transparent 28%),
+    var(--p-pending-soft);
 }
 
 .gatesGrid {
@@ -421,6 +545,7 @@
   gap: 10px;
   align-items: center;
   border: 1px solid var(--p-line);
+  border-radius: 12px;
   background: var(--p-surface);
   line-height: 1.45;
 }
@@ -459,7 +584,7 @@
 }
 
 .ctaSection {
-  background: var(--p-surface-soft);
+  background: var(--p-paper);
   color: var(--p-ink);
 }
 
@@ -468,6 +593,13 @@
   grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
   gap: 44px;
   align-items: end;
+  padding: clamp(24px, 4vw, 38px);
+  border: 1px solid var(--p-line);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 90% 10%, color-mix(in srgb, var(--p-accent-violet) 12%, transparent), transparent 30%),
+    var(--p-surface);
+  box-shadow: var(--p-shadow);
 }
 
 .ctaActions {
@@ -498,11 +630,19 @@
   .coverageGrid {
     grid-template-columns: 1fr;
   }
+
+  .primaryIdentityGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 700px) {
   .identityGrid,
   .evidenceGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .primaryIdentityGrid {
     grid-template-columns: 1fr;
   }
 
@@ -544,5 +684,10 @@
   .auditCallout {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+
+  .coverageBody,
+  .ctaGrid {
+    padding: 20px;
   }
 }
