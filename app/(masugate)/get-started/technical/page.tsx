@@ -37,8 +37,8 @@ export default function TechnicalReferencePage() {
             <p className="masugate-eyebrow">Technical reference</p>
             <h1>Profiles, outcomes, and integration boundaries.</h1>
             <p className={styles.intro}>
-              This page keeps the detailed research-preview material out of the
-              quick-start path while preserving it for implementation and review.
+              Use the exact environment profile, operation outcomes, host
+              boundaries, and troubleshooting checks for the research preview.
             </p>
           </div>
           <aside className={styles.statusCard} aria-label="Reference status">

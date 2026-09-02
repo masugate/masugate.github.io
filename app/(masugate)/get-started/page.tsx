@@ -42,8 +42,8 @@ export default function GetStartedPage() {
             <p className="masugate-eyebrow">Get Started</p>
             <h1>Run the reference demo.</h1>
             <p className={styles.intro}>
-              Prepare the supported local workspace once, then run a governed
-              procurement scenario in under five minutes.
+              Prepare the supported workspace once, then run and verify one
+              governed procurement scenario in under five minutes.
             </p>
             <div className={styles.heroActions}>
               {isAvailable(source) ? (
@@ -116,7 +116,7 @@ export default function GetStartedPage() {
           ) : null}
           <div className={styles.commandCard}>
             <div className={styles.commandLabel}>In a clean release checkout, prepare once</div>
-            <pre><code>{setupCommand}</code></pre>
+            <pre tabIndex={0}><code>{setupCommand}</code></pre>
           </div>
           <details className={styles.setupDetails}>
             <summary>What the one-time setup provides</summary>
@@ -143,7 +143,7 @@ export default function GetStartedPage() {
           <div className={styles.demoLayout}>
             <div className={styles.commandCard}>
               <div className={styles.commandLabel}>Run the scenario</div>
-              <pre><code>{demoCommand}</code></pre>
+              <pre tabIndex={0}><code>{demoCommand}</code></pre>
             </div>
             <aside className={styles.resultCard}>
               <span>Expected result</span>
@@ -170,7 +170,7 @@ export default function GetStartedPage() {
           </div>
           <div className={styles.commandCard}>
             <div className={styles.commandLabel}>Verify the result</div>
-            <pre><code>{verifyCommand}</code></pre>
+            <pre tabIndex={0}><code>{verifyCommand}</code></pre>
           </div>
         </div>
       </section>

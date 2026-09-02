@@ -8,17 +8,25 @@
 }
 
 .hero {
+  position: relative;
+  overflow: hidden;
   padding-top: clamp(54px, 7vw, 86px);
   background:
-    radial-gradient(circle at 88% 14%, color-mix(in srgb, var(--p-info) 16%, transparent), transparent 28%),
-    linear-gradient(142deg, var(--p-surface-soft), var(--p-paper));
+    linear-gradient(var(--p-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--p-line) 1px, transparent 1px),
+    radial-gradient(circle at 86% 16%, color-mix(in srgb, var(--p-accent-violet) 20%, transparent), transparent 27%),
+    radial-gradient(circle at 18% 100%, color-mix(in srgb, var(--p-info) 10%, transparent), transparent 24%),
+    var(--p-paper);
+  background-size: 52px 52px, 52px 52px, auto, auto, auto;
 }
 
 .heroGrid {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
   gap: clamp(34px, 6vw, 72px);
-  align-items: end;
+  align-items: center;
 }
 
 .hero h1,
@@ -26,15 +34,16 @@
 .verifyGrid h2,
 .nextGrid h2 {
   font-family: var(--p-font-sans);
-  font-weight: 400;
-  letter-spacing: -0.04em;
-  line-height: 1.04;
+  font-weight: 560;
+  letter-spacing: -0.055em;
+  line-height: 0.99;
+  text-wrap: balance;
 }
 
 .hero h1 {
   max-width: 700px;
   margin: 0 0 20px;
-  font-size: clamp(2.7rem, 5vw, 5.1rem);
+  font-size: clamp(3rem, 5.4vw, 5.4rem);
 }
 
 .intro {
@@ -56,7 +65,8 @@
   margin-top: 14px;
   padding: 16px 18px;
   border: 1px solid var(--p-line);
-  background: var(--p-paper);
+  border-radius: 12px;
+  background: var(--p-surface-soft);
 }
 
 .sourceLinks a {
@@ -69,7 +79,10 @@
   padding: 24px;
   border: 1px solid var(--p-line-strong);
   border-top: 6px solid var(--p-allow);
-  background: var(--p-surface);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--p-allow) 12%, transparent), transparent 34%),
+    linear-gradient(155deg, var(--p-surface), var(--p-surface-soft));
   box-shadow: var(--p-shadow);
 }
 
@@ -87,14 +100,43 @@
 
 .summary ol {
   margin: 14px 0;
-  padding-left: 1.2rem;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  counter-reset: quick-step;
   font-family: var(--p-font-sans);
   font-size: 1.16rem;
   line-height: 1.38;
+  list-style: none;
 }
 
-.summary li + li {
-  margin-top: 8px;
+.summary li {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  counter-increment: quick-step;
+}
+
+.summary li::before {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--p-info) 34%, var(--p-line));
+  border-radius: 50%;
+  background: var(--p-info-soft);
+  color: var(--p-info);
+  content: counter(quick-step, decimal-leading-zero);
+  font-family: var(--p-font-mono);
+  font-size: 0.64rem;
+  font-weight: 900;
+}
+
+.summary p {
+  margin: 14px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--p-line);
 }
 
 .summary p,
@@ -119,7 +161,7 @@
 .verifyGrid h2,
 .nextGrid h2 {
   margin: 0 0 14px;
-  font-size: clamp(2rem, 4vw, 3.75rem);
+  font-size: clamp(2.15rem, 4vw, 3.9rem);
 }
 
 .sectionHeading > p:last-child {
@@ -131,13 +173,17 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   border: 1px solid var(--p-line);
-  background: var(--p-paper);
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--p-surface);
+  box-shadow: var(--p-shadow);
 }
 
 .requirementGrid article {
   min-width: 0;
   padding: 24px;
   border-right: 1px solid var(--p-line);
+  background: linear-gradient(160deg, var(--p-surface), var(--p-surface-soft));
 }
 
 .requirementGrid article:last-child {
@@ -156,7 +202,8 @@
   margin: 12px 0 10px;
   font-family: var(--p-font-sans);
   font-size: 1.35rem;
-  font-weight: 400;
+  font-weight: 600;
+  letter-spacing: -0.035em;
   line-height: 1.15;
 }
 
@@ -168,9 +215,10 @@
 }
 
 .setupDetails {
-  margin-top: 0;
+  margin-top: 12px;
   border: 1px solid var(--p-line);
-  background: var(--p-paper);
+  border-radius: 12px;
+  background: var(--p-surface);
 }
 
 .setupDetails summary {
@@ -191,8 +239,9 @@
   background:
     linear-gradient(var(--p-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--p-line) 1px, transparent 1px),
+    radial-gradient(circle at 84% 18%, color-mix(in srgb, var(--p-accent-violet) 10%, transparent), transparent 25%),
     var(--p-paper);
-  background-size: 28px 28px;
+  background-size: 48px 48px, 48px 48px, auto, auto;
 }
 
 .demoLayout,
@@ -206,8 +255,10 @@
 
 .commandCard {
   min-width: 0;
+  overflow: hidden;
   border: 1px solid var(--p-line-strong);
-  background: var(--p-surface-soft);
+  border-radius: 16px;
+  background: linear-gradient(150deg, var(--p-surface-soft), var(--p-surface));
   color: var(--p-ink);
 }
 
@@ -218,6 +269,7 @@
 .commandLabel {
   padding: 14px 18px;
   border-bottom: 1px solid var(--p-line-strong);
+  background: color-mix(in srgb, var(--p-info) 6%, transparent);
   color: var(--p-allow);
 }
 
@@ -232,18 +284,25 @@
   white-space: pre;
 }
 
+.commandCard pre:focus-visible {
+  outline: 3px solid var(--p-info);
+  outline-offset: -4px;
+}
+
 .resultCard {
   padding: 24px;
   border: 1px solid var(--p-line);
   border-top: 6px solid var(--p-allow);
-  background: var(--p-surface);
+  border-radius: 16px;
+  background: linear-gradient(155deg, var(--p-surface), var(--p-allow-soft));
 }
 
 .resultCard h3 {
   margin: 13px 0 12px;
   font-family: var(--p-font-sans);
   font-size: 1.48rem;
-  font-weight: 400;
+  font-weight: 600;
+  letter-spacing: -0.035em;
   line-height: 1.13;
 }
 
@@ -252,7 +311,13 @@
 }
 
 .verifySection {
-  background: var(--p-allow-soft);
+  background:
+    radial-gradient(circle at 12% 50%, color-mix(in srgb, var(--p-allow) 10%, transparent), transparent 28%),
+    var(--p-allow-soft);
+}
+
+.verifyGrid {
+  align-items: center;
 }
 
 .verifyGrid > div:first-child,
@@ -266,11 +331,18 @@
 }
 
 .nextSection {
-  background: var(--p-surface);
+  background: var(--p-paper);
 }
 
 .nextGrid {
   align-items: center;
+  padding: clamp(24px, 4vw, 38px);
+  border: 1px solid var(--p-line);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 90% 10%, color-mix(in srgb, var(--p-accent-violet) 12%, transparent), transparent 30%),
+    var(--p-surface);
+  box-shadow: var(--p-shadow);
 }
 
 .nextActions {
@@ -302,6 +374,10 @@
   .nextActions {
     justify-self: start;
     justify-content: start;
+  }
+
+  .nextGrid {
+    padding: 24px;
   }
 }
 
