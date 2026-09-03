@@ -2,11 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { isAvailable } from "../../data/contracts";
-import { getStartedGuide } from "../../data/get-started";
+import {
+  getStartedGuide,
+  type ReadinessStep,
+} from "../../data/get-started";
 import { createMasuGatePageMetadata } from "../../data/metadata";
 import styles from "./get-started.module.css";
 
 const page = getStartedGuide.quickStartPage;
+const readinessSteps: readonly ReadinessStep[] = getStartedGuide.readinessSteps;
 
 export const metadata: Metadata = createMasuGatePageMetadata({
   title: "Get Started",
@@ -135,7 +139,7 @@ export default function GetStartedPage() {
             </p>
           </div>
           <ol className={styles.readinessList}>
-            {getStartedGuide.readinessSteps.map((step) => (
+            {readinessSteps.map((step) => (
               <li data-status={step.status} key={step.id}>
                 <span className={styles.stepNumber}>
                   {String(step.number).padStart(2, "0")}
