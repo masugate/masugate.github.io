@@ -87,7 +87,7 @@ export type ReferenceIntegrationProfile = IntegrationProfileBase &
   Readonly<{
     publication: "reference-only";
     evidence: ReferenceEvidence;
-    profileHref: Unavailable;
+    profileHref: Availability<`https://${string}`>;
     verificationDate: Unavailable;
     cleanCheckout: Unavailable;
     conformance: Unavailable;
@@ -122,13 +122,7 @@ export type IntegrationProfile =
 const pendingRouteBinding = () =>
   unavailable(
     "release-binding-unconfirmed",
-    "The exact public-release route binding remains release-gated.",
-  );
-
-const pendingProfileHref = () =>
-  unavailable(
-    "public-evidence-unavailable",
-    "No public exact-profile destination is available yet.",
+    "The website scenario route is not asserted to match the exact 0.1.1 source-reference route.",
   );
 
 const pendingVerificationDate = () =>
@@ -154,11 +148,22 @@ function profileEvidence(profileId: IntegrationProfileId): ReferenceEvidence {
     status: "reference",
     sourceKind: "candidate-manifest",
     locator:
-      `masugate/masugate@${masugateRelease.candidateSource.releaseTreeRevision}:candidate-integration-profile:${profileId}`,
+      `masugate/masugate@main:source-integration-profile:${profileId}`,
     note:
-      "Git-backed candidate profile metadata is Reference material, not registry availability, runtime evidence, or a broad compatibility claim.",
+      "Public-source profile metadata is Reference material, not registry availability, independently retained runtime evidence, or a broad compatibility claim.",
   };
 }
+
+const profileHrefs: Readonly<Record<IntegrationProfileId, `https://${string}`>> = {
+  openclaw:
+    "https://github.com/masugate/masugate/blob/main/integrations/openclaw/README.md",
+  "langchain-langgraph":
+    "https://github.com/masugate/masugate/blob/main/adapters/langchain/README.md",
+  "microsoft-agent-framework":
+    "https://github.com/masugate/masugate/blob/main/adapters/agent-framework/README.md",
+  crewai:
+    "https://github.com/masugate/masugate/blob/main/adapters/crewai/README.md",
+};
 
 const commonReplacementBoundary =
   "The MasuGate-backed tool replaces the original consequential purchase tool on the declared route. Unrelated host tools remain host-owned and are not mediated automatically.";
@@ -175,7 +180,7 @@ export const integrationProfiles: readonly IntegrationProfile[] = [
     pathRequirement: "required",
     adapter: {
       packageName: available("@masugate/openclaw"),
-      version: available("0.1.0"),
+      version: available("0.1.1"),
     },
     comparisonId: adoptionComparison.id,
     conceptualBinding:
@@ -205,7 +210,7 @@ export const integrationProfiles: readonly IntegrationProfile[] = [
     ],
     publication: "reference-only",
     evidence: profileEvidence("openclaw"),
-    profileHref: pendingProfileHref(),
+    profileHref: available(profileHrefs.openclaw),
     verificationDate: pendingVerificationDate(),
     cleanCheckout: pendingCleanCheckout(),
     conformance: pendingConformance(),
@@ -225,7 +230,7 @@ export const integrationProfiles: readonly IntegrationProfile[] = [
     pathRequirement: "optional",
     adapter: {
       packageName: available("masugate-langchain"),
-      version: available("0.1.0"),
+      version: available("0.1.1"),
     },
     comparisonId: adoptionComparison.id,
     conceptualBinding:
@@ -254,7 +259,7 @@ export const integrationProfiles: readonly IntegrationProfile[] = [
     ],
     publication: "reference-only",
     evidence: profileEvidence("langchain-langgraph"),
-    profileHref: pendingProfileHref(),
+    profileHref: available(profileHrefs["langchain-langgraph"]),
     verificationDate: pendingVerificationDate(),
     cleanCheckout: pendingCleanCheckout(),
     conformance: pendingConformance(),
@@ -273,7 +278,7 @@ export const integrationProfiles: readonly IntegrationProfile[] = [
     pathRequirement: "optional",
     adapter: {
       packageName: available("masugate-agent-framework"),
-      version: available("0.1.0"),
+      version: available("0.1.1"),
     },
     comparisonId: adoptionComparison.id,
     conceptualBinding:
@@ -302,7 +307,7 @@ export const integrationProfiles: readonly IntegrationProfile[] = [
     ],
     publication: "reference-only",
     evidence: profileEvidence("microsoft-agent-framework"),
-    profileHref: pendingProfileHref(),
+    profileHref: available(profileHrefs["microsoft-agent-framework"]),
     verificationDate: pendingVerificationDate(),
     cleanCheckout: pendingCleanCheckout(),
     conformance: pendingConformance(),
@@ -322,7 +327,7 @@ export const integrationProfiles: readonly IntegrationProfile[] = [
     pathRequirement: "optional",
     adapter: {
       packageName: available("masugate-crewai"),
-      version: available("0.1.0"),
+      version: available("0.1.1"),
     },
     comparisonId: adoptionComparison.id,
     conceptualBinding:
@@ -351,7 +356,7 @@ export const integrationProfiles: readonly IntegrationProfile[] = [
     ],
     publication: "reference-only",
     evidence: profileEvidence("crewai"),
-    profileHref: pendingProfileHref(),
+    profileHref: available(profileHrefs.crewai),
     verificationDate: pendingVerificationDate(),
     cleanCheckout: pendingCleanCheckout(),
     conformance: pendingConformance(),

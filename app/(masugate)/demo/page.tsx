@@ -405,7 +405,7 @@ export default function MasuGateDemoPage() {
 
           <div className={styles.frameworkBoundary}>
             <p>
-              <strong>Evidence boundary:</strong> Reference candidate bindings,
+              <strong>Evidence boundary:</strong> Public-source Reference bindings,
               not Verified or drop-in integrations.
             </p>
             <Link href="/demo/#framework-portability">
@@ -446,23 +446,23 @@ export default function MasuGateDemoPage() {
         <div className={`masugate-shell ${styles.candidateBridge}`}>
           <div>
             <p className="masugate-eyebrow">
-              Milestone 3B · separate candidate path
+              MasuGate 0.1.1 · separate source reference
             </p>
-            <h2>Inspect the bounded OpenClaw purchase candidate.</h2>
+            <h2>Inspect the bounded OpenClaw purchase reference.</h2>
             <p>
-              Review the exact OpenClaw 2026.7.1 and adapter 0.1.0 purchase
-              surface, its related concurrency workload, and the publication
-              gates still ahead. This companion view does not relabel any of
-              the three simulated stages as recorded execution.
+              Review the exact OpenClaw 2026.7.1 and adapter 0.1.1 purchase
+              surface, its public-source run path, and its evidence boundary.
+              This companion view does not relabel any simulated stage as
+              recorded execution.
             </p>
           </div>
           <div className={styles.candidateAction}>
-            <span>Unreleased · Reference</span>
+            <span>Public source · Reference</span>
             <Link
               className="masugate-button"
               href="/demo/openclaw-reference/"
             >
-              Inspect OpenClaw reference candidate
+              Inspect OpenClaw source reference
             </Link>
           </div>
         </div>
@@ -474,9 +474,12 @@ export default function MasuGateDemoPage() {
             <p className="masugate-eyebrow">
               Continue from the {evidenceLabel} demo
             </p>
-            <h2>Inspect the release path or bring your own agent scenario.</h2>
+            <h2>Run the public source or bring your own agent scenario.</h2>
             <p>
-              MasuGate is currently an unreleased, experimental research project. Installation commands and Verified integration claims remain gated until public release artifacts pass their named checks.
+              MasuGate 0.1.1 is a public-source, experimental research preview.
+              The exact source workflow is runnable; package registries, a
+              tagged GitHub Release, and independently retained verification
+              remain separate publication boundaries.
             </p>
           </div>
           <div className={styles.ctaActions}>

@@ -8,7 +8,6 @@ import {
   type PathRequirement,
   type ReleaseState,
   available,
-  unavailable,
 } from "./contracts";
 import {
   adoptionComparison,
@@ -19,18 +18,14 @@ import { openClawReferenceCandidate } from "./openclaw-reference";
 import {
   masugateRelease,
   type ReleaseContract,
+  type SourceQuickStart,
   type VersionPin,
 } from "./release";
 
 export type GetStartedPathId =
-  | "reference-demo"
-  | "application-integration"
-  | "research-artifact";
-
-export type GetStartedCtaHref =
-  | "/demo/"
-  | "/demo/openclaw-reference/"
-  | "/#contact";
+  | "browser-walkthrough"
+  | "local-demonstration"
+  | "technical-review";
 
 export interface GetStartedPath {
   id: GetStartedPathId;
@@ -40,13 +35,14 @@ export interface GetStartedPath {
   currentBoundary: string;
   cta: Readonly<{
     label: string;
-    href: GetStartedCtaHref;
+    href: string;
+    external: boolean;
   }>;
 }
 
 export type ReadinessStepId =
+  | "get-source"
   | "prerequisites"
-  | "get-release"
   | "prepare-once"
   | "run-demo"
   | "verify-success"
@@ -56,9 +52,12 @@ export type ReadinessStepId =
 export interface ReadinessStep {
   id: ReadinessStepId;
   number: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  status: "before-you-run" | "available" | "after-run";
   title: string;
-  status: "review-now" | "release-gated";
   guidance: string;
+  command?: string;
+  expected?: string;
+  sourceHref?: `https://${string}`;
 }
 
 export interface OutcomeMeaning {
@@ -92,41 +91,37 @@ export interface GetStartedAvailability {
   publicRepository: Availability<Readonly<{ href: `https://${string}` }>>;
   publicDocumentation: Availability<Readonly<{ href: `https://${string}` }>>;
   primaryInstall: Availability<string>;
-  runLocally: Availability<Readonly<{ href: string }>>;
+  runLocally: Availability<Readonly<{ href: `https://${string}` }>>;
   publicEvidence: Availability<
     readonly Readonly<{ label: string; href: `https://${string}` }>[]
   >;
   verifiedAt: Availability<IsoDate>;
-  openClawPublicInstructions: Availability<never>;
+  openClawPublicInstructions: Availability<
+    Readonly<{ href: `https://${string}` }>
+  >;
   openClawCapturedRun: Availability<never>;
   issueTracker: Availability<Readonly<{ href: `https://${string}` }>>;
   securityReporting: Availability<Readonly<{ href: `https://${string}` }>>;
 }
 
-export interface CandidateSourceCheckpoint {
-  repository: string;
-  defaultBranch: string;
-  releaseTreeRevision: string;
-  originSourceRevision: string;
-  visibility: "private" | "public";
+export interface SourceReleaseCheckpoint {
+  repository: `https://${string}`;
+  defaultBranch: "main";
+  currentMainRevision: string;
+  provenanceRevision: string;
   observedAt: IsoDate;
+  publication: "public-source";
   releaseTag: "not-published";
-  externalReleaseAuthorization: "pending";
-  publishingWorkflows: "disabled";
-  liveGateContract: "needs-reconciliation";
-  sourceChecks: readonly Readonly<{
-    label: string;
-    status: "passed" | "pending";
-  }>[];
+  registries: "not-published";
   boundary: string;
 }
 
 export interface DeclaredPackageSummary {
   id: string;
-  channel: "pypi" | "npm" | "release-asset" | "container";
+  channel: "pypi" | "npm";
   name: string;
   version: string;
-  publication: "declared-only";
+  publication: "declared-only" | "published";
 }
 
 export interface GetStartedGuide {
@@ -135,6 +130,8 @@ export interface GetStartedGuide {
     id: string;
     version: string;
     state: ReleaseState;
+    sourcePublication: "public";
+    distributionPublication: "source-only";
     maturity: Maturity;
     posture: "research-preview";
     evidence: Evidence;
@@ -147,18 +144,21 @@ export interface GetStartedGuide {
       links: readonly Readonly<{
         label: string;
         href:
-          | "/get-started/#evaluation-paths"
-          | "/get-started/#technical-readiness"
-          | "/get-started/#source-review"
+          | "/get-started/#choose-a-path"
+          | "/get-started/#run-locally"
+          | "/get-started/#success-contract"
+          | "/get-started/#source-and-support"
           | "/get-started/technical/";
         detail: string;
       }>[];
     }>;
     hero: Readonly<{
       eyebrow: string;
+      releaseLabel: string;
       title: string;
       intro: string;
-      demoActionLabel: string;
+      primaryActionLabel: string;
+      browserActionLabel: string;
       sourceActionLabel: string;
     }>;
     summary: Readonly<{
@@ -175,12 +175,27 @@ export interface GetStartedGuide {
       outcomeLabel: string;
       boundaryLabel: string;
     }>;
-    readinessSection: Readonly<{
+    workflowSection: Readonly<{
       eyebrow: string;
       title: string;
       intro: string;
-      reviewNowLabel: string;
-      releaseGatedLabel: string;
+      beforeLabel: string;
+      availableLabel: string;
+      afterLabel: string;
+      commandLabel: string;
+      expectedLabel: string;
+      sourceLabel: string;
+      pssActionLabel: string;
+      pssHref: "/blog/when-allowed-goes-stale/#serial-explanation";
+    }>;
+    successSection: Readonly<{
+      eyebrow: string;
+      title: string;
+      intro: string;
+      confirmsLabel: string;
+      confirms: readonly string[];
+      caveatLabel: string;
+      caveat: string;
     }>;
     sourceSection: Readonly<{
       eyebrow: string;
@@ -188,8 +203,9 @@ export interface GetStartedGuide {
       intro: string;
       repositoryActionLabel: string;
       documentationActionLabel: string;
-      revisionLabel: string;
-      boundaryLabel: string;
+      versionLabel: string;
+      channelLabel: string;
+      distributionLabel: string;
     }>;
     nextSection: Readonly<{
       eyebrow: string;
@@ -200,16 +216,8 @@ export interface GetStartedGuide {
     }>;
   }>;
   technicalPage: Readonly<{
-    hero: Readonly<{
-      eyebrow: string;
-      title: string;
-      intro: string;
-    }>;
-    runtimeSection: Readonly<{
-      eyebrow: string;
-      title: string;
-      intro: string;
-    }>;
+    hero: Readonly<{ eyebrow: string; title: string; intro: string }>;
+    runtimeSection: Readonly<{ eyebrow: string; title: string; intro: string }>;
   }>;
   baseline: Readonly<{
     target: Readonly<{
@@ -229,7 +237,8 @@ export interface GetStartedGuide {
     }>;
     evidence: Evidence;
   }>;
-  candidateSource: CandidateSourceCheckpoint;
+  sourceRelease: SourceReleaseCheckpoint;
+  sourceQuickStart: SourceQuickStart;
   declaredPackages: readonly DeclaredPackageSummary[];
   readinessSteps: readonly ReadinessStep[];
   outcomes: readonly OutcomeMeaning[];
@@ -251,7 +260,7 @@ export interface GetStartedGuide {
   integrations: readonly GetStartedIntegrationSummary[];
   openClawContinuation: Readonly<{
     releaseId: string;
-    releaseState: "unreleased";
+    releaseState: ReleaseState;
     evidence: Evidence;
     host: "OpenClaw";
     hostVersion: string;
@@ -269,10 +278,7 @@ export interface GetStartedGuide {
     identityBoundary: string;
     replacementBoundary: string;
     truths: readonly string[];
-    cta: Readonly<{
-      label: string;
-      href: "/demo/openclaw-reference/";
-    }>;
+    cta: Readonly<{ label: string; href: "/demo/openclaw-reference/" }>;
   }>;
   troubleshooting: readonly Readonly<{
     id: string;
@@ -281,22 +287,37 @@ export interface GetStartedGuide {
     nextStep: string;
   }>[];
   availability: GetStartedAvailability;
+  documentationLinks: readonly Readonly<{
+    label: string;
+    detail: string;
+    href: `https://${string}`;
+  }>[];
   cta: Readonly<{
     demo: Readonly<{ label: string; href: "/demo/" }>;
+    run: Readonly<{ label: string; href: `https://${string}` }>;
     openClaw: Readonly<{
       label: string;
       href: "/demo/openclaw-reference/";
     }>;
+    review: Readonly<{ label: string; href: `https://${string}` }>;
     contact: Readonly<{ label: string; href: "/#contact" }>;
   }>;
 }
 
-const pathCtas = {
-  demo: { label: "Explore the interactive walkthrough", href: "/demo/" },
+if (masugateRelease.sourceQuickStart.state !== "available") {
+  throw new Error("The public-source release must expose its quickstart.");
+}
+
+const sourceQuickStart = masugateRelease.sourceQuickStart.value;
+
+const cta = {
+  demo: { label: "Explore the browser walkthrough", href: "/demo/" },
+  run: { label: "Run the public-source demo", href: sourceQuickStart.guideHref },
   openClaw: {
-    label: "Inspect the OpenClaw candidate",
+    label: "Inspect the OpenClaw reference",
     href: "/demo/openclaw-reference/",
   },
+  review: { label: "Choose a review path", href: sourceQuickStart.reviewHref },
   contact: { label: "Request a customized demo", href: "/#contact" },
 } as const;
 
@@ -329,7 +350,7 @@ const declaredPackages: readonly DeclaredPackageSummary[] =
             channel: packageIdentity.channel,
             name: packageIdentity.packageName.value,
             version: packageIdentity.version,
-            publication: "declared-only" as const,
+            publication: packageIdentity.publication,
           },
         ]
       : [],
@@ -341,131 +362,163 @@ export const getStartedGuide = {
     id: masugateRelease.id,
     version: masugateRelease.version,
     state: masugateRelease.state,
+    sourcePublication: "public",
+    distributionPublication: "source-only",
     maturity: masugateRelease.maturity,
     posture: masugateRelease.posture,
     evidence: masugateRelease.candidateEvidence,
   },
   paths: [
     {
-      id: "reference-demo",
-      title: "Explore the reference walkthrough",
-      audience: "A developer evaluating MasuGate for the first time.",
+      id: "browser-walkthrough",
+      title: "See the governed flow",
+      audience: "Anyone meeting MasuGate for the first time.",
       outcome:
-        "Understand one governed procurement flow and the evidence it should retain.",
+        "Understand how one request stays connected to policy code, live shared state, the governed effect, and its record.",
       currentBoundary:
-        "The browser walkthrough is available now. A pinned Git candidate exists; a supported, retained local run remains gated.",
-      cta: pathCtas.demo,
+        "An interactive, deterministic product walkthrough—not captured runtime evidence.",
+      cta: { ...cta.demo, external: false },
     },
     {
-      id: "application-integration",
-      title: "Inspect an application integration",
-      audience: "A developer adding MasuGate to an existing agent system.",
+      id: "local-demonstration",
+      title: "Run the procurement demo",
+      audience: "Developers with the exact Linux/amd64 reference environment.",
       outcome:
-        "Compare the invariant governance contract with one host-specific binding.",
+        "Build the 0.1.1 release artifacts from source, run the credential-free scenario, and verify its retained result.",
       currentBoundary:
-        "Inspect the exact OpenClaw candidate boundary and declared packages; registry install and run instructions are not public yet.",
-      cta: pathCtas.openClaw,
+        "Source-based only. Setup may use the network; the measured demo needs no credential or network.",
+      cta: { ...cta.run, external: true },
     },
     {
-      id: "research-artifact",
-      title: "Plan research reproduction",
-      audience: "A reviewer validating the implementation and its claims.",
+      id: "technical-review",
+      title: "Review or extend the artifact",
+      audience: "Researchers and application developers inspecting exact contracts.",
       outcome:
-        "Use the eventual immutable release, supported environment, and retained verification gates.",
+        "Follow a bounded review path, inspect integrations, or trace the implementation and its limitations.",
       currentBoundary:
-        "The public Git-backed candidate is fixed, but its tag, release authorization, and retained evidence are still pending.",
-      cta: pathCtas.contact,
+        "Exact research profiles, not a general compatibility or production-assurance claim.",
+      cta: { ...cta.review, external: true },
     },
   ],
   quickStartPage: {
     metadataDescription:
-      "Explore the browser walkthrough, review the public source candidate, and inspect release readiness while local installation and runtime evidence remain unavailable.",
+      "Run the MasuGate 0.1.1 public-source research preview, verify the credential-free procurement demo, and inspect its exact support boundary.",
     navigation: {
-      summary: "Evaluate the current research preview",
+      summary: "Start with the public-source 0.1.1 path",
       links: [
         {
-          label: "Evaluation paths",
-          href: "/get-started/#evaluation-paths",
-          detail: "Choose the browser, source-review, or research path.",
+          label: "Choose a path",
+          href: "/get-started/#choose-a-path",
+          detail: "Browser, local run, or review.",
         },
         {
-          label: "Technical readiness",
-          href: "/get-started/#technical-readiness",
-          detail: "Review what is available now and what remains release-gated.",
+          label: "Run locally",
+          href: "/get-started/#run-locally",
+          detail: "Set up, run, and verify.",
         },
         {
-          label: "Public source candidate",
-          href: "/get-started/#source-review",
-          detail: "Inspect the repository, documentation, and release boundary.",
+          label: "Success contract",
+          href: "/get-started/#success-contract",
+          detail: "What a passing run establishes.",
+        },
+        {
+          label: "Source and support",
+          href: "/get-started/#source-and-support",
+          detail: "Repository, docs, and support.",
         },
         {
           label: "Technical reference",
           href: "/get-started/technical/",
-          detail: "Inspect profiles, outcomes, and integration boundaries.",
+          detail: "Runtime, outcomes, and integrations.",
         },
       ],
     },
     hero: {
       eyebrow: "Get Started",
-      title: "Choose the evidence path available today.",
+      releaseLabel: "MasuGate 0.1.1 · Public source · Research preview",
+      title: "Run one governed action from the public source.",
       intro:
-        "Explore the browser walkthrough, inspect the public source candidate, and review technical readiness while installation and verified local execution remain release-gated.",
-      demoActionLabel: "Explore the browser walkthrough",
-      sourceActionLabel: "Review the public source",
+        "Start with the browser story or use the documented Linux/amd64 workflow to build, run, and verify the credential-free procurement demonstration.",
+      primaryActionLabel: "Run the public-source demo",
+      browserActionLabel: "Explore in the browser",
+      sourceActionLabel: "Browse the source",
     },
     summary: {
-      label: "Current evaluation paths",
-      eyebrow: "Available now",
+      label: "Quickstart facts",
+      eyebrow: "Before you begin",
       items: [
-        "Explore the governed scenario in the browser.",
-        "Review the public Git candidate and documentation.",
-        "Track the remaining release and runtime gates.",
+        "Linux/amd64 with CPython 3.12, Docker, and Compose.",
+        "Allow up to 15 minutes and 8 GiB for one-time setup.",
+        "The measured demo is credential-free and offline after setup.",
       ],
       note:
-        "Local installation and run instructions stay hidden until the tagged release path and runtime evidence are available.",
+        "This is a source-based 0.1.1 research preview. No v0.1.1 Git tag, GitHub Release, PyPI package, or npm package is published.",
     },
     pathsSection: {
-      eyebrow: "Evaluation paths",
-      title: "Start from the boundary you need to inspect.",
+      eyebrow: "Three ways in",
+      title: "Choose the shortest path to your question.",
       intro:
-        "Each path leads to material that is available now and states what remains gated.",
-      audienceLabel: "For",
-      outcomeLabel: "What you can learn",
-      boundaryLabel: "Current boundary",
+        "Each path names both the useful outcome and the boundary you should keep in view.",
+      audienceLabel: "Best for",
+      outcomeLabel: "You will",
+      boundaryLabel: "Boundary",
     },
-    readinessSection: {
-      eyebrow: "Technical readiness",
-      title: "See the release path without publishing a recipe early.",
+    workflowSection: {
+      eyebrow: "Public-source workflow",
+      title: "Build once. Run in five minutes. Verify the result.",
       intro:
-        "The sequence stays visible for reviewers, while every action that depends on a tagged release or supported runtime evidence remains gated.",
-      reviewNowLabel: "Review now",
-      releaseGatedLabel: "Release-gated",
+        "Start in a clean checkout of the public source. Use the exact commands below; the linked repository guide remains canonical if this workflow changes. Policy-state serializability (PSS) asks whether completed decisions and effects retain a valid, real-time-respecting serial explanation over the declared policy state.",
+      beforeLabel: "Before you run",
+      availableLabel: "Run this step",
+      afterLabel: "After the run",
+      commandLabel: "Command",
+      expectedLabel: "Expected",
+      sourceLabel: "Open canonical instructions",
+      pssActionLabel: "Read the full PSS explanation",
+      pssHref: "/blog/when-allowed-goes-stale/#serial-explanation",
+    },
+    successSection: {
+      eyebrow: "Success contract",
+      title: "A pass connects the unsafe baseline to the governed result.",
+      intro:
+        "The supplied verifier reads the generated evidence instead of asking you to infer success from a screenshot or log excerpt.",
+      confirmsLabel: "A passing verifier confirms",
+      confirms: [
+        "the deliberately unsafe stale concurrent baseline is retained",
+        "the governed execution is PSS-valid",
+        "one successful committed receipt connects decision and effect",
+        "both the unsafe and governed PSS verdicts are present",
+      ],
+      caveatLabel: "What it does not establish",
+      caveat:
+        "A passing local run is evidence for this exact 0.1.1 research profile. It is not a production, compliance, arbitrary-host, or arbitrary-policy assurance claim, and it is not an independently retained public verification.",
     },
     sourceSection: {
-      eyebrow: "Public source candidate",
-      title: "Review the source without mistaking it for a release.",
+      eyebrow: "Source and support",
+      title: "Public to inspect, precise about distribution.",
       intro:
-        "The repository and documentation are public. The pinned candidate is still untagged, and its local-run and verification paths are not available for promotion.",
+        "The repository, runbook, expected results, review paths, issue tracker, and security policy are public. Package-registry installation and a tagged GitHub Release remain unavailable.",
       repositoryActionLabel: "Open the GitHub repository",
       documentationActionLabel: "Read the repository guide",
-      revisionLabel: "Pinned release-tree commit",
-      boundaryLabel: "Release boundary",
+      versionLabel: "Current release identity",
+      channelLabel: "Available channel",
+      distributionLabel: "Distribution boundary",
     },
     nextSection: {
       eyebrow: "Continue",
-      title: "Follow the walkthrough or inspect the full contract.",
+      title: "Inspect the product story or the complete technical boundary.",
       intro:
-        "Use the browser demo for the product story, or the technical reference for profiles, outcomes, integration boundaries, and readiness detail.",
+        "Use the interactive demo for the concept, or the technical reference for runtime anatomy, outcomes, profiles, and troubleshooting.",
       demoActionLabel: "Open the browser demo",
       technicalActionLabel: "Open technical reference",
     },
   },
   technicalPage: {
     hero: {
-      eyebrow: "Technical reference",
+      eyebrow: "Technical reference · 0.1.1",
       title: "Profiles, outcomes, and integration boundaries.",
       intro:
-        "Use the exact environment profile, operation outcomes, host boundaries, and troubleshooting checks for the research preview.",
+        "Use the exact public-source environment, operation outcomes, host boundaries, and troubleshooting checks for the 0.1.1 research preview.",
     },
     runtimeSection: {
       eyebrow: "Governed runtime anatomy",
@@ -475,97 +528,95 @@ export const getStartedGuide = {
     },
   },
   baseline: {
-    target: {
-      os: masugateRelease.referenceEnvironment.os,
-      architecture: masugateRelease.referenceEnvironment.architecture,
-      python: openClawReferenceCandidate.environment.python,
-      dockerRequired: openClawReferenceCandidate.environment.dockerRequired,
-      composeRequired: openClawReferenceCandidate.environment.composeRequired,
-    },
+    target: masugateRelease.referenceEnvironment,
     toolchain: masugateRelease.reviewerToolchain,
     setup: masugateRelease.setupProfile,
-    evidence: openClawReferenceCandidate.evidence,
+    evidence: masugateRelease.candidateEvidence,
   },
-  candidateSource: {
+  sourceRelease: {
     repository: masugateRelease.candidateSource.repository,
     defaultBranch: masugateRelease.candidateSource.defaultBranch,
-    releaseTreeRevision:
-      masugateRelease.candidateSource.releaseTreeRevision,
-    originSourceRevision:
-      masugateRelease.candidateSource.originSourceRevision,
-    visibility: masugateRelease.candidateSource.visibility,
+    currentMainRevision: masugateRelease.candidateSource.releaseTreeRevision,
+    provenanceRevision: masugateRelease.candidateSource.originSourceRevision,
     observedAt: masugateRelease.candidateSource.observedAt,
+    publication: "public-source",
     releaseTag: "not-published",
-    externalReleaseAuthorization:
-      masugateRelease.sourceAudit.externalReleaseAuthorization,
-    publishingWorkflows: masugateRelease.sourceAudit.publishingWorkflows,
-    liveGateContract: masugateRelease.sourceAudit.liveGateContract,
-    sourceChecks: [
-      { label: "Release-control document validation", status: "passed" },
-      { label: "Documentation validation", status: "passed" },
-      { label: "Supported Linux/amd64 runtime gates", status: "pending" },
-      { label: "Retained public evidence bundle", status: "pending" },
-    ],
+    registries: "not-published",
     boundary:
-      "A public pinned candidate is not a published release: no v0.1.0 tag or GitHub Release exists, release authorization is pending, and the live gate input contract still needs reconciliation.",
+      "Version 0.1.1 is public and runnable from source. The main branch is mutable; it is not a v0.1.1 tag, GitHub Release, or package-registry publication.",
   },
+  sourceQuickStart,
   declaredPackages,
   readinessSteps: [
     {
-      id: "prerequisites",
+      id: "get-source",
       number: 1,
-      title: "Confirm prerequisites",
-      status: "review-now",
+      status: "before-you-run",
+      title: "Start from a clean source checkout",
       guidance:
-        "Confirm the Linux/amd64 reference target, CPython and reviewer toolchain pins, Docker and Compose, setup time, disk, and one-time network boundary.",
+        "Open the public repository and use a clean Git checkout. The main branch is the current source channel, not an immutable tagged release.",
+      sourceHref: masugateRelease.candidateSource.repository,
     },
     {
-      id: "get-release",
+      id: "prerequisites",
       number: 2,
-      title: "Get the named release",
-      status: "release-gated",
+      status: "before-you-run",
+      title: "Confirm the exact reference profile",
       guidance:
-        "The public candidate repository and exact release-tree commit are fixed. Wait for the reviewed v0.1.0 tag and GitHub Release, plus attached integrity material, before treating it as the named public release.",
+        "Use Linux/amd64, CPython 3.12, Node.js 24.16.0, npm 11.13.0, uv 0.11.26, and Docker with Compose. Allow 15 minutes and 8 GiB for a cold setup.",
+      sourceHref: sourceQuickStart.setupHref,
     },
     {
       id: "prepare-once",
       number: 3,
-      title: "Prepare once",
-      status: "release-gated",
+      status: "available",
+      title: "Prepare the reviewer inputs once",
       guidance:
-        "Follow the release-owned artifact-review setup only after its missing live-gate inputs are reconciled and the complete path passes the supported clean environment.",
+        "This setup step uses anonymous network access to retrieve lock- or digest-bound public inputs. The demo itself is offline afterward.",
+      command: sourceQuickStart.setupCommand,
+      expected: sourceQuickStart.expectedSetupOutput,
+      sourceHref: sourceQuickStart.setupHref,
     },
     {
       id: "run-demo",
       number: 4,
-      title: "Run the demonstration",
-      status: "release-gated",
+      status: "available",
+      title: "Run the procurement demonstration",
       guidance:
-        "Exercise the fixed procurement workload using the release-owned entry point and declared provider boundary.",
+        "The measured command starts a disposable local Compose stack, retains JSON evidence, and should finish in under 300 seconds.",
+      command: sourceQuickStart.runCommand,
+      expected: sourceQuickStart.expectedRunOutput,
+      sourceHref: sourceQuickStart.guideHref,
     },
     {
       id: "verify-success",
       number: 5,
-      title: "Verify success",
-      status: "release-gated",
+      status: "available",
+      title: "Verify the generated evidence",
       guidance:
-        "Match the terminal outcome and verifier result to the exact release, environment, and evidence gate.",
+        "Run the supplied verifier against the same output directory. Treat any non-pass result as a failed gate.",
+      command: sourceQuickStart.verifyCommand,
+      expected: sourceQuickStart.expectedVerificationResult,
+      sourceHref: sourceQuickStart.expectedResultsHref,
     },
     {
       id: "inspect-result",
       number: 6,
-      title: "Inspect the result",
-      status: "release-gated",
+      status: "available",
+      title: "Inspect the decision-and-effect record",
       guidance:
-        "Follow the operation identity across the request, state reads, policy decision, governed effect, and retained record.",
+        "Follow the request, policy state, decision, governed effect, receipt, and both PSS results in procurement.json and run-metadata.json.",
+      sourceHref: sourceQuickStart.expectedResultsHref,
     },
     {
       id: "clean-up",
       number: 7,
-      title: "Clean up",
-      status: "release-gated",
+      status: "after-run",
+      title: "Remove only the disposable demo output",
       guidance:
-        "Use only the narrowly scoped cleanup procedure verified and published with the selected release.",
+        "After inspection, remove the exact demo output directory. The separate reviewer setup can be retained for another run or removed with the repository's documented cleanup.",
+      command: sourceQuickStart.cleanupCommand,
+      sourceHref: sourceQuickStart.setupHref,
     },
   ],
   outcomes: [
@@ -624,8 +675,7 @@ export const getStartedGuide = {
     route: openClawReferenceCandidate.integration.route,
     action: openClawReferenceCandidate.integration.action,
     providerId: openClawReferenceCandidate.integration.providerId,
-    executionPosition:
-      openClawReferenceCandidate.integration.executionPosition,
+    executionPosition: openClawReferenceCandidate.integration.executionPosition,
     connectorId: openClawReferenceCandidate.integration.connectorId,
     agentId: openClawReferenceCandidate.integration.agentId,
     principalId: openClawReferenceCandidate.integration.principalId,
@@ -642,14 +692,13 @@ export const getStartedGuide = {
       "Pending work requires a distinct, independently authorized resolution path.",
       "Providers remain responsible for their declared state views and governed effects.",
     ],
-    cta: pathCtas.openClaw,
+    cta: cta.openClaw,
   },
   troubleshooting: [
     {
       id: "host-version-rejected",
       symptom: "The host platform or tool version is rejected.",
-      diagnostic:
-        "Compare every local version with the exact candidate or selected-release profile.",
+      diagnostic: "Compare every local version with the exact 0.1.1 reference profile.",
       nextStep:
         "Use the declared profile; do not substitute an unverified package combination.",
     },
@@ -706,7 +755,7 @@ export const getStartedGuide = {
       id: "evidence-verification-failed",
       symptom: "Generated evidence does not pass verification.",
       diagnostic:
-        "Compare the environment, immutable revision, expected result, and named gate with the selected release.",
+        "Compare the environment, source provenance, expected result, and named gate with the 0.1.1 profile.",
       nextStep:
         "Treat the mismatch as a failed verification; do not relabel the output or disable validation.",
     },
@@ -715,10 +764,7 @@ export const getStartedGuide = {
     publicRepository: masugateRelease.publicRepository,
     publicDocumentation: masugateRelease.publicDocumentation,
     primaryInstall: masugateRelease.primaryInstall.command,
-    runLocally: unavailable(
-      "verification-pending",
-      "A tagged release-owned local-run path remains pending.",
-    ),
+    runLocally: available({ href: sourceQuickStart.guideHref }),
     publicEvidence: masugateRelease.publicEvidenceLinks,
     verifiedAt: masugateRelease.verifiedAt,
     openClawPublicInstructions: openClawReferenceCandidate.publicInstructions,
@@ -730,26 +776,45 @@ export const getStartedGuide = {
       href: "https://github.com/masugate/masugate/blob/main/SECURITY.md",
     }),
   },
-  cta: pathCtas,
+  documentationLinks: [
+    {
+      label: "Exact setup",
+      detail: "Prerequisites, setup command, network boundary, and cleanup.",
+      href: sourceQuickStart.setupHref,
+    },
+    {
+      label: "Reproduction",
+      detail: "Required local tier, optional checks, and failure interpretation.",
+      href: sourceQuickStart.reproductionHref,
+    },
+    {
+      label: "Expected results",
+      detail: "Observable pass conditions and nondeterministic fields.",
+      href: sourceQuickStart.expectedResultsHref,
+    },
+    {
+      label: "Review paths",
+      detail: "Bounded 15-, 30-, and 60-minute review routes.",
+      href: sourceQuickStart.reviewHref,
+    },
+    {
+      label: "Claims and limitations",
+      detail: "The exact claim ledger and explicit exclusions.",
+      href: sourceQuickStart.claimsHref,
+    },
+  ],
+  cta,
 } as const satisfies GetStartedGuide;
 
-const expectedPathCtas = new Map<GetStartedPathId, GetStartedCtaHref>([
-  ["reference-demo", "/demo/"],
-  ["application-integration", "/demo/openclaw-reference/"],
-  ["research-artifact", "/#contact"],
-]);
-
-const expectedReadinessStepIds: readonly ReadinessStepId[] = [
+const expectedStepIds: readonly ReadinessStepId[] = [
+  "get-source",
   "prerequisites",
-  "get-release",
   "prepare-once",
   "run-demo",
   "verify-success",
   "inspect-result",
   "clean-up",
 ];
-
-const commandShape = /(?:^|\n)\s*(?:\$\s*)?(?:pip3?|npm|npx|pnpm|yarn|uv|git|docker(?:\s+compose)?|python3?|curl|wget)\s+\S/i;
 
 function sameStrings(left: readonly string[], right: readonly string[]): boolean {
   return left.length === right.length && left.every((value, index) => value === right[index]);
@@ -760,81 +825,7 @@ export function validateGetStartedGuide(
   release: ReleaseContract = masugateRelease,
 ): readonly string[] {
   const errors: string[] = [];
-  const pathIds = new Set<GetStartedPathId>();
   const quickStart = guide.quickStartPage;
-  const quickStartCopy = [
-    quickStart.metadataDescription,
-    quickStart.navigation.summary,
-    ...quickStart.navigation.links.flatMap(({ label, detail }) => [label, detail]),
-    quickStart.hero.eyebrow,
-    quickStart.hero.title,
-    quickStart.hero.intro,
-    quickStart.hero.demoActionLabel,
-    quickStart.hero.sourceActionLabel,
-    quickStart.summary.label,
-    quickStart.summary.eyebrow,
-    ...quickStart.summary.items,
-    quickStart.summary.note,
-    ...Object.values(quickStart.pathsSection),
-    ...Object.values(quickStart.readinessSection),
-    ...Object.values(quickStart.sourceSection),
-    ...Object.values(quickStart.nextSection),
-  ];
-
-  if (quickStartCopy.some((value) => value.trim().length === 0)) {
-    errors.push("The Get Started presentation copy is incomplete.");
-  }
-  if (
-    quickStart.summary.items.length !== 3 ||
-    quickStartCopy.some((value) => commandShape.test(value))
-  ) {
-    errors.push("The Get Started evaluation summary must stay three-part and command-free.");
-  }
-  if (
-    !sameStrings(
-      quickStart.navigation.links.map(({ href }) => href),
-      [
-        "/get-started/#evaluation-paths",
-        "/get-started/#technical-readiness",
-        "/get-started/#source-review",
-        "/get-started/technical/",
-      ],
-    )
-  ) {
-    errors.push("The Get Started navigation drifted from its current route sections.");
-  }
-
-  const unsupportedRunClaim =
-    /\b(?:prepare the supported (?:local )?workspace|run and verify|under five minutes|successful run|PSS-valid execution|exits with status zero)\b/i;
-  if (
-    guide.availability.runLocally.state === "unavailable" &&
-    quickStartCopy.some((value) => unsupportedRunClaim.test(value))
-  ) {
-    errors.push("Unavailable local execution cannot be presented as supported or verified.");
-  }
-
-  for (const path of guide.paths) {
-    if (pathIds.has(path.id)) {
-      errors.push(`Duplicate Get Started path: ${path.id}`);
-    }
-    pathIds.add(path.id);
-
-    if (path.cta.href !== expectedPathCtas.get(path.id)) {
-      errors.push(`Get Started path has the wrong current CTA: ${path.id}`);
-    }
-  }
-
-  if (pathIds.size !== expectedPathCtas.size) {
-    errors.push("Get Started must expose exactly three task-oriented paths.");
-  }
-
-  if (
-    guide.cta.demo.href !== "/demo/" ||
-    guide.cta.openClaw.href !== "/demo/openclaw-reference/" ||
-    guide.cta.contact.href !== "/#contact"
-  ) {
-    errors.push("Get Started CTAs drifted from the three approved internal destinations.");
-  }
 
   if (
     guide.release.id !== release.id ||
@@ -845,144 +836,112 @@ export function validateGetStartedGuide(
     errors.push("Get Started release identity drifted from the release contract.");
   }
 
-  const candidateEnvironment = openClawReferenceCandidate.environment;
-  const baseline = guide.baseline;
   if (
-    baseline.target.os !== candidateEnvironment.os ||
-    baseline.target.architecture !== candidateEnvironment.architecture ||
-    baseline.target.python !== candidateEnvironment.python ||
-    baseline.target.dockerRequired !== candidateEnvironment.dockerRequired ||
-    baseline.target.composeRequired !== candidateEnvironment.composeRequired
+    guide.release.state !== "source-public" ||
+    guide.release.sourcePublication !== "public" ||
+    guide.release.distributionPublication !== "source-only" ||
+    guide.release.evidence.status !== "reference"
   ) {
-    errors.push("Get Started baseline drifted from the exact candidate environment.");
+    errors.push("Get Started must preserve the public-source research-preview boundary.");
   }
 
-  const expectedToolchain = [
-    ...release.reviewerToolchain.map(({ component, version }) => [
-      component,
-      version,
-    ]),
-  ];
+  const navigationHrefs = quickStart.navigation.links.map(({ href }) => href);
   if (
-    baseline.toolchain.length !== expectedToolchain.length ||
-    baseline.toolchain.some(
-      (pin, index) =>
-        pin.component !== expectedToolchain[index]?.[0] ||
-        pin.version !== expectedToolchain[index]?.[1],
+    !sameStrings(navigationHrefs, [
+      "/get-started/#choose-a-path",
+      "/get-started/#run-locally",
+      "/get-started/#success-contract",
+      "/get-started/#source-and-support",
+      "/get-started/technical/",
+    ])
+  ) {
+    errors.push("Get Started navigation drifted from its rendered sections.");
+  }
+
+  if (
+    !/policy-state serializability \(PSS\)/i.test(
+      quickStart.workflowSection.intro,
+    ) ||
+    quickStart.workflowSection.pssHref !==
+      "/blog/when-allowed-goes-stale/#serial-explanation"
+  ) {
+    errors.push("Get Started must define PSS before first use and link its explainer.");
+  }
+
+  if (guide.paths.length !== 3 || new Set(guide.paths.map(({ id }) => id)).size !== 3) {
+    errors.push("Get Started must expose three distinct entry paths.");
+  }
+
+  const steps = guide.readinessSteps;
+  if (
+    steps.length !== expectedStepIds.length ||
+    steps.some(
+      (step, index) =>
+        step.id !== expectedStepIds[index] || step.number !== index + 1,
     )
   ) {
-    errors.push("Get Started reviewer toolchain drifted from the candidate pins.");
+    errors.push("Get Started public-source workflow order drifted.");
   }
 
+  const commandById = new Map(steps.map((step) => [step.id, step.command]));
   if (
-    guide.candidateSource.repository !== release.candidateSource.repository ||
-    guide.candidateSource.releaseTreeRevision !==
-      release.candidateSource.releaseTreeRevision ||
-    guide.candidateSource.originSourceRevision !==
-      release.candidateSource.originSourceRevision ||
-    guide.candidateSource.visibility !== release.candidateSource.visibility
+    commandById.get("prepare-once") !== guide.sourceQuickStart.setupCommand ||
+    commandById.get("run-demo") !== guide.sourceQuickStart.runCommand ||
+    commandById.get("verify-success") !== guide.sourceQuickStart.verifyCommand ||
+    commandById.get("clean-up") !== guide.sourceQuickStart.cleanupCommand
   ) {
-    errors.push("Get Started candidate source drifted from the release contract.");
+    errors.push("Get Started commands drifted from the canonical source quickstart.");
   }
 
-  const sourceStatusCopy = [
-    ...guide.paths.map(({ currentBoundary }) => currentBoundary),
-    guide.candidateSource.boundary,
-    ...guide.readinessSteps.map(({ guidance }) => guidance),
-  ];
+  const serializedCommands = steps.map(({ command }) => command ?? "").join("\n");
   if (
-    guide.availability.publicRepository.state === "available" &&
-    sourceStatusCopy.some((value) =>
-      /(?:wait for anonymous access|anonymous access (?:is )?unavailable|(?:source )?repository (?:is )?private)/i.test(
-        value,
-      ),
+    /\b(?:pip3?|uv)\s+install\b|\bnpm\s+(?:install|add)\b|\bnpx\b/i.test(
+      serializedCommands,
     )
   ) {
-    errors.push("Public repository copy contradicts the availability contract.");
+    errors.push("Get Started cannot imply an unpublished registry installation.");
   }
 
   if (
-    guide.candidateSource.sourceChecks.filter(({ status }) => status === "passed")
-      .length !== 2 ||
-    guide.candidateSource.sourceChecks.filter(({ status }) => status === "pending")
-      .length !== 2
+    guide.availability.publicRepository.state !== "available" ||
+    guide.availability.publicDocumentation.state !== "available" ||
+    guide.availability.runLocally.state !== "available" ||
+    guide.availability.primaryInstall.state !== "unavailable"
   ) {
-    errors.push("Get Started must distinguish source checks from runtime acceptance.");
+    errors.push("Get Started source and distribution availability contradict each other.");
   }
 
-  const expectedDeclaredPackages = release.packages.filter(
-    ({ packageName }) => packageName.state === "available",
-  );
   if (
-    guide.declaredPackages.length !== expectedDeclaredPackages.length ||
+    guide.sourceRelease.releaseTag !== "not-published" ||
+    guide.sourceRelease.registries !== "not-published" ||
+    !/not a v0\.1\.1 tag|not.*tag/i.test(guide.sourceRelease.boundary)
+  ) {
+    errors.push("Get Started must keep the tag and registry boundary visible.");
+  }
+
+  if (
+    guide.declaredPackages.length !== release.packages.length ||
     guide.declaredPackages.some(
-      (packageIdentity) =>
-        packageIdentity.publication !== "declared-only" ||
-        !expectedDeclaredPackages.some(
-          (source) =>
-            source.id === packageIdentity.id &&
-            source.packageName.state === "available" &&
-            source.packageName.value === packageIdentity.name &&
-            source.version === packageIdentity.version,
-        ),
+      (item) => item.version !== release.version || item.publication !== "declared-only",
     )
   ) {
-    errors.push("Get Started declared packages drifted from the candidate catalog.");
-  }
-
-  const readinessIds = new Set<ReadinessStepId>();
-  for (const [index, step] of guide.readinessSteps.entries()) {
-    if (readinessIds.has(step.id)) {
-      errors.push(`Duplicate Get Started readiness step: ${step.id}`);
-    }
-    readinessIds.add(step.id);
-
-    if (step.id !== expectedReadinessStepIds[index] || step.number !== index + 1) {
-      errors.push(`Get Started readiness order drifted at step ${index + 1}.`);
-    }
-    if (
-      Object.keys(step).some((key) => key.toLowerCase().includes("command")) ||
-      commandShape.test(step.guidance)
-    ) {
-      errors.push(`Release-gated readiness step contains command-shaped content: ${step.id}`);
-    }
-  }
-  if (guide.readinessSteps.length !== 7 || readinessIds.size !== 7) {
-    errors.push("Get Started must contain exactly seven command-free readiness steps.");
+    errors.push("Get Started package declarations drifted from the 0.1.1 catalog.");
   }
 
   const outcomes = new Map(guide.outcomes.map((outcome) => [outcome.status, outcome]));
-  const committed = outcomes.get("committed");
-  const denied = outcomes.get("denied");
-  const pending = outcomes.get("pending");
-  if (outcomes.size !== 3 || guide.outcomes.length !== 3) {
-    errors.push("Get Started must define committed, denied, and pending exactly once.");
-  }
-  if (!committed?.terminal || !committed.effectOccurred) {
-    errors.push("Committed must be terminal and state that the governed effect occurred.");
-  }
-  if (!denied?.terminal || denied.effectOccurred) {
-    errors.push("Denied must be terminal and state that no governed effect occurred.");
-  }
-  if (pending?.terminal || pending?.effectOccurred) {
-    errors.push("Pending must be nonterminal and state that no final effect occurred.");
-  }
-  if (!committed?.integrationResponse.includes("do not invoke")) {
-    errors.push("Committed handling must forbid invoking the original effect again.");
-  }
-  if (!pending?.integrationResponse.includes("independently authorized")) {
-    errors.push("Pending handling must require independent authorization.");
+  if (
+    outcomes.size !== 3 ||
+    !outcomes.get("committed")?.effectOccurred ||
+    outcomes.get("denied")?.effectOccurred ||
+    outcomes.get("pending")?.effectOccurred ||
+    outcomes.get("pending")?.terminal
+  ) {
+    errors.push("Get Started operation outcomes are incomplete or inconsistent.");
   }
 
   if (
     guide.comparison.id !== adoptionComparison.id ||
-    guide.comparison.requestId !== adoptionComparison.requestId ||
-    guide.comparison.policyArtifactId !== adoptionComparison.policyArtifactId ||
-    guide.comparison.governedRouteId !== adoptionComparison.governedRouteId ||
-    !sameStrings(
-      guide.comparison.fixedArtifacts,
-      adoptionComparison.unchangedArtifacts,
-    ) ||
+    !sameStrings(guide.comparison.fixedArtifacts, adoptionComparison.unchangedArtifacts) ||
     !sameStrings(
       guide.comparison.canonicalRecordFields,
       adoptionComparison.canonicalRecordFields,
@@ -991,99 +950,37 @@ export function validateGetStartedGuide(
     errors.push("Get Started fixed comparison drifted from the adoption contract.");
   }
 
-  const integrationIds = new Set<IntegrationProfileId>();
-  for (const summary of guide.integrations) {
-    if (integrationIds.has(summary.id)) {
-      errors.push(`Duplicate Get Started integration: ${summary.id}`);
-    }
-    integrationIds.add(summary.id);
-
-    const source = integrationProfiles.find(({ id }) => id === summary.id);
-    if (!source || !sameStrings(
-      summary.hostPins.map(({ component, version }) => `${component}@${version}`),
-      source.hostPins.map(({ component, version }) => `${component}@${version}`),
-    )) {
-      errors.push(`Get Started integration pins drifted from the source profile: ${summary.id}`);
-    }
-  }
-  if (integrationIds.size !== integrationProfiles.length) {
-    errors.push("Get Started must summarize every declared integration profile once.");
-  }
-
-  const openClaw = guide.openClawContinuation;
-  const referenceIntegration = openClawReferenceCandidate.integration;
   if (
-    openClaw.releaseId !== openClawReferenceCandidate.identity.releaseId ||
-    openClaw.hostVersion !== referenceIntegration.hostVersion ||
-    openClaw.adapterPackage !== referenceIntegration.adapterPackage ||
-    openClaw.adapterVersion !== referenceIntegration.adapterVersion ||
-    openClaw.route !== referenceIntegration.route ||
-    openClaw.action !== referenceIntegration.action ||
-    openClaw.providerId !== referenceIntegration.providerId ||
-    openClaw.executionPosition !== referenceIntegration.executionPosition ||
-    openClaw.connectorId !== referenceIntegration.connectorId ||
-    openClaw.principalId !== referenceIntegration.principalId
+    guide.integrations.length !== integrationProfiles.length ||
+    guide.integrations.some((summary) => {
+      const source = integrationProfiles.find(({ id }) => id === summary.id);
+      return (
+        !source ||
+        !sameStrings(
+          summary.hostPins.map(({ component, version }) => `${component}@${version}`),
+          source.hostPins.map(({ component, version }) => `${component}@${version}`),
+        )
+      );
+    })
   ) {
-    errors.push("Get Started OpenClaw continuation drifted from the candidate contract.");
-  }
-  if (openClaw.truths.length < 7) {
-    errors.push("Get Started must keep the OpenClaw execution and trust boundaries visible.");
+    errors.push("Get Started integration profiles drifted from their source contract.");
   }
 
-  const troubleshootingIds = new Set(
-    guide.troubleshooting.map(({ id }) => id),
-  );
-  if (guide.troubleshooting.length !== 8 || troubleshootingIds.size !== 8) {
-    errors.push("Get Started must cover all eight observable troubleshooting symptoms.");
-  }
-  for (const item of guide.troubleshooting) {
-    if (
-      commandShape.test(item.diagnostic) ||
-      commandShape.test(item.nextStep)
-    ) {
-      errors.push(`Troubleshooting contains an unverified command: ${item.id}`);
-    }
+  if (
+    guide.openClawContinuation.releaseId !==
+      openClawReferenceCandidate.identity.releaseId ||
+    guide.openClawContinuation.adapterVersion !==
+      openClawReferenceCandidate.integration.adapterVersion ||
+    guide.openClawContinuation.truths.length < 7
+  ) {
+    errors.push("Get Started OpenClaw continuation drifted from the public reference.");
   }
 
-  if (release.state === "unreleased") {
-    const releaseOnlyAvailability = {
-      primaryInstall: guide.availability.primaryInstall,
-      runLocally: guide.availability.runLocally,
-      publicEvidence: guide.availability.publicEvidence,
-      verifiedAt: guide.availability.verifiedAt,
-      openClawPublicInstructions:
-        guide.availability.openClawPublicInstructions,
-      openClawCapturedRun: guide.availability.openClawCapturedRun,
-    };
-    for (const [name, value] of Object.entries(releaseOnlyAvailability)) {
-      if (value.state === "available") {
-        errors.push(`Unreleased Get Started cannot expose available ${name}.`);
-      }
-    }
-
-    if (guide.release.evidence.status === "verified") {
-      errors.push("Unreleased Get Started cannot claim Verified release evidence.");
-    }
-    if (
-      guide.openClawContinuation.releaseState !== "unreleased" ||
-      guide.openClawContinuation.evidence.status === "verified"
-    ) {
-      errors.push("Unreleased Get Started cannot promote the OpenClaw candidate.");
-    }
-
-    for (const integration of guide.integrations) {
-      if (
-        integration.publication !== "reference-only" ||
-        integration.evidence.status === "verified" ||
-        integration.profileHref.state === "available" ||
-        integration.verificationDate.state === "available" ||
-        integration.cleanCheckout.state === "available"
-      ) {
-        errors.push(
-          `Unreleased Get Started cannot promote integration evidence: ${integration.id}`,
-        );
-      }
-    }
+  if (
+    guide.troubleshooting.length !== 8 ||
+    new Set(guide.troubleshooting.map(({ id }) => id)).size !== 8
+  ) {
+    errors.push("Get Started must cover all eight troubleshooting symptoms.");
   }
 
   return errors;

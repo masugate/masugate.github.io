@@ -250,23 +250,40 @@ function assertMasuGateChrome(html, path) {
   );
 
   const primaryNavigationLinks = linksIn(primaryNavigation);
-  for (const href of [
-    "/blog/when-time-becomes-agent-policy/",
-    "/blog/policy-as-code-not-prompt/",
-    "/blog/when-allowed-goes-stale/",
-  ]) {
+  const blogPublications = [
+    {
+      href: "/blog/masugate-public-source-release/",
+      title:
+        "MasuGate Is Now Public: From Research Prototype to Product-Oriented Release",
+    },
+    {
+      href: "/blog/when-time-becomes-agent-policy/",
+      title: "Approved at 5:05: When Time Becomes Part of an Agent Policy",
+    },
+    {
+      href: "/blog/policy-as-code-not-prompt/",
+      title: "Policy as Code, Not Prompt: A Practical Introduction",
+    },
+    {
+      href: "/blog/when-allowed-goes-stale/",
+      title:
+        "When “Allowed” Goes Stale: Why Concurrent Agents Need Stateful Governance",
+    },
+  ];
+  for (const publication of blogPublications) {
+    const matchingLinks = primaryNavigationLinks.filter(
+      ({ href }) => href === publication.href,
+    );
+    assert.equal(
+      matchingLinks.length,
+      1,
+      `${path}: Blog pull-down must contain ${publication.href} exactly once`,
+    );
     assert.ok(
-      primaryNavigationLinks.some((link) => link.href === href),
-      `${path}: Blog pull-down is missing technical article ${href}`,
+      matchingLinks[0].label.includes(publication.title),
+      `${path}: Blog pull-down title drifted for ${publication.href}`,
     );
   }
-  assert.equal(
-    primaryNavigationLinks.some(
-      ({ href }) => href === "/blog/masugate-public-source-release/",
-    ),
-    false,
-    `${path}: the release announcement belongs in the separate update banner`,
-  );
 
   assert.doesNotMatch(
     html,
@@ -326,11 +343,11 @@ test("server-renders the MasuGate primary routes through one gated shell", async
     ],
     [
       "/demo/openclaw-reference/",
-      /Inspect the candidate-backed purchase path\./,
+      /Inspect the public-source purchase boundary\./,
     ],
     [
       "/get-started/",
-      /Choose the evidence path available today\./,
+      /Run one governed action from the public source\./,
     ],
     [
       "/get-started/technical/",
@@ -542,7 +559,9 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
     "Keep the governance contract fixed. Change the host binding.",
     "Host-native edge · changes",
     "Review Reference adapter profiles",
-    "View release-candidate documentation",
+    "MasuGate 0.1.1 · separate source reference",
+    "Inspect OpenClaw source reference",
+    "Run MasuGate from public source",
     "Request a customized demo",
   ]) {
     assert.ok(text.includes(requiredCopy), `Demo is missing: ${requiredCopy}`);
@@ -767,7 +786,7 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
   assert.ok(!textContent(outcome).includes(denseTakeaway));
   assert.match(
     html,
-    /href="\/get-started\/"[^>]*>[^<]*View release-candidate documentation/i,
+    /href="https:\/\/github\.com\/masugate\/masugate#five-minute-local-demonstration"[^>]*>[^<]*Run MasuGate from public source/i,
   );
   assert.match(
     html,
@@ -776,7 +795,7 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
   assert.match(
     html,
     /href="\/demo\/openclaw-reference\/"/i,
-    "Demo must link to the separate OpenClaw reference candidate",
+    "Demo must link to the separate OpenClaw public-source reference",
   );
 
   const boundary = sectionContaining(
@@ -804,7 +823,7 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
       `Demo portability bridge is missing: ${framework}`,
     );
   }
-  assert.match(textContent(portability), /Reference candidate bindings/i);
+  assert.match(textContent(portability), /Public-source Reference bindings/i);
   for (const logo of [
     "/logos/openclaw.svg",
     "/logos/langchain.svg",
@@ -832,7 +851,7 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
   assert.doesNotMatch(html, /\bSAGE\b/);
 });
 
-test("server-renders the bounded Milestone 3B OpenClaw reference candidate", async () => {
+test("server-renders the bounded OpenClaw public-source reference", async () => {
   const response = await render("/demo/openclaw-reference/");
   const html = await response.text();
   const text = textContent(html);
@@ -842,14 +861,16 @@ test("server-renders the bounded Milestone 3B OpenClaw reference candidate", asy
   assertMasuGateChrome(html, "/demo/openclaw-reference");
 
   for (const requiredCopy of [
-    "Milestone 3B · OpenClaw reference candidate",
-    "Inspect the candidate-backed purchase path.",
-    "Release: Unreleased",
+    "MasuGate 0.1.1 · OpenClaw reference",
+    "Inspect the public-source purchase boundary.",
+    "Version: 0.1.1",
+    "Channel: Public source",
     "Maturity: Experimental",
     "Evidence: Reference",
-    "masugate-openclaw-reference/0.1.0",
+    "The source and runbook are public. Distribution remains source-only.",
+    "masugate-openclaw-reference/0.1.1",
     "OpenClaw 2026.7.1",
-    "@masugate/openclaw@0.1.0",
+    "@masugate/openclaw@0.1.1",
     "masugate_governed_action",
     "spend.purchase",
     "masugate.spend.reference",
@@ -864,17 +885,18 @@ test("server-renders the bounded Milestone 3B OpenClaw reference candidate", asy
     "Pinned OpenClaw host round trip",
     "Clean-artifact concurrent procurement workload",
     "The source gate is designed to assert:",
+    "The verifier checks policy-state serializability (PSS): whether terminal decisions and effects retain a valid, real-time-respecting serial explanation over declared policy state",
     "PostgreSQL MasuGate state; SQLite effect fixture",
     "masugate/masugate",
-    "6b3852ecb70bd55cb22bf78769028b9b52af9735",
-    "Two document validators passed; runtime acceptance did not run.",
-    "Reconcile the live release gate",
-    "Intake complete",
-    "Still required",
-    "No website stage is release-backed yet.",
-    "Stage 1 · Related candidate path",
+    "Public source and local runbook available; tag and registries unpublished.",
+    "Publish the source-based run contract",
+    "Public now",
+    "Still unpublished",
+    "Related to the walkthrough, but not the same evidence.",
+    "Stage 1 · Related source path",
     "Stage 2 · Related workload",
     "Stage 3 · Simulation only",
+    "Run from public source",
     "Return to the interactive walkthrough",
     "Request a customized demo",
   ]) {
@@ -886,6 +908,15 @@ test("server-renders the bounded Milestone 3B OpenClaw reference candidate", asy
 
   assert.match(
     html,
+    /<dt>Observed main commit<\/dt><dd><code>[0-9a-f]{40}<\/code><\/dd>/i,
+    "OpenClaw reference must identify the observed mutable main revision",
+  );
+  assert.match(
+    html,
+    /href="https:\/\/github\.com\/masugate\/masugate#five-minute-local-demonstration"[^>]*>[\s\S]*?Run from public source/i,
+  );
+  assert.match(
+    html,
     /href="\/demo\/"[^>]*>[\s\S]*?Return to the interactive walkthrough/i,
   );
   assert.match(
@@ -895,16 +926,11 @@ test("server-renders the bounded Milestone 3B OpenClaw reference candidate", asy
 
   assert.doesNotMatch(text, /Evidence:\s*Verified/i);
   assert.doesNotMatch(text, /Presentation:\s*Recorded/i);
-  assert.equal(
-    linksIn(html).some(({ label }) => /\bRun locally\b/i.test(label)),
-    false,
-    "Candidate page must not offer a Run locally link",
-  );
+  assert.doesNotMatch(text, /Release:\s*Unreleased/i);
   assert.doesNotMatch(
     text,
     /\b(?:pip|npm|pnpm|yarn)\s+(?:install|add)\b|\buv\s+sync\b|\bdocker\s+compose\b/i,
   );
-  assert.doesNotMatch(mainMarkup(html), /href="https?:\/\//i);
   assert.doesNotMatch(text, /\/Users\//);
 });
 
@@ -1158,21 +1184,16 @@ test("renders explicit evidence, presentation, release, and maturity status", as
 
   const getStartedResponse = await render("/get-started/");
   const getStartedHtml = await getStartedResponse.text();
-  const getStartedTextMarkup = getStartedHtml.replace(/<!-- -->/g, "");
+  const getStartedText = textContent(getStartedHtml);
 
   assert.equal(getStartedResponse.status, 200);
-  assert.match(
-    getStartedTextMarkup,
-    /Choose the evidence path available today\./,
-  );
-  assert.match(
-    getStartedTextMarkup,
-    /Local installation and run instructions stay hidden/,
-  );
-  assert.doesNotMatch(getStartedTextMarkup, /Evidence: Verified/);
+  assert.match(getStartedText, /MasuGate 0\.1\.1 · Public source · Research preview/);
+  assert.match(getStartedText, /Run one governed action from the public source\./);
+  assert.match(getStartedText, /No v0\.1\.1 Git tag, GitHub Release, PyPI package, or npm package is published\./);
+  assert.doesNotMatch(getStartedText, /Evidence: Verified|Release: Unreleased/);
 });
 
-test("server-renders the release-safe Get Started evaluation guide", async () => {
+test("server-renders the public-source 0.1.1 Get Started workflow", async () => {
   const response = await render("/get-started/");
   const html = await response.text();
   const text = textContent(html);
@@ -1183,24 +1204,31 @@ test("server-renders the release-safe Get Started evaluation guide", async () =>
 
   for (const requiredCopy of [
     "Get Started",
-    "Choose the evidence path available today.",
-    "Available now",
-    "Explore the governed scenario in the browser.",
-    "Review the public Git candidate and documentation.",
-    "Track the remaining release and runtime gates.",
-    "Evaluation paths",
-    "Start from the boundary you need to inspect.",
-    "Explore the reference walkthrough",
-    "Inspect an application integration",
-    "Plan research reproduction",
-    "Technical readiness",
-    "See the release path without publishing a recipe early.",
-    "Confirm prerequisites",
-    "Release-gated",
-    "Public source candidate",
-    "Review the source without mistaking it for a release.",
-    "Pinned release-tree commit",
-    "Release boundary",
+    "MasuGate 0.1.1 · Public source · Research preview",
+    "Run one governed action from the public source.",
+    "Before you begin",
+    "Linux/amd64 with CPython 3.12, Docker, and Compose.",
+    "No v0.1.1 Git tag, GitHub Release, PyPI package, or npm package is published.",
+    "Three ways in",
+    "Choose the shortest path to your question.",
+    "See the governed flow",
+    "Run the procurement demo",
+    "Review or extend the artifact",
+    "Public-source workflow",
+    "Build once. Run in five minutes. Verify the result.",
+    "Policy-state serializability (PSS) asks whether completed decisions and effects retain a valid, real-time-respecting serial explanation over the declared policy state.",
+    "Read the full PSS explanation",
+    "Prepare the reviewer inputs once",
+    "Run the procurement demonstration",
+    "Verify the generated evidence",
+    "Remove only the disposable demo output",
+    "Success contract",
+    "A pass connects the unsafe baseline to the governed result.",
+    "What it does not establish",
+    "Source and support",
+    "Public to inspect, precise about distribution.",
+    "Public source on main",
+    "Package-registry installation and a tagged GitHub Release remain unavailable.",
     "Open the browser demo",
     "Open technical reference",
   ]) {
@@ -1217,6 +1245,14 @@ test("server-renders the release-safe Get Started evaluation guide", async () =>
   for (const href of [
     "https://github.com/masugate/masugate",
     "https://github.com/masugate/masugate/blob/main/README.md",
+    "https://github.com/masugate/masugate#five-minute-local-demonstration",
+    "https://github.com/masugate/masugate/blob/main/docs/artifact-evaluation.md#exact-one-time-setup",
+    "https://github.com/masugate/masugate/blob/main/docs/reproduction.md",
+    "https://github.com/masugate/masugate/blob/main/docs/expected-results.md",
+    "https://github.com/masugate/masugate/blob/main/REVIEWING.md",
+    "https://github.com/masugate/masugate/blob/main/docs/claims-and-limitations.md",
+    "https://github.com/masugate/masugate/issues",
+    "https://github.com/masugate/masugate/blob/main/SECURITY.md",
   ]) {
     assert.ok(
       linksIn(html).some((link) => link.href === href),
@@ -1224,15 +1260,36 @@ test("server-renders the release-safe Get Started evaluation guide", async () =>
     );
   }
 
-  assert.equal(countMatches(mainMarkup(html), /<pre\b/gi), 0);
-  assert.match(html, /id="evaluation-paths"/i);
-  assert.match(html, /id="technical-readiness"/i);
-  assert.match(html, /id="source-review"/i);
+  const main = mainMarkup(html);
+  assert.equal(countMatches(main, /<pre\b[^>]*tabindex="0"/gi), 4);
+  assert.match(html, /id="choose-a-path"/i);
+  assert.match(html, /id="run-locally"/i);
+  assert.match(html, /id="success-contract"/i);
+  assert.match(html, /id="source-and-support"/i);
+  assert.match(
+    html,
+    /href="\/blog\/when-allowed-goes-stale\/#serial-explanation"[^>]*>[^<]*Read the full PSS explanation/i,
+  );
+  for (const command of [
+    "scripts/prepare-reference-demo.py",
+    "scripts/run_reference_demos.py procurement",
+    "scripts/verify-flagship-demo.py",
+    "rm -r -- /tmp/masugate-five-minute-demo",
+  ]) {
+    assert.ok(text.includes(command), `Get Started is missing command: ${command}`);
+  }
+  for (const expected of [
+    "MasuGate reviewer inputs: /tmp/masugate-reviewer-setup/reviewer.env",
+    "MasuGate procurement evidence: /tmp/masugate-five-minute-demo/evidence/procurement.json",
+    'JSON containing "result": "PASS"',
+  ]) {
+    assert.ok(text.includes(expected), `Get Started is missing expected output: ${expected}`);
+  }
   assert.doesNotMatch(
     text,
-    /prepare-reference-demo|run_reference_demos|verify-flagship-demo|PSS-valid execution/i,
+    /\b(?:pip3?|uv)\s+install\b|\bnpm\s+(?:install|add)\b|\bnpx\b/i,
   );
-  assert.doesNotMatch(text, /Milestone 4/i);
+  assert.doesNotMatch(text, /Choose the evidence path available today|Release-gated|Public source candidate/i);
 });
 
 test("keeps detailed technical material on the Get Started subpage", async () => {
@@ -1243,8 +1300,11 @@ test("keeps detailed technical material on the Get Started subpage", async () =>
   assert.equal(response.status, 200);
   assertMasuGateChrome(html, "/get-started/technical");
   for (const requiredCopy of [
-    "Technical reference",
+    "Technical reference · 0.1.1",
     "Profiles, outcomes, and integration boundaries.",
+    "Version: 0.1.1",
+    "Channel: Public source",
+    "The source and runbook are public.",
     "Governed runtime anatomy",
     "Inspect the complete protected path.",
     "One decision needs one protected path",
@@ -1328,8 +1388,11 @@ test("server-renders the release announcement and complete editorial series", as
       path: "/blog/masugate-public-source-release/",
       required: [
         "The gate is open.",
+        "opening the MasuGate 0.1.0 research-preview repository",
         "Update · current review target",
+        "corrective research-preview update to the initial 0.1.0 source opening",
         "Reviewers should use 0.1.1",
+        "policy-state serializability (PSS) measurements",
         "The paper explains the technique. The repository engineers the path.",
         "Closer to a product-level engineering shape—without overclaiming maturity.",
         "Governance should meet agents where they already run.",

@@ -40,7 +40,7 @@ export function isAvailable<T>(
   return availability.state === "available";
 }
 
-export type ReleaseState = "released" | "unreleased";
+export type ReleaseState = "released" | "source-public" | "unreleased";
 export type EvidenceStatus = "reference" | "verified";
 export type Maturity = "experimental" | "planned";
 export type PathRequirement = "required" | "optional";

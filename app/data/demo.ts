@@ -16,6 +16,7 @@ import { getIntegrationProfile } from "./integrations";
 import { getPolicyArtifact, type PolicyArtifact } from "./policies";
 import {
   isPublishedRelease,
+  isSourcePublicRelease,
   masugateRelease,
   type ReleaseContract,
 } from "./release";
@@ -619,11 +620,14 @@ function artifactsForStage(stageId: ScenarioStageId): readonly DemoArtifact[] {
 }
 
 function selectDemoCta(release: ReleaseContract = masugateRelease) {
-  if (isPublishedRelease(release)) {
+  if (isSourcePublicRelease(release)) {
     return {
       primary: {
-        label: "Try MasuGate locally",
-        href: release.publicDocumentation.value.href,
+        label:
+          isPublishedRelease(release)
+            ? "Try MasuGate locally"
+            : "Run MasuGate from public source",
+        href: release.sourceQuickStart.value.guideHref,
       },
       secondary: {
         label: "Request a customized demo",
@@ -634,7 +638,7 @@ function selectDemoCta(release: ReleaseContract = masugateRelease) {
 
   return {
     primary: {
-      label: "View release-candidate documentation",
+      label: "View release readiness",
       href: "/get-started/",
     },
     secondary: {

@@ -27,7 +27,7 @@ const {
   validateOpenClawReferenceCandidate,
 } = referenceModule;
 
-test("OpenClaw reference candidate satisfies its bounded contract", () => {
+test("OpenClaw public-source reference satisfies its bounded contract", () => {
   assert.deepEqual(openClawReferenceValidationErrors, []);
   assert.deepEqual(
     validateOpenClawReferenceCandidate(openClawReferenceCandidate),
@@ -41,15 +41,15 @@ test("OpenClaw reference candidate satisfies its bounded contract", () => {
       evidence: openClawReferenceCandidate.evidence.status,
     },
     {
-      publication: "candidate-only",
-      releaseState: "unreleased",
+      publication: "source-reference",
+      releaseState: "source-public",
       maturity: "experimental",
       evidence: "reference",
     },
   );
 });
 
-test("candidate pins and the finite purchase route remain exact", () => {
+test("0.1.1 pins and the finite purchase route remain exact", () => {
   assert.deepEqual(
     {
       host: openClawReferenceCandidate.integration.host,
@@ -65,9 +65,9 @@ test("candidate pins and the finite purchase route remain exact", () => {
       host: "OpenClaw",
       hostVersion: "2026.7.1",
       adapterPackage: "@masugate/openclaw",
-      adapterVersion: "0.1.0",
+      adapterVersion: "0.1.1",
       referenceDistribution: "masugate-openclaw-reference",
-      referenceDistributionVersion: "0.1.0",
+      referenceDistributionVersion: "0.1.1",
     },
   );
 
@@ -99,7 +99,7 @@ test("candidate pins and the finite purchase route remain exact", () => {
   );
 });
 
-test("candidate distinguishes the origin snapshot from the release tree", () => {
+test("source reference distinguishes release provenance from observed main", () => {
   assert.deepEqual(
     {
       repository: openClawReferenceCandidate.identity.repository,
@@ -107,14 +107,16 @@ test("candidate distinguishes the origin snapshot from the release tree", () => 
         openClawReferenceCandidate.identity.originImplementationRevision,
       releaseTree:
         openClawReferenceCandidate.identity.releaseTreeRevision,
+      gitTree: openClawReferenceCandidate.identity.releaseTree,
       visibility:
         openClawReferenceCandidate.identity.repositoryVisibility,
       tag: openClawReferenceCandidate.identity.releaseTag,
     },
     {
       repository: "https://github.com/masugate/masugate",
-      origin: "d56701ad9dddd8bd3136880bce619387f277f71c",
-      releaseTree: "6b3852ecb70bd55cb22bf78769028b9b52af9735",
+      origin: "1373f5507c1680c60a7700d8a6c26a8b4d3fb025",
+      releaseTree: "10f097ced9480ca86c138a9c3d8c92bebdadcefa",
+      gitTree: "75ae5448eb7b688895be34260f937a4a51dfdc54",
       visibility: "public",
       tag: "not-published",
     },
@@ -123,12 +125,12 @@ test("candidate distinguishes the origin snapshot from the release tree", () => 
     openClawReferenceCandidate.promotionGates.filter(
       ({ status }) => status === "complete",
     ).length,
-    3,
+    5,
   );
   assert.ok(
     openClawReferenceCandidate.promotionGates.some(
       ({ id, status }) =>
-        id === "live-gate-contract" && status === "pending",
+        id === "retained-evidence" && status === "pending",
     ),
   );
 });
@@ -139,8 +141,8 @@ test("public support routes are complete without promoting release evidence", ()
   );
 
   assert.equal(supportRoutes?.status, "complete");
-  assert.match(supportRoutes?.detail ?? "", /issue tracker and SECURITY\.md route/i);
-  assert.match(supportRoutes?.detail ?? "", /tag, runtime, and retained-evidence gates remain pending/i);
+  assert.match(supportRoutes?.detail ?? "", /issue tracker, review path, and SECURITY\.md route/i);
+  assert.match(supportRoutes?.detail ?? "", /does not imply a tagged or registry release/i);
 
   const driftedCandidate = {
     ...openClawReferenceCandidate,
@@ -167,7 +169,7 @@ test("OpenClaw disclosure follows the typed public-visibility boundary", async (
   assert.match(routeSource, /candidate\.presentation\.hero\.localRunBoundary/);
 });
 
-test("candidate coverage is related, related, then simulation-only", () => {
+test("source coverage is related, related, then simulation-only", () => {
   assert.deepEqual(
     openClawReferenceCandidate.stageCoverage.map(
       ({ stageId, alignment, statusLabel }) => ({
@@ -180,7 +182,7 @@ test("candidate coverage is related, related, then simulation-only", () => {
       {
         stageId: "stage-1",
         alignment: "related",
-        statusLabel: "Related candidate path",
+        statusLabel: "Related source path",
       },
       {
         stageId: "stage-2",
@@ -202,7 +204,7 @@ test("candidate coverage is related, related, then simulation-only", () => {
   );
 });
 
-test("candidate policy and provider view remain exact", () => {
+test("source policy and provider view remain exact", () => {
   assert.match(
     openClawReferenceCandidate.policySource,
     /deny budget_cap when args\.amount_cents > spend\.available_cents\(principal\.team\)/,
@@ -221,13 +223,33 @@ test("candidate policy and provider view remain exact", () => {
     scopeTemplate: "spend:team:<team>",
     reservationKind: "unsupported",
   });
+  assert.equal(
+    openClawReferenceCandidate.integration.configurationDigest,
+    "2675d08a41756224ab7fc1b15cdb5f43e724aac1eda4ecd3674ef5da35d914fc",
+  );
 });
 
-test("candidate exposes no public or captured release evidence", () => {
+test("the standalone OpenClaw reference explains PSS at first use", () => {
+  const assertions = openClawReferenceCandidate.evidenceLanes.flatMap(
+    ({ sourceAssertions }) => sourceAssertions,
+  );
+
+  assert.ok(
+    assertions.some((assertion) =>
+      /policy-state serializability \(PSS\).*real-time-respecting serial explanation/i.test(
+        assertion,
+      ),
+    ),
+  );
+});
+
+test("public source and instructions are available without captured evidence", () => {
   const publicAvailability = [
     openClawReferenceCandidate.publicSource,
     openClawReferenceCandidate.publicInstructions,
     openClawReferenceCandidate.cleanCheckout,
+  ];
+  const evidenceAvailability = [
     openClawReferenceCandidate.capturedRun,
     openClawReferenceCandidate.verification,
     ...openClawReferenceCandidate.evidenceLanes.map(
@@ -237,13 +259,17 @@ test("candidate exposes no public or captured release evidence", () => {
 
   assert.ok(publicAvailability.length > 0);
   for (const availability of publicAvailability) {
+    assert.equal(availability.state, "available");
+    assert.match(availability.value.href, /^https:\/\/github\.com\/masugate\/masugate/);
+  }
+  for (const availability of evidenceAvailability) {
     assert.equal(availability.state, "unavailable");
     assert.ok(availability.reason);
     assert.ok(availability.note);
   }
 });
 
-test("candidate-only validation rejects promoted lane evidence", () => {
+test("source-reference validation rejects invented captured evidence", () => {
   const promotedLaneCandidate = {
     ...openClawReferenceCandidate,
     evidenceLanes: openClawReferenceCandidate.evidenceLanes.map((lane, index) =>
@@ -255,7 +281,7 @@ test("candidate-only validation rejects promoted lane evidence", () => {
 
   assert.ok(
     validateOpenClawReferenceCandidate(promotedLaneCandidate).some((error) =>
-      error.includes("candidate-only route cannot expose release-backed availability"),
+      error.includes("source and retained-evidence boundary is inconsistent"),
     ),
   );
 });

@@ -102,6 +102,15 @@
   margin-bottom: 32px;
 }
 
+.inlineLink {
+  width: fit-content;
+  display: inline-block;
+  margin-top: 16px;
+  border-bottom: 1px solid currentColor;
+  color: var(--p-info);
+  font-weight: 850;
+}
+
 .runtimeFigures {
   display: grid;
   gap: 18px;

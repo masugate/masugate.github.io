@@ -762,6 +762,11 @@
   background: var(--p-allow-soft);
 }
 
+.masugate-status-public {
+  color: var(--p-allow);
+  background: var(--p-allow-soft);
+}
+
 .masugate-status-simulated {
   color: var(--p-decision-escalate);
   background: var(--p-pending-soft);

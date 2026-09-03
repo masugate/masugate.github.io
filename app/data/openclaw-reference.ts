@@ -2,6 +2,7 @@ import {
   type Availability,
   type ReferenceEvidence,
   type ScenarioStageId,
+  available,
   unavailable,
 } from "./contracts";
 import {
@@ -47,8 +48,8 @@ export interface CandidatePromotionGate {
 
 export interface OpenClawReferenceCandidate {
   id: "openclaw-reference-candidate";
-  publication: "candidate-only";
-  releaseState: "unreleased";
+  publication: "source-reference";
+  releaseState: "source-public";
   maturity: "experimental";
   evidence: ReferenceEvidence;
   presentation: Readonly<{
@@ -68,7 +69,7 @@ export interface OpenClawReferenceCandidate {
     }>;
   }>;
   identity: Readonly<{
-    releaseId: "masugate-openclaw-reference/0.1.0";
+    releaseId: "masugate-openclaw-reference/0.1.1";
     releaseChannel: "research-preview";
     repository: "https://github.com/masugate/masugate";
     defaultBranch: "main";
@@ -76,7 +77,7 @@ export interface OpenClawReferenceCandidate {
     releaseTreeRevision: string;
     releaseTree: string;
     repositoryVisibility: "private" | "public";
-    visibilityObservedAt: "2026-08-10";
+    visibilityObservedAt: "2026-09-03";
     releaseTag: "not-published";
   }>;
   environment: Readonly<{
@@ -97,9 +98,9 @@ export interface OpenClawReferenceCandidate {
     host: "OpenClaw";
     hostVersion: "2026.7.1";
     adapterPackage: "@masugate/openclaw";
-    adapterVersion: "0.1.0";
+    adapterVersion: "0.1.1";
     referenceDistribution: "masugate-openclaw-reference";
-    referenceDistributionVersion: "0.1.0";
+    referenceDistributionVersion: "0.1.1";
     tool: "masugate_governed_action";
     route: "purchase";
     action: "spend.purchase";
@@ -133,9 +134,9 @@ export interface OpenClawReferenceCandidate {
   evidenceLanes: readonly CandidateEvidenceLane[];
   stageCoverage: readonly CandidateStageCoverage[];
   promotionGates: readonly CandidatePromotionGate[];
-  publicSource: Availability<never>;
-  publicInstructions: Availability<never>;
-  cleanCheckout: Availability<never>;
+  publicSource: Availability<Readonly<{ href: `https://${string}` }>>;
+  publicInstructions: Availability<Readonly<{ href: `https://${string}` }>>;
+  cleanCheckout: Availability<Readonly<{ href: `https://${string}` }>>;
   capturedRun: Availability<never>;
   verification: Availability<never>;
   cta: Readonly<{
@@ -161,7 +162,7 @@ const supportRoutesPromotionGate: CandidatePromotionGate =
         status: "complete",
         label: "Keep public support routes active",
         detail:
-          "The site contract exposes the public issue tracker and SECURITY.md route. This completes support routing only; the tag, runtime, and retained-evidence gates remain pending.",
+          "The public source exposes its issue tracker, review path, and SECURITY.md route. This does not imply a tagged or registry release.",
       }
     : {
         id: "support-routes",
@@ -173,38 +174,38 @@ const supportRoutesPromotionGate: CandidatePromotionGate =
 
 export const openClawReferenceCandidate = {
   id: "openclaw-reference-candidate",
-  publication: "candidate-only",
-  releaseState: "unreleased",
+  publication: "source-reference",
+  releaseState: "source-public",
   maturity: "experimental",
   evidence: {
     status: "reference",
     sourceKind: "candidate-manifest",
     locator:
-      "masugate/masugate@6b3852ecb70bd55cb22bf78769028b9b52af9735/release/reference-release.json",
+      "https://github.com/masugate/masugate/blob/main/release/reference-release.json",
     note:
-      "Exact Git-backed candidate metadata; supported-runtime output, a public release, and public evidence destinations are absent.",
+      "The exact 0.1.1 descriptor and local runbook are public source. The website simulation is not captured runtime evidence, and no registry or tagged release is claimed.",
   },
   presentation: {
     hero: {
       intro:
-        "Map the pinned OpenClaw purchase candidate to the website story without treating the simulation as recorded or verified execution.",
+        "Inspect the OpenClaw 2026.7.1 boundary declared by the MasuGate 0.1.1 public-source research preview without treating the website simulation as recorded execution.",
       sourceBoundary:
-        "The source has an exact public Git identity. The release remains untagged and its external publication authorization is pending, with no retained supported-runtime output or verification date.",
+        "The source, descriptor, integration guide, and source-based runbook are public. The mutable main branch is not a v0.1.1 tag or package-registry release, and no independent retained run is claimed.",
       visibilityLabel: "Repository visibility observed on",
       localRunBoundary:
-        "No install or “Run locally” claim is published from this state.",
+        "Run the credential-free procurement reference from source; do not substitute a registry install or infer production support.",
     },
     identityDisclosure: {
-      eyebrow: "Secondary candidate detail",
-      title: "Environment, source lineage, and publication state",
+      eyebrow: "Public-source reference detail",
+      title: "Environment, source lineage, and distribution state",
     },
     coverageDisclosure: {
       eyebrow: "Relationship to the three-stage walkthrough",
-      title: "No website stage is release-backed yet.",
+      title: "Related to the walkthrough, but not the same evidence.",
     },
   },
   identity: {
-    releaseId: "masugate-openclaw-reference/0.1.0",
+    releaseId: "masugate-openclaw-reference/0.1.1",
     releaseChannel: "research-preview",
     repository: masugateRelease.candidateSource.repository,
     defaultBranch: masugateRelease.candidateSource.defaultBranch,
@@ -214,7 +215,7 @@ export const openClawReferenceCandidate = {
       masugateRelease.candidateSource.releaseTreeRevision,
     releaseTree: masugateRelease.candidateSource.releaseTree,
     repositoryVisibility: "public",
-    visibilityObservedAt: "2026-08-10",
+    visibilityObservedAt: "2026-09-03",
     releaseTag: "not-published",
   },
   environment: {
@@ -235,9 +236,9 @@ export const openClawReferenceCandidate = {
     host: "OpenClaw",
     hostVersion: "2026.7.1",
     adapterPackage: "@masugate/openclaw",
-    adapterVersion: "0.1.0",
+    adapterVersion: "0.1.1",
     referenceDistribution: "masugate-openclaw-reference",
-    referenceDistributionVersion: "0.1.0",
+    referenceDistributionVersion: "0.1.1",
     tool: "masugate_governed_action",
     route: "purchase",
     action: "spend.purchase",
@@ -249,7 +250,7 @@ export const openClawReferenceCandidate = {
     policyDigest:
       "5c072d7dbd39c0b274cfd9d078ed149536639c42c4ebefa802653b7693b16094",
     configurationDigest:
-      "ef3ed59d53a0818b903231be46ae791ad63e909b17fe38fe95d0b4f4441fa423",
+      "2675d08a41756224ab7fc1b15cdb5f43e724aac1eda4ecd3674ef5da35d914fc",
     agentId: "buyer-alpha",
     principalId: "openclaw:buyer-alpha",
     credentialEnvironment: "MASUGATE_BUYER_ALPHA_TOKEN",
@@ -301,7 +302,7 @@ export const openClawReferenceCandidate = {
     {
       id: "openclaw-host-roundtrip",
       label: "Pinned OpenClaw host round trip",
-      driver: "OpenClaw 2026.7.1 agent harness and @masugate/openclaw 0.1.0",
+      driver: "OpenClaw 2026.7.1 agent harness and @masugate/openclaw 0.1.1",
       sourceAssertions: [
         "$1 purchase commits and an identical tool call replays the same operation",
         "$6 purchase returns a durable pending result",
@@ -309,12 +310,12 @@ export const openClawReferenceCandidate = {
         "The committed audit contains a succeeded protected-execution receipt",
       ],
       boundary:
-        "The pinned Git candidate contains this integration gate with PostgreSQL MasuGate state and a SQLite purchase-effect fixture, but this intake did not execute it on the required Linux/amd64 profile or retain its output.",
+        "The public source contains this integration gate with PostgreSQL MasuGate state and a SQLite purchase-effect fixture. This website does not present a retained execution of that gate.",
       gateLabel:
         "Pinned-host integration gate (PostgreSQL MasuGate state; SQLite effect fixture)",
       capturedEvidence: pending(
         "public-evidence-unavailable",
-        "No captured host-roundtrip output or public evidence destination ships with the candidate repository.",
+        "No independently retained host-roundtrip output is published by this website.",
       ),
     },
     {
@@ -325,14 +326,14 @@ export const openClawReferenceCandidate = {
         "Two $60 requests compete for one $100 budget",
         "One request becomes pending while the other is denied against protected capacity",
         "Allow-once resolves the pending operation to one committed effect",
-        "The verifier requires a PSS-valid history and retained governance records",
+        "The verifier checks policy-state serializability (PSS): whether terminal decisions and effects retain a valid, real-time-respecting serial explanation over declared policy state",
       ],
       boundary:
         "This workload matches the Stage 2 arithmetic, but it drives masugated directly rather than an OpenClaw conversation and uses different identifiers and policy artifacts.",
       gateLabel: "Five-minute procurement and flagship-verifier gates",
       capturedEvidence: pending(
         "public-evidence-unavailable",
-        "The release intake did not execute or retain the five-minute clean-artifact demonstration on its supported profile.",
+        "The public runbook generates local evidence; this website does not claim an independently retained public run.",
       ),
     },
   ],
@@ -341,11 +342,11 @@ export const openClawReferenceCandidate = {
       stageId: "stage-1",
       stageLabel: "One governed purchase",
       alignment: "related",
-      statusLabel: "Related candidate path",
+      statusLabel: "Related source path",
       relationship:
         "The pinned host gate encodes test cases for a governed purchase, replay, pending result, and receipt.",
       mismatch:
-        "The website uses a $40 Work Manager request and categorized-purchase@v1; the candidate uses buyer-alpha, spend_budget_guard@1.0.0, and different amounts.",
+        "The website uses a $40 Work Manager request and categorized-purchase@v1; the source reference uses buyer-alpha, spend_budget_guard@1.0.0, and different amounts.",
     },
     {
       stageId: "stage-2",
@@ -363,7 +364,7 @@ export const openClawReferenceCandidate = {
       alignment: "none",
       statusLabel: "Simulation only",
       relationship:
-        "The candidate contains calendar and filesystem components and narrower reference checks.",
+        "The public source contains calendar and filesystem components and narrower reference checks.",
       mismatch:
         "No credential-free OpenClaw gate reproduces the website's overlap policy, fixed alternative, itinerary, and protected-file story.",
     },
@@ -372,30 +373,30 @@ export const openClawReferenceCandidate = {
     {
       id: "git-candidate",
       status: "complete",
-      label: "Pin the Git-backed candidate",
+      label: "Publish the 0.1.1 source reference",
       detail:
-        "Repository, main-branch release-tree commit, tree, origin implementation revision, descriptor, and package catalog are reconciled.",
+        "The repository, release descriptor, package catalog, and OpenClaw integration guide are publicly inspectable.",
     },
     {
       id: "static-controls",
       status: "complete",
-      label: "Run source-level release checks",
+      label: "Publish the source-level controls",
       detail:
-        "Release-control-document and documentation validation passed at the pinned release-tree commit; external release authorization remains pending.",
+        "The public tree includes documentation checks, exact version pins, locks, and the 0.1.1 descriptor.",
     },
     {
       id: "live-gate-contract",
-      status: "pending",
-      label: "Reconcile the live release gate",
+      status: "complete",
+      label: "Publish the source-based run contract",
       detail:
-        "The live gate requires two offline Alpine inputs that the reviewer setup and checked-in test invocation do not currently provide. Fix and revalidate that release-owned path before execution evidence is accepted.",
+        "The exact setup, procurement run, verifier, expected output, and cleanup steps are documented for the Linux/amd64 profile.",
     },
     {
       id: "supported-runtime",
-      status: "pending",
-      label: "Run the supported runtime gates",
+      status: "complete",
+      label: "Expose the local reference workflow",
       detail:
-        "Run the clean-artifact, OpenClaw/PostgreSQL, containment, procurement, and flagship verifier gates on Linux/amd64 with the declared toolchain.",
+        "The source-owned workflow builds the exact local artifacts and runs the credential-free procurement demonstration with its supplied verifier.",
     },
     {
       id: "retained-evidence",
@@ -407,24 +408,19 @@ export const openClawReferenceCandidate = {
     {
       id: "public-release",
       status: "pending",
-      label: "Publish an immutable release",
+      label: "Publish an immutable distribution",
       detail:
-        "Create the reviewed v0.1.0 tag and GitHub Release, then attach checksums, SBOM, provenance, artifacts, and evidence.",
+        "A v0.1.1 tag, GitHub Release, and PyPI/npm packages do not exist yet. Do not present the source channel as those distribution forms.",
     },
     supportRoutesPromotionGate,
   ],
-  publicSource: pending(
-    "public-release-unavailable",
-    "The MasuGate source repository is public, but the reviewed v0.1.0 tag and GitHub Release are not published yet.",
-  ),
-  publicInstructions: pending(
-    "public-release-unavailable",
-    "The candidate contains an artifact-review runbook, but there is no public tag, GitHub Release, or supported-run evidence yet.",
-  ),
-  cleanCheckout: pending(
-    "verification-pending",
-    "Static source checks passed, but the clean-artifact and runtime gates were not run on the required Linux/amd64 profile.",
-  ),
+  publicSource: available({ href: "https://github.com/masugate/masugate" }),
+  publicInstructions: available({
+    href: "https://github.com/masugate/masugate#five-minute-local-demonstration",
+  }),
+  cleanCheckout: available({
+    href: "https://github.com/masugate/masugate/blob/main/docs/artifact-evaluation.md#exact-one-time-setup",
+  }),
   capturedRun: pending(
     "public-evidence-unavailable",
     "Generated procurement and OpenClaw evidence outputs are absent from the review bundle.",
@@ -479,29 +475,29 @@ export function validateOpenClawReferenceCandidate(
   }
 
   if (
-    candidate.publication === "candidate-only" &&
+    candidate.publication !== "source-reference" ||
+    [candidate.publicSource, candidate.publicInstructions, candidate.cleanCheckout].some(
+      ({ state }) => state !== "available",
+    ) ||
     [
-      candidate.publicSource,
-      candidate.publicInstructions,
-      candidate.cleanCheckout,
       candidate.capturedRun,
       candidate.verification,
       ...candidate.evidenceLanes.map(({ capturedEvidence }) => capturedEvidence),
     ].some(({ state }) => state === "available")
   ) {
-    errors.push("A candidate-only route cannot expose release-backed availability.");
+    errors.push("The OpenClaw source and retained-evidence boundary is inconsistent.");
   }
 
   if (
     candidate.evidence.status !== "reference" ||
-    candidate.releaseState !== "unreleased"
+    candidate.releaseState !== "source-public"
   ) {
-    errors.push("The current OpenClaw reference must remain Reference and unreleased.");
+    errors.push("The OpenClaw reference must remain public source with Reference evidence.");
   }
 
   if (
     candidate.integration.hostVersion !== "2026.7.1" ||
-    candidate.integration.adapterVersion !== "0.1.0"
+    candidate.integration.adapterVersion !== "0.1.1"
   ) {
     errors.push("The OpenClaw reference pins drifted from the candidate descriptor.");
   }

@@ -1604,7 +1604,7 @@ function ConfigurationInspector({
           <dd>{hostPin ? `${hostPin.component} ${hostPin.version}` : model.integration.name}</dd>
         </div>
         <div>
-          <dt>Adapter candidate</dt>
+          <dt>Adapter reference</dt>
           <dd>
             {model.integration.adapter.packageName.state === "available"
               ? model.integration.adapter.packageName.value

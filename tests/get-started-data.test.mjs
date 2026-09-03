@@ -20,89 +20,101 @@ async function importBundled(entryPoint) {
   return import(`data:text/javascript;base64,${encoded}#${Date.now()}-${entryPoint}`);
 }
 
-const getStartedModule = await importBundled("app/data/get-started.ts");
 const {
   getStartedGuide,
   getStartedValidationErrors,
   validateGetStartedGuide,
-} = getStartedModule;
+} = await importBundled("app/data/get-started.ts");
 
-test("Get Started satisfies its release-safe data contract", () => {
+test("Get Started exposes the 0.1.1 public-source release boundary", () => {
   assert.deepEqual(getStartedValidationErrors, []);
   assert.deepEqual(validateGetStartedGuide(getStartedGuide), []);
   assert.deepEqual(
     {
-      release: getStartedGuide.release.state,
+      id: getStartedGuide.release.id,
+      version: getStartedGuide.release.version,
+      state: getStartedGuide.release.state,
+      source: getStartedGuide.release.sourcePublication,
+      distribution: getStartedGuide.release.distributionPublication,
       maturity: getStartedGuide.release.maturity,
       evidence: getStartedGuide.release.evidence.status,
     },
     {
-      release: "unreleased",
+      id: "masugate-openclaw-reference/0.1.1",
+      version: "0.1.1",
+      state: "source-public",
+      source: "public",
+      distribution: "source-only",
       maturity: "experimental",
       evidence: "reference",
     },
   );
 });
 
-test("Get Started route heroes live in the typed guide", () => {
+test("Get Started hero and menu describe the rendered public workflow", () => {
   assert.equal(
     getStartedGuide.quickStartPage.hero.title,
-    "Choose the evidence path available today.",
+    "Run one governed action from the public source.",
   );
-  assert.equal(
-    getStartedGuide.technicalPage.hero.title,
-    "Profiles, outcomes, and integration boundaries.",
-  );
-  assert.match(getStartedGuide.quickStartPage.hero.intro, /release-gated/i);
-  assert.match(getStartedGuide.technicalPage.hero.intro, /research preview/i);
-});
-
-test("Get Started navigation targets current evaluation sections", () => {
+  assert.match(getStartedGuide.quickStartPage.hero.releaseLabel, /0\.1\.1/i);
+  assert.match(getStartedGuide.quickStartPage.hero.releaseLabel, /public source/i);
   assert.deepEqual(
     getStartedGuide.quickStartPage.navigation.links.map(({ label, href }) => ({
       label,
       href,
     })),
     [
+      { label: "Choose a path", href: "/get-started/#choose-a-path" },
+      { label: "Run locally", href: "/get-started/#run-locally" },
+      { label: "Success contract", href: "/get-started/#success-contract" },
       {
-        label: "Evaluation paths",
-        href: "/get-started/#evaluation-paths",
+        label: "Source and support",
+        href: "/get-started/#source-and-support",
       },
-      {
-        label: "Technical readiness",
-        href: "/get-started/#technical-readiness",
-      },
-      {
-        label: "Public source candidate",
-        href: "/get-started/#source-review",
-      },
-      {
-        label: "Technical reference",
-        href: "/get-started/technical/",
-      },
+      { label: "Technical reference", href: "/get-started/technical/" },
     ],
+  );
+
+  assert.match(
+    getStartedGuide.quickStartPage.workflowSection.intro,
+    /Policy-state serializability \(PSS\).*real-time-respecting serial explanation/i,
+  );
+  assert.deepEqual(
+    {
+      label: getStartedGuide.quickStartPage.workflowSection.pssActionLabel,
+      href: getStartedGuide.quickStartPage.workflowSection.pssHref,
+    },
+    {
+      label: "Read the full PSS explanation",
+      href: "/blog/when-allowed-goes-stale/#serial-explanation",
+    },
   );
 });
 
-test("three current paths lead only to approved internal destinations", () => {
+test("three entry paths lead to the browser, source runbook, and review guide", () => {
   assert.deepEqual(
-    getStartedGuide.paths.map(({ id, cta }) => ({ id, href: cta.href })),
+    getStartedGuide.paths.map(({ id, cta }) => ({
+      id,
+      href: cta.href,
+      external: cta.external,
+    })),
     [
-      { id: "reference-demo", href: "/demo/" },
+      { id: "browser-walkthrough", href: "/demo/", external: false },
       {
-        id: "application-integration",
-        href: "/demo/openclaw-reference/",
+        id: "local-demonstration",
+        href: "https://github.com/masugate/masugate#five-minute-local-demonstration",
+        external: true,
       },
-      { id: "research-artifact", href: "/#contact" },
+      {
+        id: "technical-review",
+        href: "https://github.com/masugate/masugate/blob/main/REVIEWING.md",
+        external: true,
+      },
     ],
-  );
-  assert.deepEqual(
-    Object.values(getStartedGuide.cta).map(({ href }) => href),
-    ["/demo/", "/demo/openclaw-reference/", "/#contact"],
   );
 });
 
-test("candidate environment and reviewer toolchain remain exact", () => {
+test("the public quickstart preserves the exact supported environment", () => {
   assert.deepEqual(getStartedGuide.baseline.target, {
     os: "Linux",
     architecture: "amd64",
@@ -128,73 +140,39 @@ test("candidate environment and reviewer toolchain remain exact", () => {
   });
 });
 
-test("Git candidate progress is explicit without release promotion", () => {
+test("source publication is public without inventing a tag or registry release", () => {
   assert.deepEqual(
     {
-      repository: getStartedGuide.candidateSource.repository,
-      releaseTreeRevision:
-        getStartedGuide.candidateSource.releaseTreeRevision,
-      originSourceRevision:
-        getStartedGuide.candidateSource.originSourceRevision,
-      visibility: getStartedGuide.candidateSource.visibility,
-      releaseTag: getStartedGuide.candidateSource.releaseTag,
-      authorization:
-        getStartedGuide.candidateSource.externalReleaseAuthorization,
-      liveGate: getStartedGuide.candidateSource.liveGateContract,
+      repository: getStartedGuide.sourceRelease.repository,
+      branch: getStartedGuide.sourceRelease.defaultBranch,
+      observedAt: getStartedGuide.sourceRelease.observedAt,
+      publication: getStartedGuide.sourceRelease.publication,
+      tag: getStartedGuide.sourceRelease.releaseTag,
+      registries: getStartedGuide.sourceRelease.registries,
     },
     {
       repository: "https://github.com/masugate/masugate",
-      releaseTreeRevision: "6b3852ecb70bd55cb22bf78769028b9b52af9735",
-      originSourceRevision: "d56701ad9dddd8bd3136880bce619387f277f71c",
-      visibility: "public",
-      releaseTag: "not-published",
-      authorization: "pending",
-      liveGate: "needs-reconciliation",
+      branch: "main",
+      observedAt: "2026-09-03",
+      publication: "public-source",
+      tag: "not-published",
+      registries: "not-published",
     },
   );
-  assert.equal(
-    getStartedGuide.candidateSource.sourceChecks.filter(
-      ({ status }) => status === "passed",
-    ).length,
-    2,
-  );
-  assert.equal(
-    getStartedGuide.candidateSource.sourceChecks.filter(
-      ({ status }) => status === "pending",
-    ).length,
-    2,
-  );
-  assert.ok(getStartedGuide.declaredPackages.length >= 9);
+  assert.match(getStartedGuide.sourceRelease.currentMainRevision, /^[0-9a-f]{40}$/);
+  assert.match(getStartedGuide.sourceRelease.provenanceRevision, /^[0-9a-f]{40}$/);
+  assert.match(getStartedGuide.sourceRelease.boundary, /main branch is mutable/i);
+
+  assert.equal(getStartedGuide.declaredPackages.length, 18);
   assert.ok(
     getStartedGuide.declaredPackages.every(
-      ({ publication }) => publication === "declared-only",
+      ({ version, publication }) =>
+        version === "0.1.1" && publication === "declared-only",
     ),
   );
 });
 
-test("public repository copy cannot regress to a private-access boundary", () => {
-  assert.equal(getStartedGuide.availability.publicRepository.state, "available");
-  assert.doesNotMatch(
-    getStartedGuide.readinessSteps.map(({ guidance }) => guidance).join("\n"),
-    /wait for anonymous access|repository (?:is )?private/i,
-  );
-
-  const contradictoryGuide = {
-    ...getStartedGuide,
-    readinessSteps: getStartedGuide.readinessSteps.map((step) =>
-      step.id === "get-release"
-        ? { ...step, guidance: "Wait for anonymous access to the repository." }
-        : step,
-    ),
-  };
-  assert.ok(
-    validateGetStartedGuide(contradictoryGuide).some((error) =>
-      error.includes("contradicts the availability contract"),
-    ),
-  );
-});
-
-test("readiness describes seven ordered steps without publishing commands", () => {
+test("the local workflow publishes only the canonical source-based commands", () => {
   assert.deepEqual(
     getStartedGuide.readinessSteps.map(({ id, number, status }) => ({
       id,
@@ -202,37 +180,40 @@ test("readiness describes seven ordered steps without publishing commands", () =
       status,
     })),
     [
-      { id: "prerequisites", number: 1, status: "review-now" },
-      { id: "get-release", number: 2, status: "release-gated" },
-      { id: "prepare-once", number: 3, status: "release-gated" },
-      { id: "run-demo", number: 4, status: "release-gated" },
-      { id: "verify-success", number: 5, status: "release-gated" },
-      { id: "inspect-result", number: 6, status: "release-gated" },
-      { id: "clean-up", number: 7, status: "release-gated" },
+      { id: "get-source", number: 1, status: "before-you-run" },
+      { id: "prerequisites", number: 2, status: "before-you-run" },
+      { id: "prepare-once", number: 3, status: "available" },
+      { id: "run-demo", number: 4, status: "available" },
+      { id: "verify-success", number: 5, status: "available" },
+      { id: "inspect-result", number: 6, status: "available" },
+      { id: "clean-up", number: 7, status: "after-run" },
     ],
   );
 
-  for (const step of getStartedGuide.readinessSteps) {
-    assert.equal(
-      Object.keys(step).some((key) => key.toLowerCase().includes("command")),
-      false,
-    );
-    assert.doesNotMatch(
-      step.guidance,
-      /(?:^|\n)\s*(?:\$\s*)?(?:pip3?|npm|npx|pnpm|yarn|uv|git|docker|python3?|curl|wget)\s+\S/i,
-    );
-  }
+  const byId = new Map(getStartedGuide.readinessSteps.map((step) => [step.id, step]));
+  assert.equal(byId.get("prepare-once")?.command, getStartedGuide.sourceQuickStart.setupCommand);
+  assert.equal(byId.get("run-demo")?.command, getStartedGuide.sourceQuickStart.runCommand);
+  assert.equal(byId.get("verify-success")?.command, getStartedGuide.sourceQuickStart.verifyCommand);
+  assert.equal(byId.get("clean-up")?.command, getStartedGuide.sourceQuickStart.cleanupCommand);
+  assert.match(byId.get("run-demo")?.expected ?? "", /procurement\.json/);
+  assert.match(byId.get("verify-success")?.expected ?? "", /PASS/);
+
+  const commands = getStartedGuide.readinessSteps
+    .map(({ command }) => command ?? "")
+    .join("\n");
+  assert.match(commands, /prepare-reference-demo\.py/);
+  assert.match(commands, /run_reference_demos\.py procurement/);
+  assert.match(commands, /verify-flagship-demo\.py/);
+  assert.doesNotMatch(commands, /\bpip3?\s+install\b|\bnpm\s+(?:install|add)\b/i);
 });
 
 test("operation semantics distinguish effect and finality", () => {
   assert.deepEqual(
-    getStartedGuide.outcomes.map(
-      ({ status, terminal, effectOccurred }) => ({
-        status,
-        terminal,
-        effectOccurred,
-      }),
-    ),
+    getStartedGuide.outcomes.map(({ status, terminal, effectOccurred }) => ({
+      status,
+      terminal,
+      effectOccurred,
+    })),
     [
       { status: "committed", terminal: true, effectOccurred: true },
       { status: "denied", terminal: true, effectOccurred: false },
@@ -249,247 +230,157 @@ test("operation semantics distinguish effect and finality", () => {
   );
 });
 
-test("comparison fixes governance artifacts while isolating host-specific fields", () => {
-  assert.equal(getStartedGuide.comparison.id, "shared-budget-travel-purchase");
-  assert.equal(
-    getStartedGuide.comparison.requestId,
-    "stage-2-travel-hotel-deposit",
-  );
-  assert.deepEqual(getStartedGuide.comparison.expectedResult, {
-    policyDecision: "escalate",
-    humanResolution: "allow-once",
-    operationStatus: "committed",
-  });
-  assert.deepEqual(getStartedGuide.comparison.fixedArtifacts, [
-    "Scenario request and expected result",
-    "Policy source and exact scenario revision",
-    "Governed route",
-    "Provider state views and effect contract",
-    "Canonical MasuGate outcome contract and record fields",
-  ]);
-  assert.equal(getStartedGuide.comparison.hostSpecificFields.length, 5);
-  assert.ok(getStartedGuide.comparison.canonicalRecordFields.includes("operationId"));
-  assert.ok(getStartedGuide.comparison.canonicalRecordFields.includes("effectResult"));
-});
-
-test("all integration summaries remain exact Reference-only profiles", () => {
+test("integration summaries point to public 0.1.1 reference profiles", () => {
   assert.deepEqual(
-    getStartedGuide.integrations.map(
-      ({ id, publication, evidence, hostPins }) => ({
-        id,
-        publication,
-        evidence: evidence.status,
-        hostPins,
-      }),
-    ),
+    getStartedGuide.integrations.map(({ id, publication, evidence, adapter }) => ({
+      id,
+      publication,
+      evidence: evidence.status,
+      adapterVersion: adapter.version.state === "available" ? adapter.version.value : null,
+    })),
     [
-      {
-        id: "openclaw",
-        publication: "reference-only",
-        evidence: "reference",
-        hostPins: [{ component: "OpenClaw", version: "2026.7.1" }],
-      },
-      {
-        id: "langchain-langgraph",
-        publication: "reference-only",
-        evidence: "reference",
-        hostPins: [
-          { component: "LangChain", version: "1.3.14" },
-          { component: "LangGraph", version: "1.2.9" },
-        ],
-      },
-      {
-        id: "microsoft-agent-framework",
-        publication: "reference-only",
-        evidence: "reference",
-        hostPins: [
-          { component: "Microsoft Agent Framework Core", version: "1.12.0" },
-        ],
-      },
-      {
-        id: "crewai",
-        publication: "reference-only",
-        evidence: "reference",
-        hostPins: [
-          { component: "CrewAI", version: "1.15.6" },
-          { component: "CrewAI Core", version: "1.15.6" },
-        ],
-      },
+      { id: "openclaw", publication: "reference-only", evidence: "reference", adapterVersion: "0.1.1" },
+      { id: "langchain-langgraph", publication: "reference-only", evidence: "reference", adapterVersion: "0.1.1" },
+      { id: "microsoft-agent-framework", publication: "reference-only", evidence: "reference", adapterVersion: "0.1.1" },
+      { id: "crewai", publication: "reference-only", evidence: "reference", adapterVersion: "0.1.1" },
     ],
   );
-
-  for (const integration of getStartedGuide.integrations) {
-    assert.equal(integration.profileHref.state, "unavailable");
-    assert.equal(integration.verificationDate.state, "unavailable");
-    assert.equal(integration.cleanCheckout.state, "unavailable");
-  }
+  assert.ok(
+    getStartedGuide.integrations.every(
+      ({ profileHref, verificationDate, cleanCheckout }) =>
+        profileHref.state === "available" &&
+        verificationDate.state === "unavailable" &&
+        cleanCheckout.state === "unavailable",
+    ),
+  );
 });
 
-test("OpenClaw continuation preserves its exact route and trust boundaries", () => {
+test("OpenClaw continuation keeps its exact 0.1.1 boundary", () => {
   assert.deepEqual(
     {
       release: getStartedGuide.openClawContinuation.releaseId,
+      state: getStartedGuide.openClawContinuation.releaseState,
       host: getStartedGuide.openClawContinuation.host,
       hostVersion: getStartedGuide.openClawContinuation.hostVersion,
       adapterPackage: getStartedGuide.openClawContinuation.adapterPackage,
       adapterVersion: getStartedGuide.openClawContinuation.adapterVersion,
-      tool: getStartedGuide.openClawContinuation.tool,
       route: getStartedGuide.openClawContinuation.route,
       action: getStartedGuide.openClawContinuation.action,
       providerId: getStartedGuide.openClawContinuation.providerId,
-      executionPosition:
-        getStartedGuide.openClawContinuation.executionPosition,
-      connectorId: getStartedGuide.openClawContinuation.connectorId,
-      principalId: getStartedGuide.openClawContinuation.principalId,
     },
     {
-      release: "masugate-openclaw-reference/0.1.0",
+      release: "masugate-openclaw-reference/0.1.1",
+      state: "source-public",
       host: "OpenClaw",
       hostVersion: "2026.7.1",
       adapterPackage: "@masugate/openclaw",
-      adapterVersion: "0.1.0",
-      tool: "masugate_governed_action",
+      adapterVersion: "0.1.1",
       route: "purchase",
       action: "spend.purchase",
       providerId: "masugate.spend.reference",
-      executionPosition: "protected-external",
-      connectorId: "reference-purchase-v1",
-      principalId: "openclaw:buyer-alpha",
     },
   );
   assert.equal(getStartedGuide.openClawContinuation.evidence.status, "reference");
   assert.ok(getStartedGuide.openClawContinuation.truths.length >= 7);
 });
 
-test("unreleased guide exposes public source and support links without release promotion", () => {
-  assert.deepEqual(getStartedGuide.availability.publicRepository, {
-    state: "available",
-    value: { href: "https://github.com/masugate/masugate" },
-  });
-  assert.deepEqual(getStartedGuide.availability.publicDocumentation, {
-    state: "available",
-    value: {
-      href: "https://github.com/masugate/masugate/blob/main/README.md",
-    },
-  });
-  assert.deepEqual(getStartedGuide.availability.issueTracker, {
-    state: "available",
-    value: { href: "https://github.com/masugate/masugate/issues" },
-  });
-  assert.deepEqual(getStartedGuide.availability.securityReporting, {
-    state: "available",
-    value: {
-      href: "https://github.com/masugate/masugate/blob/main/SECURITY.md",
-    },
-  });
-
-  for (const availability of [
-    getStartedGuide.availability.primaryInstall,
-    getStartedGuide.availability.runLocally,
-    getStartedGuide.availability.publicEvidence,
-    getStartedGuide.availability.verifiedAt,
-    getStartedGuide.availability.openClawPublicInstructions,
-    getStartedGuide.availability.openClawCapturedRun,
-  ]) {
-    assert.equal(availability.state, "unavailable");
-    assert.ok(availability.reason);
-    assert.ok(availability.note);
-  }
-  assert.equal(getStartedGuide.troubleshooting.length, 8);
+test("public source, runbook, and support are available while distribution evidence is not", () => {
+  assert.equal(getStartedGuide.availability.publicRepository.state, "available");
+  assert.equal(getStartedGuide.availability.publicDocumentation.state, "available");
+  assert.equal(getStartedGuide.availability.runLocally.state, "available");
+  assert.equal(getStartedGuide.availability.openClawPublicInstructions.state, "available");
+  assert.equal(getStartedGuide.availability.issueTracker.state, "available");
+  assert.equal(getStartedGuide.availability.securityReporting.state, "available");
+  assert.equal(getStartedGuide.availability.primaryInstall.state, "unavailable");
+  assert.equal(getStartedGuide.availability.publicEvidence.state, "unavailable");
+  assert.equal(getStartedGuide.availability.verifiedAt.state, "unavailable");
+  assert.equal(getStartedGuide.availability.openClawCapturedRun.state, "unavailable");
 });
 
-test("validator rejects premature install, run, evidence, and Verified promotion", () => {
-  const promotedAvailability = {
+test("documentation links cover setup, reproduction, results, review, and limits", () => {
+  assert.deepEqual(
+    getStartedGuide.documentationLinks.map(({ label }) => label),
+    [
+      "Exact setup",
+      "Reproduction",
+      "Expected results",
+      "Review paths",
+      "Claims and limitations",
+    ],
+  );
+  assert.ok(
+    getStartedGuide.documentationLinks.every(({ href }) =>
+      href.startsWith("https://github.com/masugate/masugate"),
+    ),
+  );
+});
+
+test("validator rejects source/distribution contradictions and command drift", () => {
+  const registryInstall = {
+    ...getStartedGuide,
+    readinessSteps: getStartedGuide.readinessSteps.map((step) =>
+      step.id === "prepare-once"
+        ? { ...step, command: "pip install masugate==0.1.1" }
+        : step,
+    ),
+  };
+  assert.ok(
+    validateGetStartedGuide(registryInstall).some((error) =>
+      /commands drifted|registry installation/i.test(error),
+    ),
+  );
+
+  const hiddenRunbook = {
     ...getStartedGuide,
     availability: {
       ...getStartedGuide.availability,
-      primaryInstall: { state: "available", value: "pip install invented" },
-      runLocally: { state: "available", value: { href: "/run/" } },
-      publicEvidence: {
-        state: "available",
-        value: [{ label: "Evidence", href: "https://example.invalid/evidence" }],
+      runLocally: {
+        state: "unavailable",
+        reason: "verification-pending",
+        note: "hidden",
       },
     },
   };
-  const availabilityErrors = validateGetStartedGuide(promotedAvailability);
-  assert.ok(availabilityErrors.some((error) => error.includes("primaryInstall")));
-  assert.ok(availabilityErrors.some((error) => error.includes("runLocally")));
-  assert.ok(availabilityErrors.some((error) => error.includes("publicEvidence")));
+  assert.ok(
+    validateGetStartedGuide(hiddenRunbook).some((error) =>
+      /availability contradict/i.test(error),
+    ),
+  );
 
-  const verifiedGuide = {
+  const falseVerification = {
     ...getStartedGuide,
     release: {
       ...getStartedGuide.release,
-      evidence: { status: "verified" },
-    },
-    integrations: getStartedGuide.integrations.map((integration, index) =>
-      index === 0
-        ? {
-            ...integration,
-            publication: "publishable",
-            evidence: { status: "verified" },
-          }
-        : integration,
-    ),
-  };
-  const verifiedErrors = validateGetStartedGuide(verifiedGuide);
-  assert.ok(
-    verifiedErrors.some((error) => error.includes("Verified release evidence")),
-  );
-  assert.ok(
-    verifiedErrors.some((error) => error.includes("openclaw")),
-  );
-});
-
-test("validator rejects a command-shaped readiness placeholder", () => {
-  const commandGuide = {
-    ...getStartedGuide,
-    readinessSteps: getStartedGuide.readinessSteps.map((step, index) =>
-      index === 1 ? { ...step, command: "git clone placeholder" } : step,
-    ),
-  };
-
-  assert.ok(
-    validateGetStartedGuide(commandGuide).some((error) =>
-      error.includes("command-shaped content"),
-    ),
-  );
-});
-
-test("validator rejects unsupported local-execution presentation copy", () => {
-  const promotedGuide = {
-    ...getStartedGuide,
-    quickStartPage: {
-      ...getStartedGuide.quickStartPage,
-      hero: {
-        ...getStartedGuide.quickStartPage.hero,
-        intro: "Prepare the supported local workspace and run and verify it.",
+      evidence: {
+        status: "verified",
+        sourceKind: "release",
+        href: "https://example.test/evidence",
+        immutableRevision: "invented",
+        gate: "invented",
+        verifiedAt: "2026-09-03",
       },
     },
   };
-
   assert.ok(
-    validateGetStartedGuide(promotedGuide).some((error) =>
-      error.includes("cannot be presented as supported or verified"),
+    validateGetStartedGuide(falseVerification).some((error) =>
+      /public-source research-preview boundary/i.test(error),
     ),
   );
 });
 
-test("Get Started route publishes no local command or verified-run claim", async () => {
-  const routeSource = await readFile(
-    "app/(masugate)/get-started/page.tsx",
+test("Get Started route renders the workflow from typed data", async () => {
+  const routeSource = await readFile("app/(masugate)/get-started/page.tsx", "utf8");
+  const styleSource = await readFile(
+    "app/(masugate)/get-started/get-started.module.css",
     "utf8",
   );
 
-  assert.doesNotMatch(
-    routeSource,
-    /(?:setupCommand|demoCommand|verifyCommand|MASUGATE_|<pre|prepare-reference-demo|run_reference_demos|verify-flagship-demo)/,
-  );
-  assert.doesNotMatch(
-    routeSource,
-    /(?:supported local environment|under five minutes|PSS-valid execution|exits with status zero)/i,
-  );
   assert.match(routeSource, /getStartedGuide\.readinessSteps/);
-  assert.match(routeSource, /getStartedGuide\.availability\.runLocally/);
-  assert.match(routeSource, /getStartedGuide\.quickStartPage/);
+  assert.match(routeSource, /step\.command/);
+  assert.match(routeSource, /id="run-locally"/);
+  assert.match(routeSource, /id="success-contract"/);
+  assert.match(routeSource, /id="source-and-support"/);
+  assert.doesNotMatch(routeSource, /pip install|npm install/);
+  assert.match(styleSource, /\.commandBlock pre/);
+  assert.match(styleSource, /overflow-x:\s*auto/);
 });

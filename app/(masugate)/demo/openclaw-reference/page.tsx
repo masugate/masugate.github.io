@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { isAvailable } from "../../../data/contracts";
 import { createMasuGatePageMetadata } from "../../../data/metadata";
 import { openClawReferenceCandidate } from "../../../data/openclaw-reference";
 import styles from "./reference.module.css";
 
 export const metadata: Metadata = createMasuGatePageMetadata({
-  title: "OpenClaw reference candidate",
+  title: "OpenClaw Reference",
   description:
-    "Inspect the pinned Git-backed OpenClaw purchase candidate, its relationship to the interactive Demo, and the gates that remain before a public runnable release.",
+    "Inspect the OpenClaw 2026.7.1 boundary in the MasuGate 0.1.1 public-source research preview, its runnable source path, and its evidence limits.",
   path: "/demo/openclaw-reference/",
 });
 
@@ -29,14 +30,17 @@ export default function OpenClawReferenceCandidatePage() {
             <Link className={styles.backLink} href="/demo/">
               ← Back to the interactive walkthrough
             </Link>
-            <p className="masugate-eyebrow">Milestone 3B · OpenClaw reference candidate</p>
-            <h1>Inspect the candidate-backed purchase path.</h1>
+            <p className="masugate-eyebrow">MasuGate 0.1.1 · OpenClaw reference</p>
+            <h1>Inspect the public-source purchase boundary.</h1>
             <p className={styles.intro}>{candidate.presentation.hero.intro}</p>
           </div>
-          <aside className={styles.disclosure} aria-label="Candidate evidence boundary">
+          <aside className={styles.disclosure} aria-label="OpenClaw reference boundary">
             <div className="masugate-status-stack">
-              <span className="masugate-status masugate-status-unreleased">
-                Release: {titleCase(candidate.releaseState)}
+              <span className="masugate-status masugate-status-public">
+                Version: 0.1.1
+              </span>
+              <span className="masugate-status masugate-status-public">
+                Channel: Public source
               </span>
               <span className="masugate-status masugate-status-pending">
                 Maturity: {titleCase(candidate.maturity)}
@@ -59,18 +63,18 @@ export default function OpenClawReferenceCandidatePage() {
       <section className={styles.identitySection}>
         <div className="masugate-shell">
           <div className={styles.sectionHeading}>
-            <p className="masugate-eyebrow">Exact candidate identity</p>
-            <h2>The source is pinned. The release is not yet published.</h2>
+            <p className="masugate-eyebrow">Exact source identity</p>
+            <h2>The source and runbook are public. Distribution remains source-only.</h2>
             <p>
-              These values come from the candidate Git tree and release
-              descriptor. The origin implementation snapshot and the later
-              release-tree realization are deliberately shown separately.
+              These values come from the public Git tree and 0.1.1 descriptor.
+              The observed mutable main revision and the release provenance
+              identity are deliberately shown separately.
             </p>
           </div>
           <dl className={styles.primaryIdentityGrid}>
-            <div><dt>Candidate release</dt><dd><code>{candidate.identity.releaseId}</code></dd></div>
-            <div><dt>Candidate repository</dt><dd><code>{candidate.identity.repository.replace("https://", "")}</code></dd></div>
-            <div><dt>Release-tree commit</dt><dd><code>{candidate.identity.releaseTreeRevision}</code></dd></div>
+            <div><dt>Reference identity</dt><dd><code>{candidate.identity.releaseId}</code></dd></div>
+            <div><dt>Public repository</dt><dd><code>{candidate.identity.repository.replace("https://", "")}</code></dd></div>
+            <div><dt>Observed main commit</dt><dd><code>{candidate.identity.releaseTreeRevision}</code></dd></div>
             <div><dt>Host pin</dt><dd>{candidate.integration.host} {candidate.integration.hostVersion}</dd></div>
             <div><dt>Adapter pin</dt><dd><code>{candidate.integration.adapterPackage}@{candidate.integration.adapterVersion}</code></dd></div>
             <div>
@@ -86,8 +90,8 @@ export default function OpenClawReferenceCandidatePage() {
             <dl className={styles.identityGrid}>
               <div><dt>Channel</dt><dd>{candidate.identity.releaseChannel}</dd></div>
               <div><dt>Visibility</dt><dd>{titleCase(candidate.identity.repositoryVisibility)} as observed {candidate.identity.visibilityObservedAt}</dd></div>
-              <div><dt>Origin implementation snapshot</dt><dd><code>{candidate.identity.originImplementationRevision}</code></dd></div>
-              <div><dt>Release-tree object</dt><dd><code>{candidate.identity.releaseTree}</code></dd></div>
+              <div><dt>Release provenance revision</dt><dd><code>{candidate.identity.originImplementationRevision}</code></dd></div>
+              <div><dt>Observed main tree</dt><dd><code>{candidate.identity.releaseTree}</code></dd></div>
               <div><dt>Release tag</dt><dd>{titleCase(candidate.identity.releaseTag)}</dd></div>
               <div><dt>Target</dt><dd>{candidate.environment.os}/{candidate.environment.architecture} · CPython {candidate.environment.python} (tested {candidate.environment.testedPython})</dd></div>
               <div><dt>JavaScript toolchain</dt><dd>Node {candidate.environment.node} · npm {candidate.environment.npm}</dd></div>
@@ -99,7 +103,7 @@ export default function OpenClawReferenceCandidatePage() {
           <div className={styles.auditCallout}>
             <div>
               <span>Source intake · {candidate.sourceAudit.checkedAt}</span>
-              <strong>Two document validators passed; runtime acceptance did not run.</strong>
+              <strong>Public source and local runbook available; tag and registries unpublished.</strong>
             </div>
             <p>{candidate.sourceAudit.note}</p>
           </div>
@@ -116,7 +120,7 @@ export default function OpenClawReferenceCandidatePage() {
             <article className={styles.codeCard}>
               <header>
                 <span>Source-reviewed configuration excerpt</span>
-                <strong>Not a public install recipe</strong>
+                <strong>Reference configuration · not a registry install</strong>
               </header>
               <pre tabIndex={0}><code>{candidate.configurationExcerpt}</code></pre>
             </article>
@@ -174,15 +178,15 @@ export default function OpenClawReferenceCandidatePage() {
             <p className="masugate-eyebrow">Two related evidence lanes</p>
             <h2>Keep the OpenClaw host path separate from the procurement workload.</h2>
             <p>
-              Both are useful candidate surfaces. They are not interchangeable,
-              and neither ships captured gate output in the Git candidate.
+              Both are useful public-source surfaces. They are not interchangeable,
+              and this website does not present either as an independently retained run.
             </p>
           </div>
           <div className={styles.evidenceGrid}>
             {candidate.evidenceLanes.map((lane) => (
               <article key={lane.id}>
                 <header>
-                  <span>Candidate source · Reference evidence</span>
+                  <span>Public source · Reference evidence</span>
                   <h3>{lane.label}</h3>
                   <p>{lane.driver}</p>
                 </header>
@@ -207,7 +211,7 @@ export default function OpenClawReferenceCandidatePage() {
             </summary>
             <div className={styles.coverageBody}>
               <p className={styles.coverageIntro}>
-                Candidate overlap is shown as related—not exact—until identifiers,
+                Source overlap is shown as related—not exact—until identifiers,
                 driver, policy, outcome, and retained evidence all match.
               </p>
               <div className={styles.coverageGrid}>
@@ -231,12 +235,12 @@ export default function OpenClawReferenceCandidatePage() {
       <section className={styles.gatesSection}>
         <div className={`masugate-shell ${styles.gatesGrid}`}>
           <div>
-            <p className="masugate-eyebrow">Promotion boundary</p>
-            <h2>What must happen before “Run locally” appears.</h2>
+            <p className="masugate-eyebrow">Availability boundary</p>
+            <h2>What is public now—and what remains unpublished.</h2>
             <p>
-              Source presence is not execution evidence. Recorded or Verified
-              labels require the named supported environment, retained output,
-              immutable public source, and dated evidence destination.
+              The source workflow is runnable now. Recorded or Verified labels
+              still require retained output, an exact environment, and a dated
+              evidence destination; a tag or registry package is a separate step.
             </p>
           </div>
           <ol>
@@ -244,7 +248,7 @@ export default function OpenClawReferenceCandidatePage() {
               <li data-status={gate.status} key={gate.id}>
                 <div>
                   <span className={styles.gateStatus}>
-                    {gate.status === "complete" ? "Intake complete" : "Still required"}
+                    {gate.status === "complete" ? "Public now" : "Still unpublished"}
                   </span>
                   <strong>{gate.label}</strong>
                   <p>{gate.detail}</p>
@@ -258,10 +262,20 @@ export default function OpenClawReferenceCandidatePage() {
       <section className={styles.ctaSection}>
         <div className={`masugate-shell ${styles.ctaGrid}`}>
           <div>
-            <p className="masugate-eyebrow">Candidate boundary recorded</p>
-            <h2>Return to the simulation or discuss the exact release path.</h2>
+            <p className="masugate-eyebrow">Continue with the exact boundary</p>
+            <h2>Run the source reference or return to the simulation.</h2>
           </div>
           <div className={styles.ctaActions}>
+            {isAvailable(candidate.publicInstructions) ? (
+              <a
+                className="masugate-button masugate-button-primary"
+                href={candidate.publicInstructions.value.href}
+                rel="noreferrer"
+                target="_blank"
+              >
+                Run from public source
+              </a>
+            ) : null}
             <Link className="masugate-button" href={candidate.cta.primary.href}>
               {candidate.cta.primary.label}
             </Link>

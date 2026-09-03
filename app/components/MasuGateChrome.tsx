@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {
-  selectBlogNavigationArticles,
+  selectBlogIndexPublications,
   selectLatestAnnouncement,
 } from "../data/articles";
 import { contactContract } from "../data/contact";
@@ -13,17 +13,16 @@ import {
 } from "../data/masugate-site";
 import { ThemeControl } from "./ThemeControl";
 
-const blogNavigationLinks = selectBlogNavigationArticles().map((article) => ({
+const blogNavigationLinks = selectBlogIndexPublications().map((article) => ({
   label: article.title,
   href: article.href,
-  detail: `Technical article · ${article.readingMinutes} min read`,
 }));
 
 const navigationMaps: Record<
   NavigationItemId,
   Readonly<{
     summary: string;
-    links: readonly Readonly<{ label: string; href: string; detail: string }>[];
+    links: readonly Readonly<{ label: string; href: string; detail?: string }>[];
   }>
 > = {
   challenge: {
@@ -62,13 +61,13 @@ const navigationMaps: Record<
       {
         label: "OpenClaw reference",
         href: "/demo/openclaw-reference/",
-        detail: "Inspect the bounded integration profile.",
+        detail: "Inspect the 0.1.1 public-source integration boundary.",
       },
     ],
   },
   "get-started": getStartedGuide.quickStartPage.navigation,
   blog: {
-    summary: "Read the project’s technical notes",
+    summary: "Read technical notes and project updates",
     links: [
       {
         label: "All posts",
@@ -160,7 +159,7 @@ export function MasuGateHeader() {
                     {menu.links.map((link) => (
                       <Link href={link.href} key={link.href}>
                         <strong>{link.label}</strong>
-                        <span>{link.detail}</span>
+                        {link.detail ? <span>{link.detail}</span> : null}
                       </Link>
                     ))}
                   </div>

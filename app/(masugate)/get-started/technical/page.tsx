@@ -4,6 +4,7 @@ import {
   GovernedActionExplainer,
   GovernedRuntimeSchematic,
 } from "../../../components/MasuGateSchematics";
+import { isAvailable } from "../../../data/contracts";
 import { getStartedGuide } from "../../../data/get-started";
 import { createMasuGatePageMetadata } from "../../../data/metadata";
 import styles from "./technical.module.css";
@@ -41,8 +42,11 @@ export default function TechnicalReferencePage() {
           </div>
           <aside className={styles.statusCard} aria-label="Reference status">
             <div className="masugate-status-stack">
-              <span className="masugate-status masugate-status-unreleased">
-                Release: {titleCase(guide.release.state)}
+              <span className="masugate-status masugate-status-public">
+                Version: {guide.release.version}
+              </span>
+              <span className="masugate-status masugate-status-public">
+                Channel: Public source
               </span>
               <span className="masugate-status masugate-status-reference">
                 Evidence: {titleCase(guide.release.evidence.status)}
@@ -52,8 +56,8 @@ export default function TechnicalReferencePage() {
               </span>
             </div>
             <p>
-              The reference profile is specific: inspect the named environment,
-              integration boundary, and evidence status before adapting it.
+              The source and runbook are public. The profile remains exact and
+              experimental; no package-registry or production assurance is implied.
             </p>
           </aside>
         </div>
@@ -81,7 +85,7 @@ export default function TechnicalReferencePage() {
             <p className="masugate-eyebrow">Reference environment</p>
             <h2>Use the supported profile as a whole.</h2>
             <p>
-              The candidate targets {guide.baseline.target.os}/
+              The public-source reference targets {guide.baseline.target.os}/
               {guide.baseline.target.architecture} with CPython {guide.baseline.target.python},
               Docker, and Compose. One-time setup may use the network; the
               measured demonstration is credential-free and offline after setup.
@@ -127,6 +131,14 @@ export default function TechnicalReferencePage() {
               compatibility promise. Open one only when you need the host-level
               detail.
             </p>
+            <a
+              className={styles.inlineLink}
+              href="https://github.com/masugate/masugate/blob/main/docs/framework-adapters.md"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Read the public framework-adapter guide ↗
+            </a>
           </div>
           <div className={styles.integrationList}>
             {guide.integrations.map((integration) => (
@@ -151,6 +163,16 @@ export default function TechnicalReferencePage() {
                       <dd>{integration.deploymentOwnedConfiguration.join(" · ")}</dd>
                     </div>
                   </dl>
+                  {isAvailable(integration.profileHref) ? (
+                    <a
+                      className={styles.inlineLink}
+                      href={integration.profileHref.value}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      Open the public {integration.name} profile ↗
+                    </a>
+                  ) : null}
                 </div>
               </details>
             ))}

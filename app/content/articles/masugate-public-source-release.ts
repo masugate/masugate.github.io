@@ -79,7 +79,7 @@ export const masugatePublicSourceRelease = {
         {
           kind: "callout",
           label: "Update · current review target",
-          text: "The repository now identifies as MasuGate 0.1.1, a corrective research-preview update to the initial 0.1.0 source opening. Reviewers should use 0.1.1 and rerun prior 0.1.0 PSS measurements under the corrected checker and evidence boundary.",
+          text: "The repository now identifies as MasuGate 0.1.1, a corrective research-preview update to the initial 0.1.0 source opening. Reviewers should use 0.1.1 and rerun prior 0.1.0 policy-state serializability (PSS) measurements under the corrected checker and evidence boundary.",
           tone: "evidence",
           citationIds: ["pss-correction"],
         },
