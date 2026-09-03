@@ -341,6 +341,12 @@
   transition: opacity 140ms ease, translate 140ms ease, visibility 140ms ease;
 }
 
+.masugate-nav-menu[data-navigation-item="blog"] .masugate-nav-panel {
+  right: -12px;
+  left: auto;
+  width: min(430px, 54vw);
+}
+
 .masugate-nav-menu:hover .masugate-nav-panel,
 .masugate-nav-menu:focus-within .masugate-nav-panel {
   opacity: 1;

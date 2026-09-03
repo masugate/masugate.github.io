@@ -249,6 +249,25 @@ function assertMasuGateChrome(html, path) {
     `${path}: desktop navigation includes the OpenClaw site map`,
   );
 
+  const primaryNavigationLinks = linksIn(primaryNavigation);
+  for (const href of [
+    "/blog/when-time-becomes-agent-policy/",
+    "/blog/policy-as-code-not-prompt/",
+    "/blog/when-allowed-goes-stale/",
+  ]) {
+    assert.ok(
+      primaryNavigationLinks.some((link) => link.href === href),
+      `${path}: Blog pull-down is missing technical article ${href}`,
+    );
+  }
+  assert.equal(
+    primaryNavigationLinks.some(
+      ({ href }) => href === "/blog/masugate-public-source-release/",
+    ),
+    false,
+    `${path}: the release announcement belongs in the separate update banner`,
+  );
+
   assert.doesNotMatch(
     html,
     /\bSAGE\b/,
@@ -1125,6 +1144,7 @@ test("server-renders the release announcement and complete editorial series", as
   const indexResponse = await render("/blog/");
   const indexHtml = await indexResponse.text();
   const indexText = textContent(indexHtml);
+  const indexMainText = textContent(mainMarkup(indexHtml));
 
   assert.equal(indexResponse.status, 200);
   assertMasuGateChrome(indexHtml, "/blog");
@@ -1146,8 +1166,11 @@ test("server-renders the release announcement and complete editorial series", as
     indexText,
     /Approved at 5:05: When Time Becomes Part of an Agent Policy/,
   );
-  assert.equal(countMatches(indexText, /Technical article/g), 3);
-  assert.equal(countMatches(indexText, /Announcement · Evidence · Reference/g), 1);
+  assert.equal(countMatches(indexMainText, /Technical article/g), 3);
+  assert.equal(
+    countMatches(indexMainText, /Announcement · Evidence · Reference/g),
+    1,
+  );
   assert.doesNotMatch(indexText, /No articles or updates are published/);
   assert.match(
     indexHtml,

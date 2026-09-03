@@ -27,6 +27,7 @@ const {
   hasPublishedArticles,
   publishedArticles,
   selectBlogIndexPublications,
+  selectBlogNavigationArticles,
   selectHomepageArticles,
   selectLatestAnnouncement,
   validatePublishedArticles,
@@ -291,6 +292,30 @@ test("the global banner selects only the newest eligible announcement", () => {
     selectBlogIndexPublications([base, olderButRecentlyEdited])[0]?.slug,
     "older-announcement",
     "announcements lead the Blog & Updates index",
+  );
+});
+
+test("the Blog navigation lists every technical article and excludes announcements", () => {
+  const navigationArticles = selectBlogNavigationArticles();
+
+  assert.deepEqual(
+    navigationArticles.map(({ slug }) => slug),
+    [
+      "when-time-becomes-agent-policy",
+      "policy-as-code-not-prompt",
+      "when-allowed-goes-stale",
+    ],
+  );
+  assert.ok(
+    navigationArticles.every(
+      ({ publicationType }) => publicationType === "article",
+    ),
+  );
+  assert.equal(
+    navigationArticles.some(
+      ({ slug }) => slug === "masugate-public-source-release",
+    ),
+    false,
   );
 });
 

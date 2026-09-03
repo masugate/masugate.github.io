@@ -120,6 +120,14 @@ export function selectBlogIndexPublications(
   ];
 }
 
+export function selectBlogNavigationArticles(
+  articles: readonly PublishedArticle[] = publishedArticles,
+): readonly PublishedArticle[] {
+  return sortByMostRecent(
+    articles.filter(({ publicationType }) => publicationType === "article"),
+  );
+}
+
 export function getPublishedArticle(
   slug: string,
 ): PublishedArticle | undefined {

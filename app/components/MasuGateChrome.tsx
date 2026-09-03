@@ -1,5 +1,8 @@
 import Link from "next/link";
-import { selectLatestAnnouncement } from "../data/articles";
+import {
+  selectBlogNavigationArticles,
+  selectLatestAnnouncement,
+} from "../data/articles";
 import { contactContract } from "../data/contact";
 import { isAvailable } from "../data/contracts";
 import {
@@ -8,6 +11,12 @@ import {
   selectPrimaryNavigation,
 } from "../data/masugate-site";
 import { ThemeControl } from "./ThemeControl";
+
+const blogNavigationLinks = selectBlogNavigationArticles().map((article) => ({
+  label: article.title,
+  href: article.href,
+  detail: `Technical article · ${article.readingMinutes} min read`,
+}));
 
 const navigationMaps: Record<
   NavigationItemId,
@@ -84,16 +93,7 @@ const navigationMaps: Record<
         href: "/blog/",
         detail: "Browse explainers and project updates.",
       },
-      {
-        label: "Policy as code, not prompt",
-        href: "/blog/policy-as-code-not-prompt/",
-        detail: "Read the practical policy-program primer.",
-      },
-      {
-        label: "Why allowed goes stale",
-        href: "/blog/when-allowed-goes-stale/",
-        detail: "Read the concurrent-agent problem in depth.",
-      },
+      ...blogNavigationLinks,
     ],
   },
 };
@@ -164,7 +164,11 @@ export function MasuGateHeader() {
             const menu = navigationMaps[item.id];
 
             return (
-              <div className="masugate-nav-menu" key={item.id}>
+              <div
+                className="masugate-nav-menu"
+                data-navigation-item={item.id}
+                key={item.id}
+              >
                 <Link className="masugate-nav-link" href={item.href}>
                   {item.label}
                 </Link>
