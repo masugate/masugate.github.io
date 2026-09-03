@@ -8,6 +8,7 @@ import {
   useMemo,
   useReducer,
   useRef,
+  useState,
 } from "react";
 import type {
   BudgetSnapshot,
@@ -45,7 +46,20 @@ const inspectorLabels: Record<DemoInspectorId, string> = {
   record: "Decision record",
 };
 
-const playbackDelayMs = 1_550;
+const playbackDelayMs = 850;
+const flowAgentStatesLabel = "Agent request states";
+const flowAgentStateLabels = {
+  ready: "Ready",
+  request: "Request sent",
+  state: "Reading shared state",
+  review: "Awaiting review",
+  held: "Capacity held",
+  approved: "Approved once",
+  allowed: "Policy allowed",
+  committed: "Committed",
+  denied: "Request denied",
+  active: "In progress",
+} as const;
 
 function inspectorArtifactKind(inspectorId: DemoInspectorId) {
   if (inspectorId === "configuration") return "configuration";
@@ -85,6 +99,31 @@ const flowPhaseByEventKind: Record<
   record: 3,
 };
 
+function flowPacketPosition(
+  eventKind: DemoClientEvent["kind"] | "idle",
+  stageId: string,
+  agentId?: DemoOperationDefinition["agentId"],
+) {
+  if (eventKind === "request") {
+    if (stageId === "stage-2") {
+      return {
+        x: 174,
+        y: agentId === "openclaw:work-manager" ? 244 : 142,
+      };
+    }
+    return stageId === "stage-1" ? { x: 126, y: 183 } : { x: 174, y: 183 };
+  }
+  if (eventKind === "host-context") return { x: 178, y: 183 };
+  if (eventKind === "route-resolution") return { x: 246, y: 183 };
+  if (eventKind === "state-read") return { x: 512, y: 183 };
+  if (["decision", "protection", "review"].includes(eventKind)) {
+    return { x: 782, y: 183 };
+  }
+  if (eventKind === "effect") return { x: 850, y: 183 };
+  if (eventKind === "record") return { x: 922, y: 235 };
+  return { x: 86, y: 260 };
+}
+
 function artifactStatus(artifact?: DemoClientArtifact) {
   return {
     presentation: titleCase(artifact?.presentationOrigin ?? "simulated"),
@@ -115,10 +154,10 @@ function actorLabel(model: DemoClientModel, actorId: DemoClientEvent["actorId"])
     reviewer: "Human reviewer",
     masugate: "MasuGate",
     provider: "Configured provider",
-    scenario: "Scenario fixture",
     "detached-check": "Detached comparison",
   };
 
+  if (actorId === "scenario") return model.copy.visitor.scenarioActorLabel;
   return labels[actorId] ?? titleCase(actorId);
 }
 
@@ -161,11 +200,22 @@ function eventAnnouncement(
   stage: DemoStage,
   events: readonly DemoClientEvent[],
   index: number,
-): string {
+  startingStateSelected: string,
+): string | undefined {
   const event = events[index];
-  if (!event) return `${stage.title}. Named version fixture selected.`;
+  if (!event) return `${stage.title}. ${startingStateSelected}.`;
 
-  return `${stage.title}. Step ${index + 1} of ${events.length}. ${event.announcement}`;
+  if (
+    event.kind === "reset" ||
+    event.kind === "request" ||
+    event.kind === "host-context" ||
+    event.kind === "route-resolution" ||
+    (event.kind === "state-read" && !event.policyContext)
+  ) {
+    return undefined;
+  }
+
+  return `${stage.title}. ${event.announcement}`;
 }
 
 interface ResourceLedger {
@@ -253,67 +303,643 @@ function policyRevisionLabel(policy: DemoClientPolicy): string {
   return `${base} → ${next ? `@${next}` : policy.scenarioRevision}`;
 }
 
-function BudgetResource({ snapshot }: { snapshot: BudgetSnapshot }) {
-  const capacity = Math.max(snapshot.capacity.minorUnits, 1);
-  const segments = [
-    {
-      id: "committed",
-      label: "Committed spend",
-      value: snapshot.committed,
-      className: styles.budgetCommitted,
-    },
-    {
-      id: "protected",
-      label: "Protected pending capacity",
-      value: snapshot.protected,
-      className: styles.budgetProtected,
-    },
-    {
-      id: "available",
-      label: "Available capacity",
-      value: snapshot.available,
-      className: styles.budgetAvailable,
-    },
-  ] as const;
+type FlowNodeState = "complete" | "current" | "upcoming";
+
+function flowNodeState(
+  nodeIndex: number,
+  currentPhase: number | null,
+  complete: boolean,
+): FlowNodeState {
+  if (currentPhase === null || nodeIndex > currentPhase) return "upcoming";
+  if (complete) return "complete";
+  if (nodeIndex === currentPhase) return "current";
+  return "complete";
+}
+
+function activeFlowOperation(
+  events: readonly DemoClientEvent[],
+  eventIndex: number,
+  model: DemoClientModel,
+): DemoOperationDefinition | undefined {
+  const currentEvent = events[eventIndex];
+  if (!currentEvent || currentEvent.kind === "reset") return undefined;
+  if (currentEvent.kind === "state-read" && !currentEvent.policyContext) {
+    return undefined;
+  }
+
+  if (currentEvent.operation) {
+    return operationDefinition(model, currentEvent.operation.operationId);
+  }
+
+  const request = events
+    .slice(0, eventIndex + 1)
+    .reverse()
+    .find(({ kind }) => kind === "request");
+  const requestId = request?.artifactRefs
+    .find((reference) => reference.startsWith("request:"))
+    ?.slice("request:".length);
+
+  return model.operations.find((operation) => operation.requestId === requestId);
+}
+
+function useAnimatedMinorUnits(target: number, reducedMotion: boolean): number {
+  const [value, setValue] = useState(target);
+  const valueRef = useRef(target);
+
+  useEffect(() => {
+    const start = valueRef.current;
+    const steps = reducedMotion ? 1 : 9;
+    let step = 0;
+    const timer = window.setInterval(() => {
+      step += 1;
+      const next = Math.round(start + ((target - start) * step) / steps);
+      valueRef.current = next;
+      setValue(next);
+      if (step === steps) window.clearInterval(timer);
+    }, reducedMotion ? 0 : 58);
+
+    return () => window.clearInterval(timer);
+  }, [reducedMotion, target]);
+
+  return reducedMotion ? target : value;
+}
+
+function GovernedActionFlow({
+  budget,
+  currentEvent,
+  currentPhase,
+  eventIndex,
+  events,
+  flowViewportRef,
+  histories,
+  model,
+  playback,
+  reducedMotion,
+  stage,
+}: {
+  budget?: BudgetSnapshot;
+  currentEvent?: DemoClientEvent;
+  currentPhase: number | null;
+  eventIndex: number;
+  events: readonly DemoClientEvent[];
+  flowViewportRef: RefObject<HTMLDivElement | null>;
+  histories: OperationHistory[];
+  model: DemoClientModel;
+  playback: DemoMachineState["playback"];
+  reducedMotion: boolean;
+  stage: DemoStage;
+}) {
+  const copy = model.copy.flowDiagram;
+  const [openClawLabelLead, ...openClawLabelTail] =
+    copy.openClawLabel.split(" ");
+  const [stateHintLead, ...stateHintTail] = copy.stateHint.split(" ");
+  const flowFocusRef = useRef<SVGCircleElement>(null);
+  const flowFollowSuspendedRef = useRef(false);
+  const previousEventIndexRef = useRef(eventIndex);
+  const previousStageIdRef = useRef(stage.id);
+  const currentOperation = currentEvent?.operation;
+  const activeOperation = activeFlowOperation(events, eventIndex, model);
+  const decision = currentEvent?.policy?.decision ?? "ready";
+  const operationStatus = currentOperation?.status ?? "not-started";
+  const effectLabel =
+    operationStatus === "committed"
+      ? titleCase(operationStatus)
+    : operationStatus === "denied"
+        ? copy.noEffectLabel
+        : operationStatus === "pending"
+          ? copy.notRunLabel
+          : copy.notStartedLabel;
+  const operationLabel = titleCase(operationStatus);
+  const recordReferences = currentEvent?.artifactRefs.filter((reference) =>
+    reference.startsWith("record:"),
+  ) ?? [];
+  const laterRecordExists = currentOperation
+    ? events.slice(eventIndex + 1).some(
+        (event) =>
+          event.kind === "record" &&
+          event.artifactRefs.includes(`record:${currentOperation.operationId}`),
+      )
+    : false;
+  const recordVisible =
+    currentEvent?.kind === "record" ||
+    Boolean(
+      currentOperation &&
+        currentOperation.status !== "pending" &&
+        recordReferences.length > 0 &&
+        !laterRecordExists,
+    );
+  const recordHistories = recordReferences
+    .map((reference) =>
+      histories.find(
+        ({ operation }) =>
+          `record:${operation.operationId}` === reference,
+      ),
+    )
+    .filter((history): history is OperationHistory => Boolean(history));
+  const recordTone = recordHistories.length > 1
+    ? "mixed"
+    : recordHistories[0]?.operation.status ?? operationStatus;
+  const stageAgents = stage.presentation.activeAgentIds
+    .map((id) => model.scenario.agents.find((agent) => agent.id === id))
+    .filter((agent): agent is DemoClientModel["scenario"]["agents"][number] =>
+      Boolean(agent),
+    );
+  const agentViews = stageAgents.map((agent) => {
+    const history = [...histories].reverse().find(({ operation }) =>
+      model.operations.some(
+        (definition) =>
+          definition.operationId === operation.operationId &&
+          definition.agentId === agent.id,
+      ),
+    );
+    const isCurrent = activeOperation?.agentId === agent.id;
+    let state: keyof typeof flowAgentStateLabels = "ready";
+
+    if (isCurrent && currentEvent?.kind === "request") state = "request";
+    else if (isCurrent && currentEvent?.kind === "state-read") state = "state";
+    else if (history?.operation.status === "committed") state = "committed";
+    else if (history?.operation.status === "denied") state = "denied";
+    else if (history?.operation.humanResolution === "allow-once") state = "approved";
+    else if (isCurrent && currentEvent?.kind === "review") state = "review";
+    else if (history?.event.kind === "protection") state = "held";
+    else if (history?.policyDecision === "escalate") state = "review";
+    else if (history?.policyDecision === "allow") state = "allowed";
+    else if (isCurrent && currentEvent?.policy?.decision === "allow") state = "allowed";
+    else if (isCurrent && currentEvent?.policy?.decision === "deny") state = "denied";
+    else if (isCurrent && currentEvent?.policy?.decision === "escalate") state = "review";
+    else if (isCurrent && currentEvent) state = "active";
+
+    return { agent, isCurrent, label: flowAgentStateLabels[state], state };
+  });
+  const hasMultipleAgents = agentViews.length > 1;
+  const agentStateDescription = agentViews.length
+    ? `${flowAgentStatesLabel}: ${agentViews
+        .map(({ agent, label }) => `${agent.shortName}: ${label}`)
+        .join("; ")}.`
+    : "";
+  const activeResourceKind =
+    currentEvent?.resourceSnapshot.kind === "workspace"
+      ? "workspace"
+      : "calendar";
+  const currentEventKind = currentEvent?.kind ?? "idle";
+  const packetPosition = flowPacketPosition(
+    currentEventKind,
+    stage.id,
+    activeOperation?.agentId,
+  );
+  const displayedAvailable = useAnimatedMinorUnits(
+    budget?.available.minorUnits ?? 0,
+    reducedMotion,
+  );
+  const budgetCapacity = Math.max(budget?.capacity.minorUnits ?? 1, 1);
+  const budgetBarWidth = 216;
+  const committedWidth = budget
+    ? (budget.committed.minorUnits / budgetCapacity) * budgetBarWidth
+    : 0;
+  const protectedWidth = budget
+    ? (budget.protected.minorUnits / budgetCapacity) * budgetBarWidth
+    : 0;
+  const availableWidth = budget
+    ? Math.max(
+        (budget.available.minorUnits / budgetCapacity) * budgetBarWidth,
+        0,
+      )
+    : budgetBarWidth;
+  const budgetDescription = budget
+    ? `${copy.budgetLabel}: ${formatMoney(budget.committed)} ${copy.committedLabel}, ${formatMoney(budget.protected)} ${copy.heldLabel}, and ${formatMoney(budget.available)} ${copy.availableLabel} out of ${formatMoney(budget.capacity)} ${copy.totalLabel}.`
+    : "";
+  const flowStateDescription = currentEvent
+    ? `${currentEvent.label}. ${currentEvent.description} ${copy.decisionLabel}: ${decision === "ready" ? copy.readyLabel : titleCase(decision)}. ${copy.operationLabel}: ${operationLabel}. ${recordVisible ? `${recordReferences.length || 1} ${recordReferences.length > 1 ? copy.recordsLabel : copy.recordLabel}.` : `${copy.recordLabel}: ${copy.notStartedLabel}.`}`
+    : copy.readyDescription;
+  const flowComplete = playback === "complete";
+
+  useEffect(() => {
+    const stageChanged = previousStageIdRef.current !== stage.id;
+    const runStarted = previousEventIndexRef.current < 0 && eventIndex >= 0;
+
+    if (stageChanged || eventIndex < 0 || runStarted) {
+      flowFollowSuspendedRef.current = false;
+    }
+
+    previousStageIdRef.current = stage.id;
+    previousEventIndexRef.current = eventIndex;
+
+    const viewport = flowViewportRef.current;
+    if (
+      !viewport ||
+      viewport.scrollWidth <= viewport.clientWidth + 1 ||
+      flowFollowSuspendedRef.current
+    ) {
+      return;
+    }
+
+    const target = flowFocusRef.current;
+    if (!target) return;
+
+    const viewportBounds = viewport.getBoundingClientRect();
+    const targetBounds = target.getBoundingClientRect();
+    const horizontalDelta =
+      targetBounds.left +
+      targetBounds.width / 2 -
+      (viewportBounds.left + viewportBounds.width / 2);
+
+    viewport.scrollBy({
+      behavior: reducedMotion ? "auto" : "smooth",
+      left: horizontalDelta,
+    });
+  }, [currentEventKind, eventIndex, flowViewportRef, reducedMotion, stage.id]);
 
   return (
-    <article className={styles.resourceCard}>
-      <header className={styles.resourceHeader}>
-        <div>
-          <span>Governed resource</span>
-          <h4>Business budget</h4>
-        </div>
-        <strong>{formatMoney(snapshot.available)} available</strong>
-      </header>
+    <figure className={styles.flowFigure} data-playback={playback}>
+      <p className={styles.flowScrollHint} id="demo-flow-scroll-instruction">
+        {copy.viewportHint}
+      </p>
       <div
-        aria-label={`${formatMoney(snapshot.committed)} committed, ${formatMoney(snapshot.protected)} protected pending, and ${formatMoney(snapshot.available)} available out of ${formatMoney(snapshot.capacity)}`}
-        className={styles.budgetBar}
-        role="img"
+        aria-describedby="demo-flow-scroll-instruction"
+        aria-label={copy.viewportLabel}
+        className={styles.flowViewport}
+        onKeyDown={(event) => {
+          if (
+            ["ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"].includes(
+              event.key,
+            )
+          ) {
+            flowFollowSuspendedRef.current = true;
+          }
+        }}
+        onPointerDown={() => {
+          flowFollowSuspendedRef.current = true;
+        }}
+        onWheel={(event) => {
+          if (event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
+            flowFollowSuspendedRef.current = true;
+          }
+        }}
+        ref={flowViewportRef}
+        role="region"
+        tabIndex={0}
       >
-        {segments.map((segment) => (
-          <span
-            className={segment.className}
-            key={segment.id}
-            style={{ width: `${(segment.value.minorUnits / capacity) * 100}%` }}
+        <svg
+          aria-describedby="demo-flow-description"
+          aria-labelledby="demo-flow-title"
+          className={styles.flowDiagram}
+          data-current-phase={currentPhase ?? "idle"}
+          data-operation-status={operationStatus}
+          data-stage-id={stage.id}
+          role="img"
+          viewBox="0 0 1000 440"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <title id="demo-flow-title">{copy.title}</title>
+          <desc id="demo-flow-description">
+            {copy.description} {agentStateDescription} {flowStateDescription} {budgetDescription}
+          </desc>
+          <defs>
+            <marker
+              id="demo-flow-arrow"
+              markerHeight="7"
+              markerWidth="7"
+              orient="auto-start-reverse"
+              refX="6"
+              refY="3.5"
+            >
+              <path className={styles.flowArrowHead} d="M0,0 L7,3.5 L0,7 Z" />
+            </marker>
+            <clipPath id="demo-budget-clip">
+              <rect height="34" rx="17" width="216" x="404" y="324" />
+            </clipPath>
+            <pattern
+              height="10"
+              id="demo-budget-pending"
+              patternTransform="rotate(32)"
+              patternUnits="userSpaceOnUse"
+              width="10"
+            >
+              <rect className={styles.flowBudgetPendingBase} height="10" width="10" />
+              <rect className={styles.flowBudgetPendingStripe} height="10" width="4" />
+            </pattern>
+          </defs>
+
+          <rect
+            className={styles.openClawZone}
+            height="364"
+            rx="22"
+            width="176"
+            x="20"
+            y="48"
           />
-        ))}
+          <rect
+            className={styles.masuGateZone}
+            height="400"
+            rx="26"
+            width="766"
+            x="216"
+            y="22"
+          />
+          <text className={styles.flowZoneLabel} x="42" y="69">
+            <tspan x="42" y="69">{openClawLabelLead}</tspan>
+            <tspan x="42" y="84">{openClawLabelTail.join(" ")}</tspan>
+          </text>
+          <text className={styles.flowZoneLabel} x="244" y="52">
+            {copy.runtimeLabel}
+          </text>
+          <text
+            className={styles.flowBoundaryLabel}
+            textAnchor="middle"
+            transform="rotate(-90 216 220)"
+            x="216"
+            y="220"
+          >
+            {copy.boundaryLabel}
+          </text>
+
+          {agentViews.map(({ agent, isCurrent, label, state }, index) => {
+            const x = hasMultipleAgents ? 34 : 42;
+            const y = hasMultipleAgents ? 101 + index * 102 : 136;
+            const width = hasMultipleAgents ? 148 : 132;
+            const height = hasMultipleAgents ? 82 : 94;
+            const centerY = y + height / 2;
+
+            return (
+              <g key={agent.id}>
+                <path
+                  className={`${styles.flowPath} ${styles.flowAgentPath}`}
+                  d={hasMultipleAgents
+                    ? `M${x + width} ${centerY} C208 ${centerY} 207 183 232 183`
+                    : "M174 183 H260"}
+                  data-agent-current={isCurrent ? "true" : "false"}
+                  data-agent-state={state}
+                  markerEnd={hasMultipleAgents ? undefined : "url(#demo-flow-arrow)"}
+                />
+                <g
+                  className={styles.flowAgent}
+                  data-agent-current={isCurrent ? "true" : "false"}
+                  data-agent-id={agent.id}
+                  data-agent-state={state}
+                >
+                  <rect height={height} rx="14" width={width} x={x} y={y} />
+                  <circle className={styles.flowAgentStatus} cx={x + width - 16} cy={y + 18} r="5" />
+                  <text className={styles.flowMicroText} x={x + 14} y={y + 23}>
+                    {copy.agentLabel}
+                  </text>
+                  <text className={styles.flowNodeTitle} x={x + 14} y={y + 49}>
+                    {agent.shortName}
+                  </text>
+                  <text className={styles.flowAgentHint} x={x + 14} y={y + 70}>
+                    {label}
+                  </text>
+                </g>
+              </g>
+            );
+          })}
+
+          {hasMultipleAgents ? (
+            <path
+              className={`${styles.flowPath} ${styles.flowPathInbound}`}
+              d="M232 183 H260"
+              markerEnd="url(#demo-flow-arrow)"
+            />
+          ) : null}
+          <path
+            className={`${styles.flowPath} ${styles.flowPathState}`}
+            d="M400 183 H442"
+            markerEnd="url(#demo-flow-arrow)"
+          />
+          <path
+            className={`${styles.flowPath} ${styles.flowPathDecision}`}
+            d="M582 183 H624"
+            markerEnd="url(#demo-flow-arrow)"
+          />
+          <path
+            className={`${styles.flowPath} ${styles.flowPathResult}`}
+            d="M764 183 H800"
+            markerEnd="url(#demo-flow-arrow)"
+          />
+          <path
+            className={styles.flowDependencyPath}
+            d="M512 282 V236"
+            markerEnd="url(#demo-flow-arrow)"
+          />
+
+          <g
+            className={styles.flowNode}
+            data-flow-state={flowNodeState(0, currentPhase, flowComplete)}
+          >
+            <rect height="106" rx="16" width="140" x="260" y="130" />
+            <text className={styles.flowStepText} x="278" y="156">{copy.steps.request}</text>
+            <text className={styles.flowNodeTitle} x="278" y="184">
+              {copy.requestLabel}
+            </text>
+            <text className={styles.flowNodeHint} x="278" y="208">
+              {copy.requestHint}
+            </text>
+          </g>
+
+          <g
+            className={styles.flowNode}
+            data-flow-state={flowNodeState(1, currentPhase, flowComplete)}
+          >
+            <rect height="106" rx="16" width="140" x="442" y="130" />
+            <text className={styles.flowStepText} x="460" y="156">{copy.steps.state}</text>
+            <text className={styles.flowNodeTitle} x="460" y="184">
+              {copy.stateLabel}
+            </text>
+            <text className={styles.flowNodeHint} x="460" y="203">
+              <tspan x="460" y="203">{stateHintLead}</tspan>
+              <tspan x="460" y="218">{stateHintTail.join(" ")}</tspan>
+            </text>
+          </g>
+
+          <g
+            className={styles.flowNode}
+            data-flow-state={flowNodeState(2, currentPhase, flowComplete)}
+          >
+            <rect height="106" rx="16" width="140" x="624" y="130" />
+            <text className={styles.flowStepText} x="642" y="156">{copy.steps.decision}</text>
+            <text className={styles.flowNodeTitle} x="642" y="184">
+              {copy.decisionLabel}
+            </text>
+            <text className={styles.flowNodeHint} x="642" y="208">
+              {decision === "ready" ? copy.decisionHint : titleCase(decision)}
+            </text>
+          </g>
+
+          <g
+            className={styles.flowGate}
+            data-decision={decision}
+            aria-hidden="true"
+          >
+            <rect className={styles.flowGateLeafLeft} height="30" rx="3" width="7" x="775" y="168" />
+            <rect className={styles.flowGateLeafRight} height="30" rx="3" width="7" x="786" y="168" />
+            <rect className={styles.flowGateStop} height="8" rx="4" width="42" x="761" y="179" />
+            <circle className={styles.flowGateHold} cx="782" cy="183" r="21" />
+          </g>
+
+          <g
+            className={`${styles.flowNode} ${styles.flowResultNode}`}
+            data-flow-state={flowNodeState(3, currentPhase, flowComplete)}
+          >
+            <rect height="146" rx="16" width="160" x="800" y="110" />
+            <text className={styles.flowStepText} x="818" y="136">{copy.steps.result}</text>
+            <text className={styles.flowNodeTitle} x="818" y="162">
+              {copy.resultLabel}
+            </text>
+            <g className={styles.flowEffect} data-operation-status={operationStatus}>
+              <rect height="38" rx="8" width="124" x="818" y="176" />
+              <text className={styles.flowMicroText} x="830" y="191">
+                {copy.effectLabel}
+              </text>
+              <text className={styles.flowResultText} x="830" y="207">
+                {effectLabel}
+              </text>
+            </g>
+            <text className={styles.flowOperationText} x="818" y="230">
+              {copy.operationLabel}
+            </text>
+            <text
+              className={styles.flowOperationText}
+              textAnchor="end"
+              x="942"
+              y="230"
+            >
+              {operationLabel}
+            </text>
+            <g
+              className={styles.flowRecord}
+              data-record-visible={recordVisible ? "true" : "false"}
+              data-record-tone={recordTone}
+            >
+              <rect height="24" rx="6" width="106" x="836" y="236" />
+              <text className={styles.flowResultText} x="848" y="253">
+                {recordReferences.length > 1
+                  ? `${recordReferences.length} ${copy.recordsLabel}`
+                  : copy.recordLabel}
+              </text>
+            </g>
+          </g>
+
+          {budget ? (
+            <g
+              className={styles.flowBudget}
+              data-budget-protected={budget.protected.minorUnits > 0 ? "true" : "false"}
+            >
+              <rect className={styles.flowBudgetCard} height="126" rx="16" width="260" x="382" y="282" />
+              <text className={styles.flowMicroText} x="404" y="309">
+                {copy.budgetLabel}
+              </text>
+              <text className={styles.flowBudgetTotal} textAnchor="end" x="620" y="309">
+                {formatMoney(budget.capacity)} {copy.totalLabel}
+              </text>
+              <rect className={styles.flowBudgetTrack} height="34" rx="17" width="216" x="404" y="324" />
+              <g clipPath="url(#demo-budget-clip)">
+                <rect
+                  className={`${styles.flowBudgetSegment} ${styles.flowBudgetCommitted}`}
+                  height="34"
+                  width={committedWidth}
+                  x="404"
+                  y="324"
+                />
+                <rect
+                  className={`${styles.flowBudgetSegment} ${styles.flowBudgetProtected}`}
+                  height="34"
+                  width={protectedWidth}
+                  x={404 + committedWidth}
+                  y="324"
+                />
+                <rect
+                  className={`${styles.flowBudgetSegment} ${styles.flowBudgetAvailable}`}
+                  height="34"
+                  width={availableWidth}
+                  x={404 + committedWidth + protectedWidth}
+                  y="324"
+                />
+              </g>
+              <rect className={styles.flowBudgetOutline} height="34" rx="17" width="216" x="404" y="324" />
+              <text className={styles.flowBudgetValue} x="404" y="382">
+                {formatMoney({
+                  currency: budget.available.currency,
+                  minorUnits: displayedAvailable,
+                })}{" "}
+                {copy.availableLabel}
+              </text>
+              <text className={styles.flowBudgetLegend} x="404" y="400">
+                {formatMoney(budget.committed)} {copy.committedLabel}
+              </text>
+              <text className={styles.flowBudgetLegend} textAnchor="end" x="620" y="400">
+                {formatMoney(budget.protected)} {copy.heldShortLabel}
+              </text>
+            </g>
+          ) : (
+            <g
+              className={styles.flowBudgetPlaceholder}
+              data-active-resource={activeResourceKind}
+            >
+              <rect height="126" rx="16" width="260" x="382" y="282" />
+              <text className={styles.flowMicroText} x="404" y="309">
+                {copy.resourcesLabel}
+              </text>
+              <rect
+                className={styles.flowResourceTile}
+                data-resource="calendar"
+                height="58"
+                rx="10"
+                width="102"
+                x="404"
+                y="326"
+              />
+              <text className={styles.flowNodeTitle} x="416" y="348">
+                {model.copy.visitor.calendarLabel}
+              </text>
+              <text className={styles.flowNodeHint} x="416" y="369">
+                {copy.calendarHint}
+              </text>
+              <rect
+                className={styles.flowResourceTile}
+                data-resource="workspace"
+                height="58"
+                rx="10"
+                width="102"
+                x="518"
+                y="326"
+              />
+              <text className={styles.flowNodeTitle} x="530" y="348">
+                {model.copy.visitor.workspaceLabel}
+              </text>
+              <text className={styles.flowNodeHint} x="530" y="369">
+                {copy.workspaceHint}
+              </text>
+            </g>
+          )}
+
+          <circle
+            aria-hidden="true"
+            cx={eventIndex < 0 ? 880 : packetPosition.x}
+            cy={packetPosition.y}
+            fill="transparent"
+            focusable="false"
+            r="1"
+            ref={flowFocusRef}
+          />
+          <g
+            aria-hidden="true"
+            className={styles.flowPacket}
+            data-agent-id={activeOperation?.agentId ?? "none"}
+            data-event-kind={currentEventKind}
+            key={activeOperation?.agentId ?? "idle"}
+            style={{
+              transform: `translate(${packetPosition.x}px, ${packetPosition.y}px)`,
+            }}
+          >
+            <circle className={styles.flowPacketRing} r="14" />
+            <circle className={styles.flowPacketCore} r="7" />
+          </g>
+        </svg>
       </div>
-      <dl className={styles.resourceFacts}>
-        {segments.map((segment) => (
-          <div key={segment.id}>
-            <dt>
-              <i className={segment.className} aria-hidden="true" />
-              {segment.label}
-            </dt>
-            <dd>{formatMoney(segment.value)}</dd>
-          </div>
-        ))}
-        <div>
-          <dt>Fixture capacity</dt>
-          <dd>{formatMoney(snapshot.capacity)}</dd>
-        </div>
-      </dl>
-    </article>
+      <figcaption>
+        <strong>{currentEvent?.label ?? stage.title}</strong>
+        <span>{currentEvent?.description ?? stage.requirement}</span>
+      </figcaption>
+    </figure>
   );
 }
 
@@ -352,14 +978,14 @@ function CalendarResource({
       <header className={styles.resourceHeader}>
         <div>
           <span>Governed resource</span>
-          <h4>Calendar fixture</h4>
+          <h4>{model.copy.visitor.calendarLabel}</h4>
         </div>
         <strong>{snapshot.timezone}</strong>
       </header>
       <p className={styles.fixtureNote}>
         {calendarDate.state === "available"
           ? `${calendarDate.value.date} · ${calendarDate.value.utcOffset}`
-          : "Wall-clock fixture; fixed date and UTC offset remain release-alignment inputs."}
+          : model.copy.visitor.fixedDateNote}
       </p>
       <ol className={styles.calendarList} role="list">
         {snapshot.entries.map((entry) => (
@@ -389,13 +1015,19 @@ function CalendarResource({
   );
 }
 
-function WorkspaceResource({ snapshot }: { snapshot: WorkspaceSnapshot }) {
+function WorkspaceResource({
+  snapshot,
+  model,
+}: {
+  snapshot: WorkspaceSnapshot;
+  model: DemoClientModel;
+}) {
   return (
     <article className={styles.resourceCard}>
       <header className={styles.resourceHeader}>
         <div>
           <span>Governed resource</span>
-          <h4>Workspace fixture</h4>
+          <h4>{model.copy.visitor.workspaceLabel}</h4>
         </div>
         <strong>{snapshot.entries.length} entries</strong>
       </header>
@@ -425,6 +1057,8 @@ function ResourceRegion({
   model: DemoClientModel;
   currentEvent?: DemoClientEvent;
 }) {
+  if (!ledger.calendar && !ledger.workspace) return null;
+
   return (
     <section className={styles.resourceRegion} aria-labelledby="demo-resource-title">
       <div className={styles.regionHeading}>
@@ -432,7 +1066,6 @@ function ResourceRegion({
         <h3 id="demo-resource-title">Governed resource</h3>
       </div>
       <div className={styles.resourceStack}>
-        {ledger.budget ? <BudgetResource snapshot={ledger.budget} /> : null}
         {ledger.calendar ? (
           <CalendarResource
             currentEvent={currentEvent}
@@ -440,29 +1073,26 @@ function ResourceRegion({
             snapshot={ledger.calendar}
           />
         ) : null}
-        {ledger.workspace ? <WorkspaceResource snapshot={ledger.workspace} /> : null}
+        {ledger.workspace ? (
+          <WorkspaceResource model={model} snapshot={ledger.workspace} />
+        ) : null}
       </div>
     </section>
   );
 }
 
 function ConversationRegion({
-  stage,
   events,
   eventIndex,
   model,
+  playback,
 }: {
-  stage: DemoStage;
   events: readonly DemoClientEvent[];
   eventIndex: number;
   model: DemoClientModel;
+  playback: DemoMachineState["playback"];
 }) {
-  const visibleEvents = events.slice(0, eventIndex + 1);
-  const visibleWindowStart = Math.max(visibleEvents.length - 3, 0);
-  const recentEvents = visibleEvents.slice(visibleWindowStart);
-  const stageAgents = model.scenario.agents.filter(({ id }) =>
-    new Set<string>(stage.presentation.configuredAgentIds).has(id),
-  );
+  const copy = model.copy.timeline;
 
   return (
     <section
@@ -470,63 +1100,42 @@ function ConversationRegion({
       aria-labelledby="demo-conversation-title"
     >
       <div className={styles.regionHeading}>
-        <span>01</span>
-        <h3 id="demo-conversation-title">Conversation and agent lanes</h3>
+        <span>{copy.eyebrow}</span>
+        <h3 id="demo-conversation-title">{copy.title}</h3>
       </div>
-
-      <div
-        className={styles.agentLanes}
-        aria-label="OpenClaw agent lanes"
-        role="group"
-      >
-        {stageAgents.map((agent) => {
-          const active = new Set<string>(stage.presentation.activeAgentIds).has(agent.id);
+      <ol aria-label={copy.ariaLabel} className={styles.timelineList}>
+        {events.map((event, index) => {
+          const eventState =
+            index < eventIndex ||
+            (playback === "complete" && index === eventIndex)
+              ? "complete"
+              : index === eventIndex
+                ? "current"
+                : "upcoming";
           return (
-            <article className={active ? styles.agentActive : styles.agentIdle} key={agent.id}>
-              <span>{active ? "Active in this stage" : "Available in OpenClaw"}</span>
-              <strong>{agent.displayName}</strong>
-              <code>{agent.id}</code>
-            </article>
+            <li
+              aria-current={eventState === "current" ? "step" : undefined}
+              data-timeline-state={eventState}
+              key={event.id}
+            >
+              <span aria-hidden="true" className={styles.timelineMarker}>
+                {index + 1}
+              </span>
+              <div>
+                <small>
+                  {eventState === "complete"
+                    ? copy.completeLabel
+                    : eventState === "current"
+                      ? copy.currentLabel
+                      : copy.upcomingLabel}
+                  {" · "}{actorLabel(model, event.actorId)} · {titleCase(event.kind)}
+                </small>
+                <strong>{event.label}</strong>
+                {eventState === "current" ? <p>{event.description}</p> : null}
+              </div>
+            </li>
           );
         })}
-      </div>
-
-      <ol className={styles.conversationList} role="list">
-        <li className={styles.userMessage}>
-          <span>User requirement</span>
-          <p>{stage.presentation.userIntent}</p>
-        </li>
-        <li className={styles.agentMessage}>
-          <span>OpenClaw agent</span>
-          <p>{stage.presentation.agentResponse}</p>
-        </li>
-        {visibleWindowStart > 0 ? (
-          <li className={styles.collapsedMessage}>
-            <span>Earlier deterministic events</span>
-            <strong>{visibleWindowStart} prior events remain in the static transcript.</strong>
-          </li>
-        ) : null}
-        {recentEvents.map((event, offset) => {
-          const index = visibleWindowStart + offset;
-          return (
-          <li
-            aria-current={index === eventIndex ? "step" : undefined}
-            className={index === eventIndex ? styles.eventCurrent : styles.eventComplete}
-            key={event.id}
-          >
-            <span>{actorLabel(model, event.actorId)} · {titleCase(event.kind)}</span>
-            <strong>{event.label}</strong>
-            <p>{event.description}</p>
-          </li>
-          );
-        })}
-        {visibleEvents.length === 0 ? (
-          <li className={styles.baselineMessage}>
-            <span>Named version fixture</span>
-            <strong>{stage.baselineLabel}</strong>
-            <p>{model.copy.baselineInstruction}</p>
-          </li>
-        ) : null}
       </ol>
     </section>
   );
@@ -539,6 +1148,7 @@ function ChoiceRegion({
   primaryLength,
   model,
   dispatch,
+  continueAfterChoice,
 }: {
   stage: DemoStage;
   state: DemoMachineState;
@@ -546,6 +1156,7 @@ function ChoiceRegion({
   primaryLength: number;
   model: DemoClientModel;
   dispatch: (action: Record<string, unknown>) => void;
+  continueAfterChoice: (action: Record<string, unknown>) => void;
 }) {
   const travelOperation = operationDefinition(
     model,
@@ -600,11 +1211,11 @@ function ChoiceRegion({
                 });
                 return;
               }
-              dispatch({
+              continueAfterChoice({
                 type: "stage2-choice",
                 choice: "approved",
                 announcement:
-                  "The reviewer approved the exact pending travel operation once. Playback remains paused.",
+                  "The reviewer approved the exact pending travel operation once.",
               });
             }}
             type="button"
@@ -623,11 +1234,11 @@ function ChoiceRegion({
                 });
                 return;
               }
-              dispatch({
+              continueAfterChoice({
                 type: "stage2-choice",
                 choice: "declined",
                 announcement:
-                  "The reviewer declined the travel operation. Playback remains paused and no effect has run.",
+                  "The reviewer declined the travel operation; no effect has run.",
               });
             }}
             type="button"
@@ -651,7 +1262,7 @@ function ChoiceRegion({
           <p>
             {alternativeSelected
               ? `The ${alternativeStart}–${alternativeEnd} alternative is selected. Its evaluation, effect, and record advance as separate deterministic events.`
-              : `The fixture proposes ${alternativeStart}–${alternativeEnd}. MasuGate has not optimized the schedule; it will govern the selected create request.`}
+              : `${model.copy.visitor.alternativeProposalPrefix} ${alternativeStart}–${alternativeEnd}. ${model.copy.visitor.alternativeProposalDetail}`}
           </p>
           <button
             aria-disabled={alternativeSelected}
@@ -665,9 +1276,9 @@ function ChoiceRegion({
                 });
                 return;
               }
-              dispatch({
+              continueAfterChoice({
                 type: "stage3-alternative",
-                announcement: `The ${alternativeStart} calendar alternative is selected. Playback remains paused before evaluation.`,
+                announcement: `The ${alternativeStart} calendar alternative is selected.`,
               });
             }}
             type="button"
@@ -697,10 +1308,10 @@ function ChoiceRegion({
                   });
                   return;
                 }
-                dispatch({
+                continueAfterChoice({
                   type: "stage3-probe",
                   announcement:
-                    "The protected work-file replacement was submitted. Playback remains paused before the denial.",
+                    "The protected work-file replacement was submitted.",
                 });
               }}
               type="button"
@@ -750,7 +1361,7 @@ function OutcomeRegion({
           <p>
             {latestDecision?.policy
               ? `${latestDecision.label}. Policy decision and operation lifecycle remain separate.`
-              : "The named fixture is ready. Decision and operation lifecycle will remain separate as the sequence advances."}
+              : model.copy.visitor.readyOutcome}
           </p>
         </article>
         {histories.map((history) => {
@@ -796,8 +1407,14 @@ function OutcomeRegion({
         {choice}
       </div>
       <blockquote className={styles.takeaway}>
-        <p>{stage.presentation.takeaway}</p>
-        <footer>{stage.presentation.managementTakeaway}</footer>
+        <p>
+          {stage.id === "stage-1"
+            ? stage.presentation.managementTakeaway
+            : stage.presentation.takeaway}
+        </p>
+        {stage.id === "stage-1" ? null : (
+          <footer>{stage.presentation.managementTakeaway}</footer>
+        )}
       </blockquote>
     </section>
   );
@@ -1356,6 +1973,7 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
   const [state, dispatch] = useReducer(demoReducer, initialDemoState);
   const inspectorRef = useRef<HTMLDivElement>(null);
   const choiceRef = useRef<HTMLDivElement>(null);
+  const flowViewportRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const stageTabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
@@ -1367,7 +1985,11 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
   const lastIndex = events.length - 1;
   const currentEvent = events[state.eventIndex];
   const currentFlowPhase = currentEvent
-    ? flowPhaseByEventKind[currentEvent.kind]
+    ? currentEvent.kind === "state-read" && !currentEvent.policyContext
+      ? null
+      : currentEvent.operation?.status === "denied"
+        ? 3
+        : flowPhaseByEventKind[currentEvent.kind]
     : null;
   const visibleEvents = events.slice(0, state.eventIndex + 1);
   const ledger = resourceLedger(stage, events, state.eventIndex);
@@ -1396,16 +2018,6 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
     ({ kind }) =>
       kind === inspectorArtifactKind(state.selectedInspector as DemoInspectorId),
   );
-  const stageEvidence = stage.artifacts.every(
-    ({ evidence }) => evidence.status === "verified",
-  )
-    ? "Verified"
-    : "Reference";
-  const stagePresentation = stage.artifacts.every(
-    ({ presentationOrigin }) => presentationOrigin === "recorded",
-  )
-    ? "Recorded"
-    : "Simulated";
   const selectedEvidence = selectedArtifacts.every(
     ({ evidence }) => evidence.status === "verified",
   )
@@ -1441,9 +2053,7 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
               ? "Next step"
               : "Continue walkthrough";
   const nextAction =
-    state.playback === "idle"
-      ? model.copy.controls.startHint
-      : state.playback === "playing"
+    state.playback === "playing"
         ? "Watch the request, current state, and outcome update—or pause to inspect a step."
         : state.playback === "awaiting-choice"
           ? "Your choice is required before the governed action can continue."
@@ -1480,12 +2090,17 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
       dispatch({
         type: "tick",
         lastIndex,
-        announcement: eventAnnouncement(stage, events, nextIndex),
+        announcement: eventAnnouncement(
+          stage,
+          events,
+          nextIndex,
+          model.copy.visitor.startingStateSelected,
+        ),
       });
     }, playbackDelayMs);
 
     return () => window.clearTimeout(timer);
-  }, [events, lastIndex, reducedMotion, stage, state.eventIndex, state.playback]);
+  }, [events, lastIndex, model, reducedMotion, stage, state.eventIndex, state.playback]);
 
   useEffect(() => {
     function pauseWhenHidden() {
@@ -1511,13 +2126,20 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
 
   function runOrResume() {
     const nextIndex = state.eventIndex < 0 ? 0 : state.eventIndex;
+    const milestoneAnnouncement = eventAnnouncement(
+      stage,
+      events,
+      nextIndex,
+      model.copy.visitor.startingStateSelected,
+    );
     dispatch({
       type: "run",
       lastIndex,
       reducedMotion,
       announcement: reducedMotion
-        ? `${eventAnnouncement(stage, events, nextIndex)} Reduced motion is active, so playback is paused for manual stepping.`
-        : eventAnnouncement(stage, events, nextIndex),
+        ? `${milestoneAnnouncement ?? `${stage.title}.`} Reduced motion is active, so playback is paused for manual stepping.`
+        : milestoneAnnouncement ??
+          `${stage.title}. ${model.copy.visitor.walkthroughStarted}`,
     });
   }
 
@@ -1529,8 +2151,13 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
       lastIndex,
       announcement:
         target < 0
-          ? `${stage.title}. Returned to the named version fixture.`
-          : eventAnnouncement(stage, events, target),
+          ? `${stage.title}. ${model.copy.visitor.returnedToStartingState}`
+          : eventAnnouncement(
+              stage,
+              events,
+              target,
+              model.copy.visitor.startingStateSelected,
+            ) ?? `${stage.title}. ${events[target]?.announcement}`,
     });
   }
 
@@ -1538,7 +2165,7 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
     dispatch({
       type: "select-stage",
       stageId,
-      announcement: `${title} selected. Version fixture reset to its named baseline.`,
+      announcement: `${title} ${model.copy.visitor.stageSelectedSuffix}`,
     });
   }
 
@@ -1552,6 +2179,13 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
       type: "announce",
       announcement:
         "Required choice focused. Select one deterministic branch to continue.",
+    });
+  }
+
+  function continueAfterChoice(action: Record<string, unknown>) {
+    dispatch({ ...action, resumePlayback: !reducedMotion });
+    window.requestAnimationFrame(() => {
+      flowViewportRef.current?.focus();
     });
   }
 
@@ -1627,6 +2261,7 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
 
   const choice = (
     <ChoiceRegion
+      continueAfterChoice={continueAfterChoice}
       dispatch={dispatch}
       eventIndex={state.eventIndex}
       model={model}
@@ -1643,55 +2278,51 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
           <p className="masugate-eyebrow">Deterministic product walkthrough</p>
           <h2 id="demo-experience-title">Watch one governed action move.</h2>
         </div>
-        <div
-          aria-label="Demo status"
-          className="masugate-status-stack"
-          role="group"
-        >
-          <span
-            className={`masugate-status masugate-status-${stagePresentation.toLowerCase()}`}
-          >
-            Presentation: {stagePresentation}
-          </span>
-          <span
-            className={`masugate-status masugate-status-${stageEvidence.toLowerCase()}`}
-          >
-            Evidence: {stageEvidence}
-          </span>
-        </div>
       </div>
 
       <div className={styles.stageBrowser}>
         <div className={styles.stageBrowserHeader}>
           <div>
-            <span>Walkthrough stages</span>
-            <strong>{model.copy.stageBrowser.title}</strong>
+            <span>{model.copy.stageLadder.eyebrow}</span>
+            <strong>{model.copy.stageLadder.title}</strong>
           </div>
-          <p>{model.copy.stageBrowser.hint}</p>
+          <p>{model.copy.stageLadder.hint}</p>
         </div>
         <div
-          aria-label="Demo stages"
+          aria-label={model.copy.stageLadder.ariaLabel}
           className={styles.stageNavigation}
           role="tablist"
         >
           <ol>
-            {model.stages.map((item) => {
+            {model.stages.map((item, index) => {
               const selected = item.id === stage.id;
               const completed = state.completedStageIds.includes(item.id);
+              const currentRunComplete =
+                selected && state.playback === "complete";
+              const nextRecommended =
+                state.playback === "complete" && index === stageIndex + 1;
               const stageState = selected
-                ? "current"
+                ? currentRunComplete
+                  ? "current-complete"
+                  : "current"
                 : completed
                   ? "completed"
                   : "not-started";
               return (
-                <li key={item.id}>
+                <li
+                  data-connector-state={completed ? "completed" : "available"}
+                  key={item.id}
+                >
                   <button
                     aria-controls="demo-stage-panel"
                     aria-selected={selected}
+                    data-stage-complete={completed ? "true" : "false"}
+                    data-stage-next={nextRecommended ? "true" : "false"}
+                    data-stage-position={index + 1}
                     data-stage-state={stageState}
                     id={`demo-stage-tab-${item.id}`}
                     onClick={() => selectStage(item.id, item.title)}
-                    onKeyDown={(event) => handleStageTabKey(event, model.stages.indexOf(item))}
+                    onKeyDown={(event) => handleStageTabKey(event, index)}
                     ref={(node) => {
                       stageTabRefs.current[item.id] = node;
                     }}
@@ -1699,22 +2330,49 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
                     tabIndex={selected ? 0 : -1}
                     type="button"
                   >
-                    <span>Stage {item.productVersion}</span>
-                    <strong>{item.title}</strong>
-                    <small>{model.copy.stageCues[item.id]}</small>
-                    <em>
-                      {selected
-                        ? state.eventIndex < 0
-                          ? completed
-                            ? "Current · reset"
-                            : "Current · ready"
-                          : state.playback === "complete"
-                            ? "Current · done"
-                            : "Current · running"
-                        : completed
-                          ? "Done · revisit"
-                          : "Choose stage"}
-                    </em>
+                    <span className={styles.stageMarker} aria-hidden="true">
+                      <b>{completed ? "✓" : item.productVersion}</b>
+                      <span className={styles.stageLoad}>
+                        {index < 2 ? (
+                          <>
+                            <span className={styles.stageAgents}>
+                              {Array.from(
+                                { length: index + 1 },
+                                (_, agentIndex) => <i key={agentIndex} />,
+                              )}
+                            </span>
+                            <span className={styles.stageBudget}>
+                              <i />
+                              <i />
+                            </span>
+                          </>
+                        ) : (
+                          <span className={styles.stageResources}>
+                            <i data-resource="budget" />
+                            <i data-resource="calendar" />
+                            <i data-resource="file" />
+                          </span>
+                        )}
+                      </span>
+                    </span>
+                    <span className={styles.stageLabel}>
+                      <span>Stage {item.productVersion}</span>
+                      <strong>{item.title}</strong>
+                      <small data-stage-addition={item.id}>
+                        {model.copy.stageLadder.additions[item.id]}
+                      </small>
+                      <em>
+                        {nextRecommended
+                          ? model.copy.stageLadder.nextPrompts[stage.id]
+                          : selected
+                          ? currentRunComplete
+                            ? model.copy.stageLadder.currentCompleteLabel
+                            : model.copy.stageLadder.currentLabel
+                          : completed
+                            ? model.copy.stageLadder.completedLabel
+                            : model.copy.stageLadder.availableLabel}
+                      </em>
+                    </span>
                   </button>
                 </li>
               );
@@ -1730,47 +2388,8 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
         role="tabpanel"
         tabIndex={0}
       >
-      <div className={styles.stagePanelHeader}>
-        <div>
-          <span>Selected-stage details</span>
-          <strong>Stage {stage.productVersion} · {stage.title}</strong>
-        </div>
-        <p>{stage.requirement}</p>
-      </div>
-
       <div className={styles.workspace}>
         <div className={styles.mainColumn}>
-          <div className={styles.quickStart}>
-            <div>
-              <span>{model.copy.quickStart.eyebrow}</span>
-              <strong>{model.copy.quickStart.instruction}</strong>
-            </div>
-            <p>{model.copy.quickStart.detail}</p>
-          </div>
-
-          <ol
-            className={styles.flowStrip}
-            aria-label={model.copy.flow.ariaLabel}
-          >
-            {model.copy.flow.phases.map((phase, index) => {
-              const current = currentFlowPhase === index;
-
-              return (
-                <li
-                  aria-current={current ? "step" : undefined}
-                  data-current={current ? "true" : undefined}
-                  key={phase.id}
-                >
-                  <span>
-                    {phase.step}
-                    {current ? ` · ${model.copy.flow.currentLabel}` : ""}
-                  </span>
-                  <strong>{phase.label}</strong>
-                </li>
-              );
-            })}
-          </ol>
-
           <div
             className={styles.controls}
             aria-label="Demo walkthrough controls"
@@ -1805,57 +2424,76 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
             >
               {primaryLabel}
             </button>
-            <button
-              disabled={previousBlocked}
-              onClick={() => step(-1)}
-              type="button"
-            >
-              Previous
-            </button>
-            <button
-              disabled={nextBlocked}
-              onClick={() => step(1)}
-              type="button"
-            >
-              {state.playback === "idle"
-                ? model.copy.controls.startOneStepLabel
-                : model.copy.controls.nextStepLabel}
-            </button>
-            <details className={styles.playbackOptions}>
-              <summary>More options</summary>
-              <div>
+            {state.playback !== "idle" ? (
+              <>
                 <button
-                  onClick={() =>
-                    dispatch({
-                      type: "reset",
-                      announcement: `${stage.title}. Version fixture reset to ${stage.baselineLabel}.`,
-                    })
-                  }
+                  disabled={previousBlocked}
+                  onClick={() => step(-1)}
                   type="button"
                 >
-                  Reset stage
+                  Previous
                 </button>
-                <a href="#demo-static-transcript">Open static transcript</a>
-              </div>
-            </details>
-            <div className={styles.playbackGuide}>
-              <span>
-                {state.playback === "idle"
-                  ? model.copy.controls.readyLabel
-                  : titleCase(state.playback)} · {state.eventIndex < 0
-                  ? "Baseline"
-                  : `Step ${state.eventIndex + 1} of ${events.length}`}
-              </span>
-              <strong>Next: {nextAction}</strong>
-            </div>
+                <button
+                  disabled={nextBlocked}
+                  onClick={() => step(1)}
+                  type="button"
+                >
+                  {model.copy.controls.nextStepLabel}
+                </button>
+                <details className={styles.playbackOptions}>
+                  <summary>More options</summary>
+                  <div>
+                    <button
+                      onClick={() =>
+                        dispatch({
+                          type: "reset",
+                          announcement: `${stage.title}. ${model.copy.visitor.startingStates[stage.id].announcement}`,
+                        })
+                      }
+                      type="button"
+                    >
+                      Reset stage
+                    </button>
+                    <a href="#demo-static-transcript">Open static transcript</a>
+                  </div>
+                </details>
+                <div className={styles.playbackGuide}>
+                  <span>
+                    {titleCase(state.playback)} · {state.eventIndex < 0
+                      ? model.copy.visitor.startingStateLabel
+                      : `Step ${state.eventIndex + 1} of ${events.length}`}
+                  </span>
+                  <strong>Next: {nextAction}</strong>
+                </div>
+              </>
+            ) : null}
           </div>
 
-          <div className={styles.scene}>
+          <GovernedActionFlow
+            budget={ledger.budget}
+            currentEvent={currentEvent}
+            currentPhase={currentFlowPhase}
+            eventIndex={state.eventIndex}
+            events={events}
+            flowViewportRef={flowViewportRef}
+            histories={histories}
+            model={model}
+            playback={state.playback}
+            reducedMotion={reducedMotion}
+            stage={stage}
+          />
+
+          <div
+            className={styles.scene}
+            data-has-secondary-resource={
+              ledger.calendar || ledger.workspace ? "true" : "false"
+            }
+          >
             <ConversationRegion
               eventIndex={state.eventIndex}
               events={events}
               model={model}
-              stage={stage}
+              playback={state.playback}
             />
             <ResourceRegion
               currentEvent={events[state.eventIndex]}
@@ -1881,6 +2519,9 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
               <span>Current governance need</span>
               <h3>{stage.requirement}</h3>
               <p>{stage.presentation.policyChange}</p>
+              {stage.id === "stage-1" ? (
+                <p>{stage.presentation.takeaway}</p>
+              ) : null}
             </div>
             <div className={styles.contextOverview}>
               <dl className={styles.coreFacts}>

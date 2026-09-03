@@ -50,9 +50,9 @@ const navigationMaps: Record<
         detail: "Step through the product scenario.",
       },
       {
-        label: "Policy to runtime",
+        label: "Policy as a program",
         href: "/demo/#policy-runtime-lifecycle",
-        detail: "See where policy maintenance stops.",
+        detail: "Compare where the same rule lives.",
       },
       {
         label: "Static transcript",

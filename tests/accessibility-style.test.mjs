@@ -72,6 +72,40 @@ test("externally embedded logo assets contain no ungoverned motion", async () =>
   );
 });
 
+test("policy comparison is responsive and keeps optional motion accessible", async () => {
+  const css = await readFile(
+    "app/components/MasuGateSchematics.module.css",
+    "utf8",
+  );
+
+  assert.match(
+    css,
+    /\.policyCaseViewport\s*\{[\s\S]*?max-width:\s*100%[\s\S]*?overflow-x:\s*auto[\s\S]*?scroll-snap-type:\s*inline mandatory/,
+  );
+  assert.match(
+    css,
+    /\.policyCase\s*\{[\s\S]*?min-width:\s*0[\s\S]*?flex:\s*0 0 calc\([\s\S]*?scroll-snap-align:\s*start/,
+  );
+  assert.match(css, /\.policyCaseNav a\s*\{[\s\S]*?min-height:\s*44px/);
+  assert.match(
+    css,
+    /@media \(max-width:\s*680px\)[\s\S]*?\.policyCaseFlow[\s\S]*?grid-template-columns:\s*1fr/,
+  );
+  assert.match(
+    css,
+    /@media \(prefers-reduced-motion:\s*no-preference\)[\s\S]*?:global\(\[data-motion-visible="true"\]\)[\s\S]*?animation:\s*lifecycle-arrive/,
+  );
+  assert.match(
+    css,
+    /@media \(prefers-reduced-motion:\s*reduce\)[\s\S]*?animation:\s*none/,
+  );
+  assert.equal(
+    [...css.matchAll(/@keyframes\s+/g)].length,
+    2,
+    "policy visuals must reuse the existing schematic keyframes",
+  );
+});
+
 test("homepage hero keeps the complete outcome diagram in its viewport", async () => {
   const [diagramCss, homepageCss] = await Promise.all([
     readFile("app/components/ConcurrentStateHero.module.css", "utf8"),

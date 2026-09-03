@@ -3,9 +3,10 @@ import Link from "next/link";
 import { DemoExperience } from "../../components/DemoExperience";
 import {
   OpenClawBridgeSchematic,
-  PolicyRuntimeLifecycleSchematic,
+  PolicyApproachTour,
 } from "../../components/MasuGateSchematics";
 import {
+  demoPolicyProgramCopy,
   selectDemoClientExperience,
   selectDemoExperience,
   type DemoExperienceModel,
@@ -238,12 +239,14 @@ export default function MasuGateDemoPage() {
           <aside className={styles.disclosure} aria-label="Simulation disclosure">
             <div className="masugate-status-stack">
               <span className="masugate-status masugate-status-simulated">
-                Simulation
+                {clientModel.copy.visitor.simulatedStatus}
               </span>
               <span
                 className={`masugate-status masugate-status-${model.status.evidence}`}
               >
-                Evidence: {evidenceLabel}
+                {model.status.evidence === "verified"
+                  ? clientModel.copy.visitor.verifiedStatus
+                  : clientModel.copy.visitor.referenceStatus}
               </span>
             </div>
             <p>
@@ -251,9 +254,6 @@ export default function MasuGateDemoPage() {
               scenario. This page performs no external purchase, calendar, or
               file action.
             </p>
-            <small>
-              Browser presentation: Simulated · release artifacts: {evidenceLabel}
-            </small>
           </aside>
         </div>
       </section>
@@ -267,14 +267,13 @@ export default function MasuGateDemoPage() {
       <section className={styles.policySection}>
         <div className="masugate-shell">
           <div className={styles.sectionHeading}>
-            <p className="masugate-eyebrow">Policy as an independent program</p>
-            <h2>Maintain policy here. Use it there.</h2>
+            <p className="masugate-eyebrow">{demoPolicyProgramCopy.eyebrow}</p>
+            <h2 id="demo-policy-program-title">{demoPolicyProgramCopy.title}</h2>
           </div>
           <p className={styles.policyDefinition}>
-            Policy maintenance stays outside the policy engine. A reviewed
-            revision becomes an input to each governed action.
+            {demoPolicyProgramCopy.definition}
           </p>
-          <PolicyRuntimeLifecycleSchematic />
+          <PolicyApproachTour />
         </div>
       </section>
 

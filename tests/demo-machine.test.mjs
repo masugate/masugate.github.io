@@ -245,6 +245,49 @@ test("Stage 3 halts after the conflict, then appends one optional probe", () => 
   assert.equal(state.playback, "complete");
 });
 
+test("resolved human choices resume playback unless reduced motion keeps manual stepping", () => {
+  const stageTwoReview = {
+    ...createDemoState("stage-2"),
+    eventIndex: demoChoicePoints.stage2Review,
+    playback: "awaiting-choice",
+  };
+  const stageTwoResumed = reduce(stageTwoReview, {
+    type: "stage2-choice",
+    choice: "approved",
+    resumePlayback: true,
+  });
+  const stageTwoManual = reduce(stageTwoReview, {
+    type: "stage2-choice",
+    choice: "declined",
+    resumePlayback: false,
+  });
+
+  assert.equal(stageTwoResumed.playback, "playing");
+  assert.equal(stageTwoManual.playback, "paused");
+
+  const stageThreeConflict = {
+    ...createDemoState("stage-3"),
+    eventIndex: demoChoicePoints.stage3Alternative,
+    playback: "awaiting-choice",
+  };
+  const stageThreeResumed = reduce(stageThreeConflict, {
+    type: "stage3-alternative",
+    resumePlayback: true,
+  });
+  assert.equal(stageThreeResumed.playback, "playing");
+
+  const stageThreePrimaryComplete = {
+    ...stageThreeResumed,
+    eventIndex: demoTransitionPoints.stage3PrimaryComplete,
+    playback: "complete",
+  };
+  const probeResumed = reduce(stageThreePrimaryComplete, {
+    type: "stage3-probe",
+    resumePlayback: true,
+  });
+  assert.equal(probeResumed.playback, "playing");
+});
+
 test("Reviewer and optional Demo transitions reject premature or repeated actions", () => {
   const stageTwoBaseline = reduce(createDemoState(), {
     type: "select-stage",

@@ -371,51 +371,180 @@ export const demoOperationDefinitions = [
   },
 ] as const satisfies readonly DemoOperationDefinition[];
 
+// Server-rendered explanatory copy. Keep this outside demoExperienceCopy so it
+// does not join the interactive client model and its transfer budget.
+export const demoPolicyProgramCopy = {
+  eyebrow: "Policy as an independent program",
+  title:
+    "Policy as code makes rules ownable, testable, versioned, reusable, and traceable.",
+  definition:
+    "The same sentence behaves differently in a prompt, in application code, and in a policy program.",
+  comparisonRule:
+    "Business purchases must fit the current shared budget.",
+  tourLabel: "Choose a case or scroll",
+  tourHint: "Scroll, swipe, use arrow keys, or choose a case.",
+  placements: [
+    {
+      id: "policy",
+      label: "Policy program",
+      title: "Defines one reviewable rule",
+      description:
+        "A structured artifact that can be owned, tested, versioned, reused, and named in a decision record.",
+      flow: [
+        "Agents + apps",
+        "policy@v2",
+        "Allow · deny · escalate",
+        "Effect + record",
+      ],
+      sideLabel: "Independent artifact",
+      sidePath: "Owned · tested · versioned · reused",
+      strength: "One shared rule across action paths.",
+      tradeoff: "Every path must invoke it; decisions do not execute effects.",
+    },
+    {
+      id: "prompt",
+      label: "Prompt guidance",
+      title: "Helps one model reason",
+      description:
+        "Useful context for planning and explanation, but not an independent enforcement artifact.",
+      flow: ["Rule in prompt", "Agent reasons", "Tool effect"],
+      sideLabel: "Possible bypass",
+      sidePath: "Other path → effect",
+      strength: "Planning and explanation.",
+      tradeoff: "Other paths may omit or reinterpret it.",
+    },
+    {
+      id: "application",
+      label: "Application check",
+      title: "Blocks one code path",
+      description:
+        "Runs in trusted code, but often couples the rule to one tool implementation and release cycle.",
+      flow: ["App A request", "Local trusted check", "Effect"],
+      sideLabel: "Drift risk",
+      sidePath: "App B → stale copy",
+      strength: "One trusted application path.",
+      tradeoff: "Copies can drift with each release.",
+    },
+  ],
+} as const;
+
 export const demoExperienceCopy = {
-  stageBrowser: {
+  stageLadder: {
+    ariaLabel: "Demo progression",
+    eyebrow: "Three-stage walkthrough",
     title: "Start with one governed action",
-    hint: "Begin with Stage 1. Later stages add one governance challenge at a time.",
+    hint:
+      "Begin with one governed path, then add shared-state concurrency and more resource types.",
+    currentLabel: "You are here",
+    currentCompleteLabel: "You are here · complete",
+    completedLabel: "Completed · revisit",
+    availableLabel: "Choose stage",
+    additions: {
+      "stage-1": "one action",
+      "stage-2": "+ concurrency",
+      "stage-3": "+ more resource types",
+    },
+    nextPrompts: {
+      "stage-1": "Next: two agents share one budget.",
+      "stage-2": "Next: add calendar and file operations.",
+      "stage-3": "All three stages complete.",
+    },
   },
-  stageCues: {
-    "stage-1": "Start here · one purchase",
-    "stage-2": "Then · coordinate shared capacity",
-    "stage-3": "Then · extend to calendar and files",
-  },
-  quickStart: {
-    eyebrow: "Two ways to explore",
-    instruction: "Choose Play for automatic playback, or move one event at a time.",
-    detail:
-      "State and outcome cards update on every event; required choices pause playback.",
-  },
-  flow: {
-    ariaLabel: "Current governed-action phase",
-    currentLabel: "Now",
-    phases: [
-      { id: "request", step: "01", label: "Request" },
-      { id: "state", step: "02", label: "Read state" },
-      { id: "decision", step: "03", label: "Decide" },
-      { id: "effect", step: "04", label: "Effect + record" },
-    ],
+  flowDiagram: {
+    title: "A governed action moving through MasuGate",
+    viewportLabel: "Scrollable governed-action diagram",
+    viewportHint:
+      "Outcome shown first. Scroll sideways to inspect the full path; during playback, the view follows the action until you scroll it yourself.",
+    description:
+      "An OpenClaw request crosses the MasuGate boundary, reads governed state, reaches a policy decision gate, and then either runs the permitted effect or stops without one; its operation record remains inspectable.",
+    readyDescription: "The governed path is ready for a request.",
+    openClawLabel: "OpenClaw orchestration",
+    agentLabel: "OpenClaw agent",
+    boundaryLabel: "MasuGate boundary",
+    runtimeLabel: "MasuGate governed path",
+    requestLabel: "Request",
+    requestHint: "Identity + route",
+    stateLabel: "Read state",
+    stateHint: "Registered dependency",
+    decisionLabel: "Decide",
+    decisionHint: "Policy gate",
+    resultLabel: "Effect + record",
+    effectLabel: "Effect",
+    operationLabel: "Operation",
+    recordLabel: "Record",
+    recordsLabel: "records",
+    budgetLabel: "Shared budget",
+    resourcesLabel: "Governed resources",
+    calendarHint: "Time blocks",
+    workspaceHint: "Paths + files",
+    totalLabel: "total",
+    availableLabel: "available",
+    committedLabel: "committed",
+    heldLabel: "held during review",
+    heldShortLabel: "held",
+    readyLabel: "Ready",
+    notStartedLabel: "Not started",
+    notRunLabel: "Not run",
+    noEffectLabel: "No effect",
+    steps: {
+      request: "01",
+      state: "02",
+      decision: "03",
+      result: "04",
+    },
   },
   controls: {
-    readyLabel: "Ready",
-    startOneStepLabel: "Start one step",
     nextStepLabel: "Next step",
-    startHint: "Play automatically, or start with one deliberate step.",
+  },
+  timeline: {
+    ariaLabel: "Every step in the current path",
+    eyebrow: "01",
+    title: "Walkthrough timeline",
+    currentLabel: "Now",
+    completeLabel: "Complete",
+    upcomingLabel: "Upcoming",
+  },
+  visitor: {
+    scenarioActorLabel: "Scenario setup",
+    startingStateLabel: "Starting state",
+    startingStateSelected: "Starting state selected",
+    walkthroughStarted: "Walkthrough started.",
+    stageSelectedSuffix: "selected. Starting state restored.",
+    returnedToStartingState: "Returned to the starting state.",
+    readyOutcome:
+      "The starting state is ready. Decision and operation lifecycles will remain separate as the sequence advances.",
+    calendarLabel: "Calendar",
+    workspaceLabel: "Workspace",
+    fixedDateNote:
+      "This example uses a fixed date and UTC offset; both remain release-alignment inputs.",
+    alternativeProposalPrefix: "OpenClaw proposes",
+    alternativeProposalDetail:
+      "MasuGate has not optimized the schedule; it will govern the selected create request.",
+    simulatedStatus: "Simulated walkthrough",
+    referenceStatus: "Reference artifacts",
+    verifiedStatus: "Verified artifacts",
+    startingStates: {
+      "stage-1": {
+        description: "Stage 1 starts with $100 available.",
+        announcement: "Stage 1 starts with $100 available.",
+      },
+      "stage-2": {
+        description: "Stage 2 starts with $100 available in the shared budget.",
+        announcement: "Stage 2 starts with $100 available in the shared budget.",
+      },
+      "stage-3": {
+        description: "Stage 3 starts with the calendar and workspace ready.",
+        announcement: "Stage 3 starts with the calendar and workspace ready.",
+      },
+    },
   },
   setupDisclosureLabel: "Optional: inspect stage setup and policy maintenance",
-  baselineInstruction:
-    "Choose Play or Start one step to begin the deterministic sequence.",
 } as const;
 
 export const demoStagePresentation = {
   "stage-1": {
     runLabel: "Play governed purchase",
     resourceLabel: "Business purchase budget",
-    userIntent:
-      "Buy the project-planning subscription for $40 and charge it to business.",
-    agentResponse:
-      "I found the requested plan. I am submitting the purchase through the governed business-purchase tool.",
     policyChange:
       "Publish the reviewed categorized-purchase@v1 scenario revision with its registered budget dependency.",
     takeaway:
@@ -429,10 +558,6 @@ export const demoStagePresentation = {
   "stage-2": {
     runLabel: "Play shared-budget requests",
     resourceLabel: "Shared demo-owner business budget",
-    userIntent:
-      "Coordinate the travel and work purchases against one $100 business budget.",
-    agentResponse:
-      "Travel Planner and Work Manager submit overlapping $60 requests through the same governed purchase shape.",
     policyChange:
       "Review categorized-purchase@v1 → @v2 so available capacity is shared by owner and category and includes protected pending work.",
     takeaway:
@@ -451,11 +576,7 @@ export const demoStagePresentation = {
   },
   "stage-3": {
     runLabel: "Play calendar and workspace",
-    resourceLabel: "Protected calendar and workspace fixtures",
-    userIntent:
-      "Reserve travel time and maintain trip files without disturbing protected work.",
-    agentResponse:
-      "Travel Planner proposes a travel block and itinerary through separate governed operations.",
+    resourceLabel: "Protected calendar and workspace",
     policyChange:
       "Add governed-calendar@v1 and governed-workspace@v1 while categorized-purchase@v2 remains unchanged.",
     takeaway:
@@ -474,8 +595,6 @@ export const demoStagePresentation = {
   Readonly<{
     runLabel: string;
     resourceLabel: string;
-    userIntent: string;
-    agentResponse: string;
     policyChange: string;
     takeaway: string;
     managementTakeaway: string;
@@ -850,19 +969,25 @@ function selectDemoClientEvent(
   const snapshotKey = JSON.stringify(event.resourceSnapshot);
   const resourceSnapshot = snapshots.get(snapshotKey) ?? event.resourceSnapshot;
   snapshots.set(snapshotKey, resourceSnapshot);
+  const startingState =
+    event.kind === "reset"
+      ? demoExperienceCopy.visitor.startingStates[event.stageId]
+      : undefined;
 
   return {
     id: event.id,
     actorId: event.actorId,
     kind: event.kind,
-    label: event.label,
-    description: event.description,
+    label: startingState
+      ? demoExperienceCopy.visitor.startingStateLabel
+      : event.label,
+    description: startingState?.description ?? event.description,
     resourceSnapshot,
     ...(event.policy ? { policy: event.policy } : {}),
     ...(event.policyContext ? { policyContext: event.policyContext } : {}),
     ...(event.operation ? { operation: event.operation } : {}),
     artifactRefs: event.artifactRefs,
-    announcement: event.announcement,
+    announcement: startingState?.announcement ?? event.announcement,
   };
 }
 

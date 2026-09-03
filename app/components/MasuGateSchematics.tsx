@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { policyAsCodeNotPromptArticle } from "../content/articles/policy-as-code-not-prompt";
+import { demoPolicyProgramCopy } from "../data/demo";
 import { getPolicyArtifact } from "../data/policies";
 import { homepageContent } from "../data/homepage";
 import {
@@ -355,146 +358,82 @@ export function GovernedRuntimeSchematic({
   );
 }
 
-export function PolicyRuntimeLifecycleSchematic() {
+export function PolicyApproachTour() {
   const { openClawRuntime: profile } = selectHomepageSchematicProfiles();
 
   if (profile.kind !== "instantiated") {
-    throw new Error("The policy/runtime lifecycle requires an instantiated profile.");
+    throw new Error("The policy comparison requires an instantiated profile.");
   }
 
   const policy = getPolicyArtifact(profile.scenarioBinding.policyArtifactIds[0]);
-  const source = profile.sourceFigures[0];
 
   return (
     <figure
-      aria-labelledby="policy-runtime-lifecycle-title"
-      className={`${styles.figure} ${styles.lifecycleFigure}`}
+      aria-labelledby="demo-policy-program-title"
+      className={`${styles.figure} ${styles.policyTourFigure}`}
       id="policy-runtime-lifecycle"
     >
-      <div className={styles.figureHeader}>
-        <div>
-          <p className={styles.figureKicker}>Policy maintenance feeds the runtime</p>
-          <h3 className={styles.lifecycleTitle} id="policy-runtime-lifecycle-title">
-            A policy program is maintained outside the policy engine, then used by each governed action.
-          </h3>
-        </div>
-        <div className={styles.legend} aria-label="Lifecycle schematic status">
-          <span className="masugate-status masugate-status-simulated">
-            Presentation: {profile.presentation.label}
-          </span>
-          <span className="masugate-status masugate-status-reference">
-            Evidence: {profile.evidence.label}
-          </span>
-        </div>
+      <p className={styles.policyRule}>
+        <strong>Shared rule</strong>{demoPolicyProgramCopy.comparisonRule}
+      </p>
+
+      <nav aria-label={demoPolicyProgramCopy.tourLabel} className={styles.policyCaseNav}>
+        {demoPolicyProgramCopy.placements.map((placement) => (
+          <a href={`#policy-case-${placement.id}`} key={placement.id}>
+            {placement.label}
+          </a>
+        ))}
+      </nav>
+      <p className={styles.policyTourHint} id="policy-tour-hint">
+        {demoPolicyProgramCopy.tourHint}
+      </p>
+      <div
+        aria-describedby="policy-tour-hint"
+        aria-label="Three ways to place the same rule"
+        className={styles.policyCaseViewport}
+        role="region"
+        tabIndex={0}
+      >
+        <ol className={styles.policyCaseTrack}>
+          {demoPolicyProgramCopy.placements.map((placement) => (
+            <li
+              className={styles.policyCase}
+              id={`policy-case-${placement.id}`}
+              key={placement.id}
+            >
+              <header>
+                <span>{placement.label}</span>
+                <h4>{placement.title}</h4>
+                <p>{placement.description}</p>
+                <p>
+                  <strong>Best at</strong>{placement.strength}
+                </p>
+                <p>
+                  <strong>Trade-off</strong>{placement.tradeoff}
+                </p>
+              </header>
+              <div>
+                <ol className={styles.policyCaseFlow}>
+                  {placement.flow.map((step, index) => <li key={index}>{step}</li>)}
+                </ol>
+                <p className={styles.policySidePath}>
+                  <strong>{placement.sideLabel}</strong>
+                  <span>{placement.sidePath}</span>
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
       </div>
 
-      <section
-        aria-labelledby="policy-management-lane-title"
-        className={styles.lifecycleLane}
-      >
-        <header className={styles.laneHeader}>
-          <span>Outside the policy engine</span>
-          <h4 id="policy-management-lane-title">Policy maintenance</h4>
-          <p>People and delivery tools own this lane.</p>
-        </header>
-        <ol className={styles.managementFlow}>
-          <li className={styles.lifecycleNode}>
-            <span className={styles.stepNumber}>1</span>
-            <strong>Author</strong>
-            <small>Write the policy program.</small>
-          </li>
-          <li className={styles.lifecycleNode}>
-            <span className={styles.stepNumber}>2</span>
-            <strong>Review</strong>
-            <small>Inspect the proposed rule.</small>
-          </li>
-          <li className={styles.lifecycleNode}>
-            <span className={styles.stepNumber}>3</span>
-            <strong>Test</strong>
-            <small>Validate expected outcomes.</small>
-          </li>
-          <li className={styles.lifecycleNode}>
-            <span className={styles.stepNumber}>4</span>
-            <strong>Deploy</strong>
-            <small>Publish one reviewed revision.</small>
-          </li>
-        </ol>
-      </section>
+      <details className={styles.policyCodeArtifact}>
+        <summary>{`Policy example · ${policy.scenarioRevision}`}</summary>
+        <pre><code>{policy.source.body}</code></pre>
+      </details>
 
-      <div className={styles.revisionHandoff}>
-        <strong>Reviewed revision → runtime</strong>
-        <span>
-          The runtime reads {policy.scenarioRevision}; it does not rewrite,
-          approve, or deploy policy.
-        </span>
-      </div>
-
-      <section
-        aria-labelledby="governed-runtime-lane-title"
-        className={`${styles.lifecycleLane} ${styles.runtimeLane}`}
-      >
-        <header className={styles.laneHeader}>
-          <span>Inside each governed action</span>
-          <h4 id="governed-runtime-lane-title">Governed runtime</h4>
-          <p>One operation connects the inputs to its outcome.</p>
-        </header>
-
-        <div className={styles.runtimeInputs} aria-label="Runtime inputs">
-          <article className={styles.runtimeInput} data-owner="host">
-            <span>Host input</span>
-            <strong>Request</strong>
-            <small>Trusted actor and action.</small>
-          </article>
-          <article className={styles.runtimeInput} data-owner="masugate">
-            <span>Policy input</span>
-            <strong>Revision</strong>
-            <small>{policy.scenarioRevision}</small>
-          </article>
-          <article className={styles.runtimeInput} data-owner="provider">
-            <span>Provider input</span>
-            <strong>State + effect</strong>
-            <small>Declared views and scopes.</small>
-          </article>
-        </div>
-
-        <p className={styles.runtimeJoin}>
-          Bound to one operation ↓
-        </p>
-
-        <ol className={styles.runtimeSequence}>
-          <li className={styles.lifecycleNode}>
-            <strong>Route</strong>
-            <small>Use the declared action.</small>
-          </li>
-          <li className={styles.lifecycleNode}>
-            <strong>Coordinate</strong>
-            <small>Protect scopes, read state.</small>
-          </li>
-          <li className={styles.lifecycleNode}>
-            <strong>Decide</strong>
-            <small>Apply that exact revision.</small>
-          </li>
-          <li className={styles.lifecycleNode}>
-            <strong>Effect</strong>
-            <small>Run only when permitted.</small>
-          </li>
-          <li className={styles.lifecycleNode}>
-            <strong>Receipt</strong>
-            <small>Keep the linked outcome.</small>
-          </li>
-        </ol>
-
-        <p className={styles.runtimeCondition}>
-          <strong>Outcome:</strong> deny stops the effect; pending waits for a
-          decision; committed retains the effect and its receipt together.
-        </p>
-      </section>
-
-      <figcaption className={styles.caption}>
-        OpenClaw orchestration and provider implementation remain outside policy
-        maintenance. This is a Reference scenario, not a release binding.{" "}
-        <FigureAttribution source={source} />
-      </figcaption>
+      <Link className={styles.policyGuide} href={policyAsCodeNotPromptArticle.href}>
+        {`Details, limits, and sources: ${policyAsCodeNotPromptArticle.title.split(":")[0]} (${policyAsCodeNotPromptArticle.readingMinutes} min) →`}
+      </Link>
     </figure>
   );
 }

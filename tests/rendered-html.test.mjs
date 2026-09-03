@@ -513,11 +513,17 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
     "See one action stay connected.",
     "Follow a selected OpenClaw action from request to governed effect, then see the same pattern extend across the product.",
     "Interactive simulation using a fixed OpenClaw and MasuGate scenario. This page performs no external purchase, calendar, or file action.",
-    "Policy maintenance stays outside the policy engine. A reviewed revision becomes an input to each governed action.",
-    "Policy maintenance feeds the runtime",
-    "Reviewed revision → runtime",
-    "State + effect",
-    "Outcome:",
+    "Policy as code makes rules ownable, testable, versioned, reusable, and traceable.",
+    "The same sentence behaves differently in a prompt, in application code, and in a policy program.",
+    "Prompt guidance",
+    "Application check",
+    "Policy program",
+    "Business purchases must fit the current shared budget.",
+    "Scroll, swipe, use arrow keys, or choose a case.",
+    "Helps one model reason",
+    "Blocks one code path",
+    "Defines one reviewable rule",
+    "Details, limits, and sources: Policy as Code, Not Prompt (9 min) →",
     "One governed purchase",
     "One budget across agents",
     "More governed operations",
@@ -525,7 +531,7 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
     "OpenClaw configuration",
     "Runtime trace",
     "Decision record",
-    "Current · ready",
+    "You are here",
     "Choose stage",
     "Selectable Reference excerpt",
     "Static transcript for every deterministic branch.",
@@ -589,10 +595,6 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
 
   for (const controlLabel of [
     "Play governed purchase",
-    "Previous",
-    "Start one step",
-    "Reset stage",
-    "Open static transcript",
     "Expand technical detail",
     "Copy Reference excerpt",
   ]) {
@@ -602,11 +604,10 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
   for (const usabilityCopy of [
     "Try the walkthrough",
     "Start with one governed action",
-    "Start here · one purchase",
-    "Two ways to explore",
-    "Choose Play for automatic playback, or move one event at a time.",
-    "State and outcome cards update on every event; required choices pause playback.",
-    "Next: Play automatically, or start with one deliberate step.",
+    "one action",
+    "+ concurrency",
+    "+ more resource types",
+    "Walkthrough timeline",
     "Stage setup and provenance",
     "Optional: inspect stage setup and policy maintenance",
     "Optional developer evidence",
@@ -616,19 +617,84 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
   }
 
   assert.ok(
-    text.indexOf("Two ways to explore") <
-      text.indexOf("Conversation and agent lanes"),
-    "Demo guidance and its primary control must precede the interactive scene",
+    text.indexOf("A governed action moving through MasuGate") <
+      text.indexOf("Walkthrough timeline"),
+    "Demo flow and its primary control must precede the interactive scene",
   );
   assert.ok(
-    text.indexOf("Conversation and agent lanes") <
+    text.indexOf("Walkthrough timeline") <
       text.indexOf("Optional: inspect stage setup and policy maintenance"),
     "Stage setup and policy maintenance must follow the live scene",
   );
   assert.ok(
-    text.indexOf("Two ways to explore") <
-      text.indexOf("Maintain policy here. Use it there."),
-    "The interactive walkthrough must precede the policy lifecycle explainer",
+    text.indexOf("A governed action moving through MasuGate") <
+      text.indexOf("Policy as code makes rules ownable"),
+    "The interactive walkthrough must precede the policy placement comparison",
+  );
+
+  const policyFigureMatch = html.match(
+    /<figure\b(?=[^>]*\bid="policy-runtime-lifecycle")[^>]*>[\s\S]*?<\/figure>/i,
+  );
+  assert.ok(policyFigureMatch, "Demo is missing the policy-as-code figure");
+  const policyFigure = policyFigureMatch[0];
+  assert.match(policyFigure, /<nav\b[^>]*aria-label="Choose a case or scroll"/i);
+  assert.match(
+    policyFigure,
+    /role="region"[^>]*tabindex="0"|tabindex="0"[^>]*role="region"/i,
+  );
+  for (const placement of ["prompt", "application", "policy"]) {
+    assert.match(policyFigure, new RegExp(`href="#policy-case-${placement}"`, "i"));
+    assert.match(policyFigure, new RegExp(`id="policy-case-${placement}"`, "i"));
+  }
+  assert.ok(
+    policyFigure.indexOf('id="policy-case-policy"') <
+      policyFigure.indexOf('id="policy-case-prompt"'),
+    "The recommended policy program must lead the case tour",
+  );
+  for (const comparisonCopy of [
+    "Useful context for planning and explanation, but not an independent enforcement artifact.",
+    "Rule in prompt",
+    "Agent reasons",
+    "Tool effect",
+    "Possible bypass",
+    "Other path → effect",
+    "Planning and explanation.",
+    "Other paths may omit or reinterpret it.",
+    "Runs in trusted code, but often couples the rule to one tool implementation and release cycle.",
+    "App A request",
+    "Local trusted check",
+    "Drift risk",
+    "App B → stale copy",
+    "Copies can drift with each release.",
+    "A structured artifact that can be owned, tested, versioned, reused, and named in a decision record.",
+    "Agents + apps",
+    "policy@v2",
+    "Allow · deny · escalate",
+    "Effect + record",
+    "Independent artifact",
+    "Owned · tested · versioned · reused",
+    "One shared rule across action paths.",
+    "Every path must invoke it; decisions do not execute effects.",
+  ]) {
+    assert.ok(
+      textContent(policyFigure).includes(comparisonCopy),
+      `Policy comparison is missing: ${comparisonCopy}`,
+    );
+  }
+  assert.equal(countMatches(policyFigure, />Best at<\/strong>/gi), 3);
+  assert.equal(countMatches(policyFigure, />Trade-off<\/strong>/gi), 3);
+  assert.match(policyFigure, /<details\b[\s\S]*?<summary\b[\s\S]*?<pre>/i);
+  assert.match(policyFigure, /<pre>\s*<code>/i);
+  assert.match(textContent(policyFigure), /categorized-purchase@v2/);
+  assert.match(textContent(policyFigure), /budget\.available/);
+  assert.doesNotMatch(textContent(policyFigure), /Policy lifecycle|Governed runtime/);
+  assert.match(
+    policyFigure,
+    /href="\/blog\/policy-as-code-not-prompt\/"/i,
+  );
+  assert.match(
+    textContent(policyFigure),
+    /Details, limits, and sources: Policy as Code, Not Prompt \(9 min\) →/,
   );
 
   assert.match(
@@ -637,12 +703,37 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
   );
   assert.match(
     html,
-    /<div\b(?=[^>]*role="tablist")(?=[^>]*aria-label="Demo stages")[^>]*>/i,
+    /<div\b(?=[^>]*role="tablist")(?=[^>]*aria-label="Demo progression")[^>]*>/i,
   );
   assert.equal(countMatches(html, /role="tab"/gi), 7);
   assert.match(html, /id="demo-stage-panel"[^>]*role="tabpanel"/i);
-  assert.match(text, /Walkthrough stages/);
-  assert.match(text, /Selected-stage details/);
+  assert.match(text, /Three-stage walkthrough/);
+  assert.match(
+    html,
+    /data-stage-position="1"[^>]*data-stage-state="current"/i,
+  );
+  assert.match(
+    html,
+    /data-stage-addition="stage-1"[^>]*>\s*one action\s*</i,
+  );
+  assert.match(
+    html,
+    /<svg\b(?=[^>]*role="img")(?=[^>]*aria-labelledby="demo-flow-title")(?=[^>]*aria-describedby="demo-flow-description")[^>]*>/i,
+  );
+  assert.match(html, /<title id="demo-flow-title">A governed action moving through MasuGate<\/title>/i);
+  assert.match(html, /<desc id="demo-flow-description">/i);
+  for (const flowLabel of [
+    "OpenClaw orchestration",
+    "MasuGate boundary",
+    "Request",
+    "Read state",
+    "Decide",
+    "Effect + record",
+  ]) {
+    assert.ok(text.includes(flowLabel), `Demo flow is missing: ${flowLabel}`);
+  }
+  assert.doesNotMatch(text, /Selected-stage details|Two ways to explore/);
+  assert.doesNotMatch(text, /Start one step|Reset stage|More options/);
   assert.doesNotMatch(html, /id="demo-transcript-stage-1"[^>]*\bopen/i);
   assert.equal(
     countMatches(html, /aria-live="polite"/gi),
@@ -650,7 +741,30 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
     "Demo must use one polite live region to avoid duplicate announcements",
   );
   assert.match(html, /id="demo-required-choice"[^>]*tabindex="-1"/i);
-  assert.match(html, /href="#demo-static-transcript"/i);
+  assert.match(html, /id="demo-static-transcript"/i);
+  assert.equal(
+    countMatches(html, /data-timeline-state="upcoming"/gi),
+    7,
+    "Stage 1 must expose its complete seven-step path before playback",
+  );
+  assert.doesNotMatch(text, /prior events remain in the static transcript/i);
+
+  const visitorDisclosure = sectionContaining(
+    html,
+    "Interactive simulation using a fixed OpenClaw and MasuGate scenario.",
+  );
+  assert.match(textContent(visitorDisclosure), /Simulated walkthrough/);
+  assert.match(textContent(visitorDisclosure), /Reference artifacts/);
+  assert.doesNotMatch(
+    textContent(visitorDisclosure),
+    /Presentation: Simulated|Evidence: Reference/,
+  );
+
+  const denseTakeaway =
+    "A governance requirement becomes a validated, reviewed policy revision, registered state dependency, governed route, and inspectable result.";
+  const outcome = sectionContaining(html, "Outcome and next action");
+  assert.ok(text.includes(denseTakeaway));
+  assert.ok(!textContent(outcome).includes(denseTakeaway));
   assert.match(
     html,
     /href="\/get-started\/"[^>]*>[^<]*View release-candidate documentation/i,
@@ -806,9 +920,11 @@ test("server-renders the complete Milestone 2 homepage contract", async () => {
     "Both requests fit. Together, they do not.",
     "Shared state is more than a budget.",
     "Keep the decision connected to the effect.",
-    "Request → live decision → governed effect",
+    "MasuGate evaluates reviewable, versioned policy code—not prompt guidance—against live shared state before the governed effect runs.",
+    "Request → policy code + live state → governed effect",
     "MasuGate protected path",
     "Policy decision",
+    "Versioned policy code reads live shared state.",
     "Governed effect",
     "Committed",
     "Denied",

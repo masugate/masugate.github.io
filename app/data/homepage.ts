@@ -193,9 +193,9 @@ export const homepageContent = {
     eyebrow: "How it works",
     title: "Keep the decision connected to the effect.",
     intro:
-      "Request, live policy decision, and governed effect travel one protected path.",
+      "MasuGate evaluates reviewable, versioned policy code—not prompt guidance—against live shared state before the governed effect runs.",
     figureKicker: "One protected path",
-    figureTitle: "Request → live decision → governed effect",
+    figureTitle: "Request → policy code + live state → governed effect",
     boundaryLabel: "MasuGate protected path",
     steps: [
       {
@@ -204,7 +204,7 @@ export const homepageContent = {
       },
       {
         label: "Policy decision",
-        detail: "The rule reads live shared state.",
+        detail: "Versioned policy code reads live shared state.",
       },
       {
         label: "Governed effect",

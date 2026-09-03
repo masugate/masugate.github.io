@@ -51,6 +51,8 @@ test("homepage mechanism is one bounded three-step flow", () => {
 
   assert.ok(wordCount(mechanism.title) <= 10);
   assert.ok(wordCount(mechanism.intro) <= 25);
+  assert.match(mechanism.intro, /versioned policy code/i);
+  assert.match(mechanism.intro, /not prompt guidance/i);
   assert.deepEqual(
     mechanism.steps.map(({ label }) => label),
     ["Request", "Policy decision", "Governed effect"],
