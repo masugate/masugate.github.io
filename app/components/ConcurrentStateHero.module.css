@@ -97,7 +97,7 @@
 
 .diagram {
   width: 100%;
-  min-width: 650px;
+  min-width: 0;
   height: auto;
   display: block;
   color: var(--p-info);
@@ -338,9 +338,5 @@
   .figure {
     padding: 10px;
     border-radius: 18px;
-  }
-
-  .diagram {
-    min-width: 620px;
   }
 }

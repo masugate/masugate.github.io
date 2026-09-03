@@ -38,6 +38,14 @@ function darkThemeBlock(css) {
   return match[1];
 }
 
+function cssRuleBodies(css, selector) {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  return [
+    ...css.matchAll(new RegExp(`${escapedSelector}\\s*\\{([^{}]*)\\}`, "g")),
+  ].map(([, body]) => body);
+}
+
 test("MasuGate chrome retains visible focus, skip-link, and reduced-motion rules", async () => {
   const css = await readFile("app/(masugate)/primary.css", "utf8");
 
@@ -61,6 +69,47 @@ test("externally embedded logo assets contain no ungoverned motion", async () =>
   assert.doesNotMatch(
     openClawLogo,
     /@keyframes|\b(?:animation|transition)(?:-[a-z-]+)?\s*:/i,
+  );
+});
+
+test("homepage hero keeps the complete outcome diagram in its viewport", async () => {
+  const [diagramCss, homepageCss] = await Promise.all([
+    readFile("app/components/ConcurrentStateHero.module.css", "utf8"),
+    readFile("app/(masugate)/home.module.css", "utf8"),
+  ]);
+  const diagramRules = cssRuleBodies(diagramCss, ".diagram");
+  const diagramMinimums = diagramRules.flatMap((rule) =>
+    [...rule.matchAll(/\bmin-width:\s*([^;]+);/g)].map(([, value]) =>
+      value.trim(),
+    ),
+  );
+
+  assert.ok(diagramRules.length > 0, "missing hero diagram rule");
+  assert.ok(
+    diagramMinimums.length > 0,
+    "hero diagram must declare its minimum width",
+  );
+  for (const value of diagramMinimums) {
+    const length = value.match(/^(-?\d*\.?\d+)([a-z%]*)$/i);
+    assert.ok(length, `unsupported hero diagram minimum width: ${value}`);
+    assert.equal(
+      Number(length[1]),
+      0,
+      `hero diagram forces horizontal overflow: ${value}`,
+    );
+  }
+
+  const heroGridRule = cssRuleBodies(homepageCss, ".heroGrid")[0];
+  assert.ok(heroGridRule, "missing homepage hero grid rule");
+  const tracks = heroGridRule.match(
+    /grid-template-columns:\s*minmax\(\s*([^,]+),\s*([\d.]+)fr\s*\)\s*minmax\(\s*([^,]+),\s*([\d.]+)fr\s*\)/,
+  );
+  assert.ok(tracks, "homepage hero must use two flexible minmax tracks");
+  assert.equal(tracks[1].trim(), "0", "hero copy track must be shrinkable");
+  assert.equal(tracks[3].trim(), "0", "hero diagram track must be shrinkable");
+  assert.ok(
+    Number(tracks[4]) >= Number(tracks[2]),
+    "hero diagram track must be at least as wide as the copy track",
   );
 });
 
