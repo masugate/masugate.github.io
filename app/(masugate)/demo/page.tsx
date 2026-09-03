@@ -258,6 +258,12 @@ export default function MasuGateDemoPage() {
         </div>
       </section>
 
+      <section className={styles.demoSection} id="interactive-walkthrough">
+        <div className="masugate-shell">
+          <DemoExperience model={clientModel} />
+        </div>
+      </section>
+
       <section className={styles.policySection}>
         <div className="masugate-shell">
           <div className={styles.sectionHeading}>
@@ -269,12 +275,6 @@ export default function MasuGateDemoPage() {
             revision becomes an input to each governed action.
           </p>
           <PolicyRuntimeLifecycleSchematic />
-        </div>
-      </section>
-
-      <section className={styles.demoSection} id="interactive-walkthrough">
-        <div className="masugate-shell">
-          <DemoExperience model={clientModel} />
         </div>
       </section>
 

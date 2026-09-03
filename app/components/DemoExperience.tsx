@@ -69,6 +69,22 @@ function titleCase(value: string): string {
     .join(" ");
 }
 
+const flowPhaseByEventKind: Record<
+  DemoClientEvent["kind"],
+  number | null
+> = {
+  reset: null,
+  request: 0,
+  "host-context": 0,
+  "route-resolution": 0,
+  "state-read": 1,
+  decision: 2,
+  protection: 2,
+  review: 2,
+  effect: 3,
+  record: 3,
+};
+
 function artifactStatus(artifact?: DemoClientArtifact) {
   return {
     presentation: titleCase(artifact?.presentationOrigin ?? "simulated"),
@@ -508,7 +524,7 @@ function ConversationRegion({
           <li className={styles.baselineMessage}>
             <span>Named version fixture</span>
             <strong>{stage.baselineLabel}</strong>
-            <p>Select Start walkthrough to begin the deterministic sequence.</p>
+            <p>{model.copy.baselineInstruction}</p>
           </li>
         ) : null}
       </ol>
@@ -1349,13 +1365,17 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
   const nextStage = model.stages[stageIndex + 1];
   const events = useMemo(() => activeTimeline(stage, state), [stage, state]);
   const lastIndex = events.length - 1;
+  const currentEvent = events[state.eventIndex];
+  const currentFlowPhase = currentEvent
+    ? flowPhaseByEventKind[currentEvent.kind]
+    : null;
   const visibleEvents = events.slice(0, state.eventIndex + 1);
   const ledger = resourceLedger(stage, events, state.eventIndex);
   const histories = operationHistories(visibleEvents);
   const latestDecision = [...visibleEvents]
     .reverse()
     .find((event) => event.policy);
-  const currentPolicyContext = events[state.eventIndex]?.policyContext;
+  const currentPolicyContext = currentEvent?.policyContext;
   const activePolicy = currentPolicyContext
     ? stage.policies.find(
         ({ id }) => id === currentPolicyContext.artifactId,
@@ -1408,7 +1428,7 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
     state.playback === "complete" || state.playback === "awaiting-choice";
   const primaryLabel =
     state.playback === "idle"
-      ? `Start walkthrough · ${stage.presentation.runLabel}`
+      ? stage.presentation.runLabel
       : state.playback === "playing"
         ? "Pause walkthrough"
         : state.playback === "awaiting-choice"
@@ -1422,7 +1442,7 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
               : "Continue walkthrough";
   const nextAction =
     state.playback === "idle"
-      ? `Start Stage ${stage.productVersion}; the walkthrough will advance automatically.`
+      ? model.copy.controls.startHint
       : state.playback === "playing"
         ? "Watch the request, current state, and outcome update—or pause to inspect a step."
         : state.playback === "awaiting-choice"
@@ -1645,9 +1665,9 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
         <div className={styles.stageBrowserHeader}>
           <div>
             <span>Walkthrough stages</span>
-            <strong>Choose one bounded scenario</strong>
+            <strong>{model.copy.stageBrowser.title}</strong>
           </div>
-          <p>Each tab resets to its own versioned fixture.</p>
+          <p>{model.copy.stageBrowser.hint}</p>
         </div>
         <div
           aria-label="Demo stages"
@@ -1681,6 +1701,7 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
                   >
                     <span>Stage {item.productVersion}</span>
                     <strong>{item.title}</strong>
+                    <small>{model.copy.stageCues[item.id]}</small>
                     <em>
                       {selected
                         ? state.eventIndex < 0
@@ -1714,124 +1735,40 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
           <span>Selected-stage details</span>
           <strong>Stage {stage.productVersion} · {stage.title}</strong>
         </div>
-        <p>Controls, state, and evidence for this scenario.</p>
+        <p>{stage.requirement}</p>
       </div>
-      <div className={styles.stageContext}>
-        <div className={styles.requirementBlock}>
-          <span>Current governance need</span>
-          <h3>{stage.requirement}</h3>
-          <p>{stage.presentation.policyChange}</p>
-        </div>
-        <div className={styles.contextOverview}>
-          <dl className={styles.coreFacts}>
-            <div>
-              <dt>Active agents</dt>
-              <dd>
-                {model.scenario.agents
-                  .filter(({ id }) => new Set<string>(stage.presentation.activeAgentIds).has(id))
-                  .map(({ shortName }) => shortName)
-                  .join(" · ")}
-              </dd>
-            </div>
-            <div>
-              <dt>Governed resource</dt>
-              <dd>{stage.presentation.resourceLabel}</dd>
-            </div>
-          </dl>
-          <details className={styles.scenarioDetails}>
-            <summary>Stage setup and provenance</summary>
-            <dl className={styles.scenarioFacts}>
-              <div><dt>Product version</dt><dd>Stage {stage.productVersion}</dd></div>
-              <div><dt>Policy revision</dt><dd>{stage.policies.map(({ scenarioRevision }) => scenarioRevision).join(" · ")}</dd></div>
-              <div><dt>Policy owner</dt><dd>{model.scenario.policyOwner.label}</dd></div>
-              <div><dt>Scenario owner</dt><dd>{model.scenario.owner.id}</dd></div>
-              <div><dt>Version fixture reset</dt><dd>{stage.baselineLabel}</dd></div>
-              <div><dt>Browser mode</dt><dd>Simulation · no external effects</dd></div>
-            </dl>
-          </details>
-        </div>
-      </div>
-
-      <details className={styles.managementDisclosure}>
-        <summary>Optional: inspect how policy maintenance reaches runtime</summary>
-        <div className={styles.managementPlane}>
-          <div>
-            <span>Policy management</span>
-            <ol role="list">
-            <li data-management-state="complete">
-              <span>Requirement</span>
-              <small>{stage.requirement}</small>
-            </li>
-            <li data-management-state="complete">
-              <span>Policy edit</span>
-              <small>{policyRevisionSummary}</small>
-            </li>
-            <li data-management-state="complete">
-              <span>Validate and test</span>
-              <small>
-                {policyChecksPassed ? "Passed" : "Review required"} · {policyCaseCount}{" "}
-                authored cases
-              </small>
-            </li>
-            <li
-              aria-current={activePolicy ? "step" : undefined}
-              data-management-state={activePolicy ? "active" : "complete"}
-            >
-              <span>Reviewed revision</span>
-              <small>
-                {activePolicy
-                  ? `${activePolicy.scenarioRevision} · active runtime input`
-                  : `${policyRevisionSummary} · ready for runtime`}
-              </small>
-            </li>
-            </ol>
-          </div>
-          <p>
-            Prompts, OpenClaw orchestration, and provider code remain outside this
-            policy-management plane.
-            <strong>
-              Current runtime evidence: {events[state.eventIndex]?.label ?? "named version fixture"}.
-              <span className={styles.activePolicyLink}>
-                {activePolicy && currentPolicyContext
-                  ? `Active policy link: ${activePolicy.scenarioRevision}${
-                      currentPolicyContext.activeClause
-                        ? ` · ${currentPolicyContext.activeClause}`
-                        : " · policy selected; clause resolves during evaluation"
-                    }`
-                  : "Start or step through the stage to connect a request to its active policy clause."}
-              </span>
-            </strong>
-          </p>
-        </div>
-      </details>
 
       <div className={styles.workspace}>
         <div className={styles.mainColumn}>
           <div className={styles.quickStart}>
             <div>
-              <span>The simple flow</span>
-              <strong>Choose a stage, then move one action from request to receipt.</strong>
+              <span>{model.copy.quickStart.eyebrow}</span>
+              <strong>{model.copy.quickStart.instruction}</strong>
             </div>
-            <p>Technical evidence and full transcripts stay optional.</p>
+            <p>{model.copy.quickStart.detail}</p>
           </div>
 
-          <ol className={styles.flowStrip} aria-label="Governed action flow">
-            <li data-active={state.eventIndex >= 0 ? "true" : undefined}>
-              <span>01</span>
-              <strong>Request</strong>
-            </li>
-            <li data-active={state.eventIndex >= 1 ? "true" : undefined}>
-              <span>02</span>
-              <strong>State + policy</strong>
-            </li>
-            <li data-active={state.eventIndex >= 2 ? "true" : undefined}>
-              <span>03</span>
-              <strong>Decision</strong>
-            </li>
-            <li data-active={state.eventIndex >= 3 ? "true" : undefined}>
-              <span>04</span>
-              <strong>Effect + receipt</strong>
-            </li>
+          <ol
+            className={styles.flowStrip}
+            aria-label={model.copy.flow.ariaLabel}
+          >
+            {model.copy.flow.phases.map((phase, index) => {
+              const current = currentFlowPhase === index;
+
+              return (
+                <li
+                  aria-current={current ? "step" : undefined}
+                  data-current={current ? "true" : undefined}
+                  key={phase.id}
+                >
+                  <span>
+                    {phase.step}
+                    {current ? ` · ${model.copy.flow.currentLabel}` : ""}
+                  </span>
+                  <strong>{phase.label}</strong>
+                </li>
+              );
+            })}
           </ol>
 
           <div
@@ -1880,7 +1817,9 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
               onClick={() => step(1)}
               type="button"
             >
-              Next step
+              {state.playback === "idle"
+                ? model.copy.controls.startOneStepLabel
+                : model.copy.controls.nextStepLabel}
             </button>
             <details className={styles.playbackOptions}>
               <summary>More options</summary>
@@ -1901,7 +1840,9 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
             </details>
             <div className={styles.playbackGuide}>
               <span>
-                {titleCase(state.playback)} · {state.eventIndex < 0
+                {state.playback === "idle"
+                  ? model.copy.controls.readyLabel
+                  : titleCase(state.playback)} · {state.eventIndex < 0
                   ? "Baseline"
                   : `Step ${state.eventIndex + 1} of ${events.length}`}
               </span>
@@ -1932,6 +1873,121 @@ export function DemoExperience({ model }: { model: DemoClientModel }) {
           </div>
 
         </div>
+
+        <details className={styles.managementDisclosure}>
+          <summary>{model.copy.setupDisclosureLabel}</summary>
+          <div className={styles.stageContext}>
+            <div className={styles.requirementBlock}>
+              <span>Current governance need</span>
+              <h3>{stage.requirement}</h3>
+              <p>{stage.presentation.policyChange}</p>
+            </div>
+            <div className={styles.contextOverview}>
+              <dl className={styles.coreFacts}>
+                <div>
+                  <dt>Active agents</dt>
+                  <dd>
+                    {model.scenario.agents
+                      .filter(({ id }) =>
+                        new Set<string>(
+                          stage.presentation.activeAgentIds,
+                        ).has(id),
+                      )
+                      .map(({ shortName }) => shortName)
+                      .join(" · ")}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Governed resource</dt>
+                  <dd>{stage.presentation.resourceLabel}</dd>
+                </div>
+              </dl>
+              <details className={styles.scenarioDetails}>
+                <summary>Stage setup and provenance</summary>
+                <dl className={styles.scenarioFacts}>
+                  <div>
+                    <dt>Product version</dt>
+                    <dd>Stage {stage.productVersion}</dd>
+                  </div>
+                  <div>
+                    <dt>Policy revision</dt>
+                    <dd>
+                      {stage.policies
+                        .map(({ scenarioRevision }) => scenarioRevision)
+                        .join(" · ")}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Policy owner</dt>
+                    <dd>{model.scenario.policyOwner.label}</dd>
+                  </div>
+                  <div>
+                    <dt>Scenario owner</dt>
+                    <dd>{model.scenario.owner.id}</dd>
+                  </div>
+                  <div>
+                    <dt>Version fixture reset</dt>
+                    <dd>{stage.baselineLabel}</dd>
+                  </div>
+                  <div>
+                    <dt>Browser mode</dt>
+                    <dd>Simulation · no external effects</dd>
+                  </div>
+                </dl>
+              </details>
+            </div>
+          </div>
+          <div className={styles.managementPlane}>
+            <div>
+              <span>Policy management</span>
+              <ol role="list">
+                <li data-management-state="complete">
+                  <span>Requirement</span>
+                  <small>{stage.requirement}</small>
+                </li>
+                <li data-management-state="complete">
+                  <span>Policy edit</span>
+                  <small>{policyRevisionSummary}</small>
+                </li>
+                <li data-management-state="complete">
+                  <span>Validate and test</span>
+                  <small>
+                    {policyChecksPassed ? "Passed" : "Review required"} ·{" "}
+                    {policyCaseCount} authored cases
+                  </small>
+                </li>
+                <li
+                  aria-current={activePolicy ? "step" : undefined}
+                  data-management-state={activePolicy ? "active" : "complete"}
+                >
+                  <span>Reviewed revision</span>
+                  <small>
+                    {activePolicy
+                      ? `${activePolicy.scenarioRevision} · active runtime input`
+                      : `${policyRevisionSummary} · ready for runtime`}
+                  </small>
+                </li>
+              </ol>
+            </div>
+            <p>
+              Prompts, OpenClaw orchestration, and provider code remain outside
+              this policy-management plane.
+              <strong>
+                Current runtime evidence:{" "}
+                {currentEvent?.label ?? "named version fixture"}.
+                <span className={styles.activePolicyLink}>
+                  {activePolicy && currentPolicyContext
+                    ? `Active policy link: ${activePolicy.scenarioRevision}${
+                        currentPolicyContext.activeClause
+                          ? ` · ${currentPolicyContext.activeClause}`
+                          : " · policy selected; clause resolves during evaluation"
+                      }`
+                    : "Start or step through the stage to connect a request to its active policy clause."}
+                </span>
+              </strong>
+            </p>
+          </div>
+        </details>
 
         <details
           className={styles.inspectorDisclosure}

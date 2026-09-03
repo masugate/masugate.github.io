@@ -371,9 +371,46 @@ export const demoOperationDefinitions = [
   },
 ] as const satisfies readonly DemoOperationDefinition[];
 
+export const demoExperienceCopy = {
+  stageBrowser: {
+    title: "Start with one governed action",
+    hint: "Begin with Stage 1. Later stages add one governance challenge at a time.",
+  },
+  stageCues: {
+    "stage-1": "Start here · one purchase",
+    "stage-2": "Then · coordinate shared capacity",
+    "stage-3": "Then · extend to calendar and files",
+  },
+  quickStart: {
+    eyebrow: "Two ways to explore",
+    instruction: "Choose Play for automatic playback, or move one event at a time.",
+    detail:
+      "State and outcome cards update on every event; required choices pause playback.",
+  },
+  flow: {
+    ariaLabel: "Current governed-action phase",
+    currentLabel: "Now",
+    phases: [
+      { id: "request", step: "01", label: "Request" },
+      { id: "state", step: "02", label: "Read state" },
+      { id: "decision", step: "03", label: "Decide" },
+      { id: "effect", step: "04", label: "Effect + record" },
+    ],
+  },
+  controls: {
+    readyLabel: "Ready",
+    startOneStepLabel: "Start one step",
+    nextStepLabel: "Next step",
+    startHint: "Play automatically, or start with one deliberate step.",
+  },
+  setupDisclosureLabel: "Optional: inspect stage setup and policy maintenance",
+  baselineInstruction:
+    "Choose Play or Start one step to begin the deterministic sequence.",
+} as const;
+
 export const demoStagePresentation = {
   "stage-1": {
-    runLabel: "Run governed purchase",
+    runLabel: "Play governed purchase",
     resourceLabel: "Business purchase budget",
     userIntent:
       "Buy the project-planning subscription for $40 and charge it to business.",
@@ -390,7 +427,7 @@ export const demoStagePresentation = {
     activeRouteIds: ["purchase"],
   },
   "stage-2": {
-    runLabel: "Run concurrent purchase requests",
+    runLabel: "Play shared-budget requests",
     resourceLabel: "Shared demo-owner business budget",
     userIntent:
       "Coordinate the travel and work purchases against one $100 business budget.",
@@ -413,7 +450,7 @@ export const demoStagePresentation = {
     activeRouteIds: ["purchase"],
   },
   "stage-3": {
-    runLabel: "Run calendar and workspace operations",
+    runLabel: "Play calendar and workspace",
     resourceLabel: "Protected calendar and workspace fixtures",
     userIntent:
       "Reserve travel time and maintain trip files without disturbing protected work.",
@@ -685,6 +722,7 @@ export type DemoClientStage = Readonly<{
  * validators without being serialized into the browser handoff.
  */
 export interface DemoClientModel {
+  copy: typeof demoExperienceCopy;
   scenario: Readonly<{
     id: DemoExperienceModel["scenario"]["id"];
     owner: Readonly<{ id: DemoExperienceModel["scenario"]["owner"]["id"] }>;
@@ -848,6 +886,7 @@ export function selectDemoClientExperience(
   );
 
   return {
+    copy: demoExperienceCopy,
     scenario: {
       id: model.scenario.id,
       owner: { id: model.scenario.owner.id },

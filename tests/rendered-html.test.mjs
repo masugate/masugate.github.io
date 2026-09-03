@@ -588,10 +588,9 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
   assert.ok(disclosureMarkupIndex >= 0 && disclosureMarkupIndex < firstButtonIndex);
 
   for (const controlLabel of [
-    "Start walkthrough",
-    "Run governed purchase",
+    "Play governed purchase",
     "Previous",
-    "Next step",
+    "Start one step",
     "Reset stage",
     "Open static transcript",
     "Expand technical detail",
@@ -602,11 +601,14 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
 
   for (const usabilityCopy of [
     "Try the walkthrough",
-    "The simple flow",
-    "Choose a stage, then move one action from request to receipt.",
-    "Next: Start Stage 1; the walkthrough will advance automatically.",
+    "Start with one governed action",
+    "Start here · one purchase",
+    "Two ways to explore",
+    "Choose Play for automatic playback, or move one event at a time.",
+    "State and outcome cards update on every event; required choices pause playback.",
+    "Next: Play automatically, or start with one deliberate step.",
     "Stage setup and provenance",
-    "Optional: inspect how policy maintenance reaches runtime",
+    "Optional: inspect stage setup and policy maintenance",
     "Optional developer evidence",
     "Inspect policy, configuration, trace, and records",
   ]) {
@@ -614,9 +616,19 @@ test("server-renders the complete Milestone 3 OpenClaw Demo contract", async () 
   }
 
   assert.ok(
-    text.indexOf("The simple flow") <
+    text.indexOf("Two ways to explore") <
       text.indexOf("Conversation and agent lanes"),
     "Demo guidance and its primary control must precede the interactive scene",
+  );
+  assert.ok(
+    text.indexOf("Conversation and agent lanes") <
+      text.indexOf("Optional: inspect stage setup and policy maintenance"),
+    "Stage setup and policy maintenance must follow the live scene",
+  );
+  assert.ok(
+    text.indexOf("Two ways to explore") <
+      text.indexOf("Maintain policy here. Use it there."),
+    "The interactive walkthrough must precede the policy lifecycle explainer",
   );
 
   assert.match(

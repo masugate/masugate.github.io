@@ -56,6 +56,8 @@ test("Demo client projection retains every interactive value", () => {
   const clientModel = demoData.selectDemoClientExperience();
   const stageThree = clientModel.stages.find(({ id }) => id === "stage-3");
 
+  assert.equal(clientModel.copy.controls.startOneStepLabel, "Start one step");
+  assert.equal(clientModel.copy.stageCues["stage-1"], "Start here · one purchase");
   assert.equal(
     clientModel.integration.adapter.packageName.value,
     "@masugate/openclaw",
