@@ -20,10 +20,14 @@ function FigureAttribution({ source }: { source: PaperFigureAttribution }) {
 }
 
 function TextEquivalent({ profile }: { profile: SchematicProfile }) {
+  const statements = profile.textEquivalent.split(/(?<=[.!?])\s+/);
+
   return (
     <details className={styles.transcript}>
       <summary>Text equivalent</summary>
-      <p>{profile.textEquivalent}</p>
+      {statements.map((statement) => (
+        <p key={statement}>{statement}</p>
+      ))}
     </details>
   );
 }
