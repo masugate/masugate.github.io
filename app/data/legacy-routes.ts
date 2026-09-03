@@ -15,6 +15,20 @@ export type LegacyRouteDisposition =
   | LegacyRedirect
   | RetainedLegacyRoute;
 
+export type LegacyRedirectStaticParam = Readonly<{
+  legacyPath: string[];
+}>;
+
+export const legacyRedirectPresentation = {
+  metadataTitle: "Page moved",
+  unavailableMetadataTitle: "Page unavailable",
+  eyebrow: "Page moved",
+  title: "This MasuGate page has a new home.",
+  fallbackMessage:
+    "If you are not redirected automatically, use the link below.",
+  actionLabel: "Continue to the current page",
+} as const;
+
 /**
  * The authoritative pre-launch migration map for legacy public routes.
  *
@@ -39,7 +53,8 @@ export const legacyRouteDispositions = [
     source: "/resources",
     disposition: "redirect",
     destination: "/blog/",
-    reason: "The Blog index now publishes two substantive technical articles.",
+    reason:
+      "The Blog index now publishes substantive technical articles and project updates.",
   },
   {
     source: "/resources/policy-as-program",
@@ -137,4 +152,16 @@ export function findLegacyRedirect(
   return activeLegacyRedirects.find(
     ({ source }) => source === normalizedPathname,
   );
+}
+
+export function getLegacyRedirectStaticParams(): readonly LegacyRedirectStaticParam[] {
+  return activeLegacyRedirects.map(({ source }) => ({
+    legacyPath: source.slice(1).split("/"),
+  }));
+}
+
+export function findLegacyRedirectBySegments(
+  legacyPath: readonly string[],
+): LegacyRedirect | undefined {
+  return findLegacyRedirect(`/${legacyPath.join("/")}`);
 }

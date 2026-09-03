@@ -4,6 +4,10 @@ import {
   type ScenarioStageId,
   unavailable,
 } from "./contracts";
+import {
+  masugateSite,
+  type SiteIdentityContract,
+} from "./masugate-site";
 import { masugateRelease } from "./release";
 
 export type CandidateStageAlignment = "exact" | "related" | "none";
@@ -50,6 +54,9 @@ export interface OpenClawReferenceCandidate {
   presentation: Readonly<{
     hero: Readonly<{
       intro: string;
+      sourceBoundary: string;
+      visibilityLabel: string;
+      localRunBoundary: string;
     }>;
     identityDisclosure: Readonly<{
       eyebrow: string;
@@ -144,6 +151,26 @@ function pending(
   return unavailable(reason, note);
 }
 
+const sourceRepositoryContract: SiteIdentityContract["sourceRepository"] =
+  masugateSite.sourceRepository;
+
+const supportRoutesPromotionGate: CandidatePromotionGate =
+  sourceRepositoryContract.state === "available"
+    ? {
+        id: "support-routes",
+        status: "complete",
+        label: "Keep public support routes active",
+        detail:
+          "The site contract exposes the public issue tracker and SECURITY.md route. This completes support routing only; the tag, runtime, and retained-evidence gates remain pending.",
+      }
+    : {
+        id: "support-routes",
+        status: "pending",
+        label: "Enable public support routes",
+        detail:
+          "Publish an issue tracker and security-policy route before marking support routing complete.",
+      };
+
 export const openClawReferenceCandidate = {
   id: "openclaw-reference-candidate",
   publication: "candidate-only",
@@ -161,6 +188,11 @@ export const openClawReferenceCandidate = {
     hero: {
       intro:
         "Map the pinned OpenClaw purchase candidate to the website story without treating the simulation as recorded or verified execution.",
+      sourceBoundary:
+        "The source has an exact public Git identity. The release remains untagged and its external publication authorization is pending, with no retained supported-runtime output or verification date.",
+      visibilityLabel: "Repository visibility observed on",
+      localRunBoundary:
+        "No install or “Run locally” claim is published from this state.",
     },
     identityDisclosure: {
       eyebrow: "Secondary candidate detail",
@@ -379,13 +411,7 @@ export const openClawReferenceCandidate = {
       detail:
         "Create the reviewed v0.1.0 tag and GitHub Release, then attach checksums, SBOM, provenance, artifacts, and evidence.",
     },
-    {
-      id: "support-routes",
-      status: "pending",
-      label: "Enable public support routes",
-      detail:
-        "Confirm the issue tracker and a private security-reporting destination before activating those website links.",
-    },
+    supportRoutesPromotionGate,
   ],
   publicSource: pending(
     "public-release-unavailable",
@@ -420,6 +446,9 @@ export function validateOpenClawReferenceCandidate(
   const stageIds = new Set<ScenarioStageId>();
   const presentationCopy = [
     candidate.presentation.hero.intro,
+    candidate.presentation.hero.sourceBoundary,
+    candidate.presentation.hero.visibilityLabel,
+    candidate.presentation.hero.localRunBoundary,
     candidate.presentation.identityDisclosure.eyebrow,
     candidate.presentation.identityDisclosure.title,
     candidate.presentation.coverageDisclosure.eyebrow,
@@ -502,6 +531,15 @@ export function validateOpenClawReferenceCandidate(
     !candidate.promotionGates.some(({ status }) => status === "pending")
   ) {
     errors.push("The candidate must distinguish completed intake from pending promotion gates.");
+  }
+
+  const supportRoutes = candidate.promotionGates.find(
+    ({ id }) => id === "support-routes",
+  );
+  const expectedSupportStatus =
+    sourceRepositoryContract.state === "available" ? "complete" : "pending";
+  if (!supportRoutes || supportRoutes.status !== expectedSupportStatus) {
+    errors.push("The OpenClaw support gate drifted from the site availability contract.");
   }
 
   return errors;

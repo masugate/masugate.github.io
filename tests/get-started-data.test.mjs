@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { build } from "esbuild";
 
@@ -44,13 +45,43 @@ test("Get Started satisfies its release-safe data contract", () => {
 });
 
 test("Get Started route heroes live in the typed guide", () => {
-  assert.equal(getStartedGuide.quickStartPage.hero.title, "Run the reference demo.");
+  assert.equal(
+    getStartedGuide.quickStartPage.hero.title,
+    "Choose the evidence path available today.",
+  );
   assert.equal(
     getStartedGuide.technicalPage.hero.title,
     "Profiles, outcomes, and integration boundaries.",
   );
-  assert.match(getStartedGuide.quickStartPage.hero.intro, /under five minutes/i);
+  assert.match(getStartedGuide.quickStartPage.hero.intro, /release-gated/i);
   assert.match(getStartedGuide.technicalPage.hero.intro, /research preview/i);
+});
+
+test("Get Started navigation targets current evaluation sections", () => {
+  assert.deepEqual(
+    getStartedGuide.quickStartPage.navigation.links.map(({ label, href }) => ({
+      label,
+      href,
+    })),
+    [
+      {
+        label: "Evaluation paths",
+        href: "/get-started/#evaluation-paths",
+      },
+      {
+        label: "Technical readiness",
+        href: "/get-started/#technical-readiness",
+      },
+      {
+        label: "Public source candidate",
+        href: "/get-started/#source-review",
+      },
+      {
+        label: "Technical reference",
+        href: "/get-started/technical/",
+      },
+    ],
+  );
 });
 
 test("three current paths lead only to approved internal destinations", () => {
@@ -137,6 +168,28 @@ test("Git candidate progress is explicit without release promotion", () => {
   assert.ok(
     getStartedGuide.declaredPackages.every(
       ({ publication }) => publication === "declared-only",
+    ),
+  );
+});
+
+test("public repository copy cannot regress to a private-access boundary", () => {
+  assert.equal(getStartedGuide.availability.publicRepository.state, "available");
+  assert.doesNotMatch(
+    getStartedGuide.readinessSteps.map(({ guidance }) => guidance).join("\n"),
+    /wait for anonymous access|repository (?:is )?private/i,
+  );
+
+  const contradictoryGuide = {
+    ...getStartedGuide,
+    readinessSteps: getStartedGuide.readinessSteps.map((step) =>
+      step.id === "get-release"
+        ? { ...step, guidance: "Wait for anonymous access to the repository." }
+        : step,
+    ),
+  };
+  assert.ok(
+    validateGetStartedGuide(contradictoryGuide).some((error) =>
+      error.includes("contradicts the availability contract"),
     ),
   );
 });
@@ -401,4 +454,42 @@ test("validator rejects a command-shaped readiness placeholder", () => {
       error.includes("command-shaped content"),
     ),
   );
+});
+
+test("validator rejects unsupported local-execution presentation copy", () => {
+  const promotedGuide = {
+    ...getStartedGuide,
+    quickStartPage: {
+      ...getStartedGuide.quickStartPage,
+      hero: {
+        ...getStartedGuide.quickStartPage.hero,
+        intro: "Prepare the supported local workspace and run and verify it.",
+      },
+    },
+  };
+
+  assert.ok(
+    validateGetStartedGuide(promotedGuide).some((error) =>
+      error.includes("cannot be presented as supported or verified"),
+    ),
+  );
+});
+
+test("Get Started route publishes no local command or verified-run claim", async () => {
+  const routeSource = await readFile(
+    "app/(masugate)/get-started/page.tsx",
+    "utf8",
+  );
+
+  assert.doesNotMatch(
+    routeSource,
+    /(?:setupCommand|demoCommand|verifyCommand|MASUGATE_|<pre|prepare-reference-demo|run_reference_demos|verify-flagship-demo)/,
+  );
+  assert.doesNotMatch(
+    routeSource,
+    /(?:supported local environment|under five minutes|PSS-valid execution|exits with status zero)/i,
+  );
+  assert.match(routeSource, /getStartedGuide\.readinessSteps/);
+  assert.match(routeSource, /getStartedGuide\.availability\.runLocally/);
+  assert.match(routeSource, /getStartedGuide\.quickStartPage/);
 });

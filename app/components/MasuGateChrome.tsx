@@ -5,6 +5,7 @@ import {
 } from "../data/articles";
 import { contactContract } from "../data/contact";
 import { isAvailable } from "../data/contracts";
+import { getStartedGuide } from "../data/get-started";
 import {
   type NavigationItemId,
   masugateSite,
@@ -65,26 +66,7 @@ const navigationMaps: Record<
       },
     ],
   },
-  "get-started": {
-    summary: "Set up the reference demo",
-    links: [
-      {
-        label: "Requirements",
-        href: "/get-started/#requirements",
-        detail: "Prepare the supported local environment.",
-      },
-      {
-        label: "Five-minute demonstration",
-        href: "/get-started/#run-demo",
-        detail: "Run and verify the procurement scenario.",
-      },
-      {
-        label: "Technical reference",
-        href: "/get-started/technical/",
-        detail: "Inspect profiles, outcomes, and boundaries.",
-      },
-    ],
-  },
+  "get-started": getStartedGuide.quickStartPage.navigation,
   blog: {
     summary: "Read the project’s technical notes",
     links: [

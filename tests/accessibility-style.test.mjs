@@ -49,6 +49,21 @@ test("MasuGate chrome retains visible focus, skip-link, and reduced-motion rules
   assert.match(css, /@media \(max-width:\s*640px\)/);
 });
 
+test("externally embedded logo assets contain no ungoverned motion", async () => {
+  const openClawLogo = await readFile("public/logos/openclaw.svg", "utf8");
+
+  assert.match(openClawLogo, /viewBox="0 0 120 120"/);
+  assert.match(openClawLogo, /lobster-gradient/);
+  assert.doesNotMatch(
+    openClawLogo,
+    /<(?:animate|animateMotion|animateTransform|set)\b/i,
+  );
+  assert.doesNotMatch(
+    openClawLogo,
+    /@keyframes|\b(?:animation|transition)(?:-[a-z-]+)?\s*:/i,
+  );
+});
+
 test("core semantic color pairs retain WCAG AA text contrast", async () => {
   const css = await readFile("app/(masugate)/primary.css", "utf8");
   const colors = Object.fromEntries(

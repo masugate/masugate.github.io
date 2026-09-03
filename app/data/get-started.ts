@@ -141,10 +141,62 @@ export interface GetStartedGuide {
   }>;
   paths: readonly GetStartedPath[];
   quickStartPage: Readonly<{
+    metadataDescription: string;
+    navigation: Readonly<{
+      summary: string;
+      links: readonly Readonly<{
+        label: string;
+        href:
+          | "/get-started/#evaluation-paths"
+          | "/get-started/#technical-readiness"
+          | "/get-started/#source-review"
+          | "/get-started/technical/";
+        detail: string;
+      }>[];
+    }>;
     hero: Readonly<{
       eyebrow: string;
       title: string;
       intro: string;
+      demoActionLabel: string;
+      sourceActionLabel: string;
+    }>;
+    summary: Readonly<{
+      label: string;
+      eyebrow: string;
+      items: readonly string[];
+      note: string;
+    }>;
+    pathsSection: Readonly<{
+      eyebrow: string;
+      title: string;
+      intro: string;
+      audienceLabel: string;
+      outcomeLabel: string;
+      boundaryLabel: string;
+    }>;
+    readinessSection: Readonly<{
+      eyebrow: string;
+      title: string;
+      intro: string;
+      reviewNowLabel: string;
+      releaseGatedLabel: string;
+    }>;
+    sourceSection: Readonly<{
+      eyebrow: string;
+      title: string;
+      intro: string;
+      repositoryActionLabel: string;
+      documentationActionLabel: string;
+      revisionLabel: string;
+      boundaryLabel: string;
+    }>;
+    nextSection: Readonly<{
+      eyebrow: string;
+      title: string;
+      intro: string;
+      demoActionLabel: string;
+      technicalActionLabel: string;
     }>;
   }>;
   technicalPage: Readonly<{
@@ -296,7 +348,7 @@ export const getStartedGuide = {
   paths: [
     {
       id: "reference-demo",
-      title: "Run the reference demo",
+      title: "Explore the reference walkthrough",
       audience: "A developer evaluating MasuGate for the first time.",
       outcome:
         "Understand one governed procurement flow and the evidence it should retain.",
@@ -306,7 +358,7 @@ export const getStartedGuide = {
     },
     {
       id: "application-integration",
-      title: "Integrate an application",
+      title: "Inspect an application integration",
       audience: "A developer adding MasuGate to an existing agent system.",
       outcome:
         "Compare the invariant governance contract with one host-specific binding.",
@@ -316,7 +368,7 @@ export const getStartedGuide = {
     },
     {
       id: "research-artifact",
-      title: "Reproduce the research artifact",
+      title: "Plan research reproduction",
       audience: "A reviewer validating the implementation and its claims.",
       outcome:
         "Use the eventual immutable release, supported environment, and retained verification gates.",
@@ -326,11 +378,86 @@ export const getStartedGuide = {
     },
   ],
   quickStartPage: {
+    metadataDescription:
+      "Explore the browser walkthrough, review the public source candidate, and inspect release readiness while local installation and runtime evidence remain unavailable.",
+    navigation: {
+      summary: "Evaluate the current research preview",
+      links: [
+        {
+          label: "Evaluation paths",
+          href: "/get-started/#evaluation-paths",
+          detail: "Choose the browser, source-review, or research path.",
+        },
+        {
+          label: "Technical readiness",
+          href: "/get-started/#technical-readiness",
+          detail: "Review what is available now and what remains release-gated.",
+        },
+        {
+          label: "Public source candidate",
+          href: "/get-started/#source-review",
+          detail: "Inspect the repository, documentation, and release boundary.",
+        },
+        {
+          label: "Technical reference",
+          href: "/get-started/technical/",
+          detail: "Inspect profiles, outcomes, and integration boundaries.",
+        },
+      ],
+    },
     hero: {
       eyebrow: "Get Started",
-      title: "Run the reference demo.",
+      title: "Choose the evidence path available today.",
       intro:
-        "Prepare the supported workspace once, then run and verify one governed procurement scenario in under five minutes.",
+        "Explore the browser walkthrough, inspect the public source candidate, and review technical readiness while installation and verified local execution remain release-gated.",
+      demoActionLabel: "Explore the browser walkthrough",
+      sourceActionLabel: "Review the public source",
+    },
+    summary: {
+      label: "Current evaluation paths",
+      eyebrow: "Available now",
+      items: [
+        "Explore the governed scenario in the browser.",
+        "Review the public Git candidate and documentation.",
+        "Track the remaining release and runtime gates.",
+      ],
+      note:
+        "Local installation and run instructions stay hidden until the tagged release path and runtime evidence are available.",
+    },
+    pathsSection: {
+      eyebrow: "Evaluation paths",
+      title: "Start from the boundary you need to inspect.",
+      intro:
+        "Each path leads to material that is available now and states what remains gated.",
+      audienceLabel: "For",
+      outcomeLabel: "What you can learn",
+      boundaryLabel: "Current boundary",
+    },
+    readinessSection: {
+      eyebrow: "Technical readiness",
+      title: "See the release path without publishing a recipe early.",
+      intro:
+        "The sequence stays visible for reviewers, while every action that depends on a tagged release or supported runtime evidence remains gated.",
+      reviewNowLabel: "Review now",
+      releaseGatedLabel: "Release-gated",
+    },
+    sourceSection: {
+      eyebrow: "Public source candidate",
+      title: "Review the source without mistaking it for a release.",
+      intro:
+        "The repository and documentation are public. The pinned candidate is still untagged, and its local-run and verification paths are not available for promotion.",
+      repositoryActionLabel: "Open the GitHub repository",
+      documentationActionLabel: "Read the repository guide",
+      revisionLabel: "Pinned release-tree commit",
+      boundaryLabel: "Release boundary",
+    },
+    nextSection: {
+      eyebrow: "Continue",
+      title: "Follow the walkthrough or inspect the full contract.",
+      intro:
+        "Use the browser demo for the product story, or the technical reference for profiles, outcomes, integration boundaries, and readiness detail.",
+      demoActionLabel: "Open the browser demo",
+      technicalActionLabel: "Open technical reference",
     },
   },
   technicalPage: {
@@ -398,7 +525,7 @@ export const getStartedGuide = {
       title: "Get the named release",
       status: "release-gated",
       guidance:
-        "The candidate repository and exact release-tree commit are fixed. Wait for anonymous access, the reviewed v0.1.0 tag and GitHub Release, and attached integrity material before treating it as the named public release.",
+        "The public candidate repository and exact release-tree commit are fixed. Wait for the reviewed v0.1.0 tag and GitHub Release, plus attached integrity material, before treating it as the named public release.",
     },
     {
       id: "prepare-once",
@@ -634,6 +761,57 @@ export function validateGetStartedGuide(
 ): readonly string[] {
   const errors: string[] = [];
   const pathIds = new Set<GetStartedPathId>();
+  const quickStart = guide.quickStartPage;
+  const quickStartCopy = [
+    quickStart.metadataDescription,
+    quickStart.navigation.summary,
+    ...quickStart.navigation.links.flatMap(({ label, detail }) => [label, detail]),
+    quickStart.hero.eyebrow,
+    quickStart.hero.title,
+    quickStart.hero.intro,
+    quickStart.hero.demoActionLabel,
+    quickStart.hero.sourceActionLabel,
+    quickStart.summary.label,
+    quickStart.summary.eyebrow,
+    ...quickStart.summary.items,
+    quickStart.summary.note,
+    ...Object.values(quickStart.pathsSection),
+    ...Object.values(quickStart.readinessSection),
+    ...Object.values(quickStart.sourceSection),
+    ...Object.values(quickStart.nextSection),
+  ];
+
+  if (quickStartCopy.some((value) => value.trim().length === 0)) {
+    errors.push("The Get Started presentation copy is incomplete.");
+  }
+  if (
+    quickStart.summary.items.length !== 3 ||
+    quickStartCopy.some((value) => commandShape.test(value))
+  ) {
+    errors.push("The Get Started evaluation summary must stay three-part and command-free.");
+  }
+  if (
+    !sameStrings(
+      quickStart.navigation.links.map(({ href }) => href),
+      [
+        "/get-started/#evaluation-paths",
+        "/get-started/#technical-readiness",
+        "/get-started/#source-review",
+        "/get-started/technical/",
+      ],
+    )
+  ) {
+    errors.push("The Get Started navigation drifted from its current route sections.");
+  }
+
+  const unsupportedRunClaim =
+    /\b(?:prepare the supported (?:local )?workspace|run and verify|under five minutes|successful run|PSS-valid execution|exits with status zero)\b/i;
+  if (
+    guide.availability.runLocally.state === "unavailable" &&
+    quickStartCopy.some((value) => unsupportedRunClaim.test(value))
+  ) {
+    errors.push("Unavailable local execution cannot be presented as supported or verified.");
+  }
 
   for (const path of guide.paths) {
     if (pathIds.has(path.id)) {
@@ -705,6 +883,22 @@ export function validateGetStartedGuide(
     guide.candidateSource.visibility !== release.candidateSource.visibility
   ) {
     errors.push("Get Started candidate source drifted from the release contract.");
+  }
+
+  const sourceStatusCopy = [
+    ...guide.paths.map(({ currentBoundary }) => currentBoundary),
+    guide.candidateSource.boundary,
+    ...guide.readinessSteps.map(({ guidance }) => guidance),
+  ];
+  if (
+    guide.availability.publicRepository.state === "available" &&
+    sourceStatusCopy.some((value) =>
+      /(?:wait for anonymous access|anonymous access (?:is )?unavailable|(?:source )?repository (?:is )?private)/i.test(
+        value,
+      ),
+    )
+  ) {
+    errors.push("Public repository copy contradicts the availability contract.");
   }
 
   if (

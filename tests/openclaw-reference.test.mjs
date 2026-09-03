@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { build } from "esbuild";
 
@@ -122,7 +123,7 @@ test("candidate distinguishes the origin snapshot from the release tree", () => 
     openClawReferenceCandidate.promotionGates.filter(
       ({ status }) => status === "complete",
     ).length,
-    2,
+    3,
   );
   assert.ok(
     openClawReferenceCandidate.promotionGates.some(
@@ -130,6 +131,40 @@ test("candidate distinguishes the origin snapshot from the release tree", () => 
         id === "live-gate-contract" && status === "pending",
     ),
   );
+});
+
+test("public support routes are complete without promoting release evidence", () => {
+  const supportRoutes = openClawReferenceCandidate.promotionGates.find(
+    ({ id }) => id === "support-routes",
+  );
+
+  assert.equal(supportRoutes?.status, "complete");
+  assert.match(supportRoutes?.detail ?? "", /issue tracker and SECURITY\.md route/i);
+  assert.match(supportRoutes?.detail ?? "", /tag, runtime, and retained-evidence gates remain pending/i);
+
+  const driftedCandidate = {
+    ...openClawReferenceCandidate,
+    promotionGates: openClawReferenceCandidate.promotionGates.map((gate) =>
+      gate.id === "support-routes" ? { ...gate, status: "pending" } : gate,
+    ),
+  };
+  assert.ok(
+    validateOpenClawReferenceCandidate(driftedCandidate).some((error) =>
+      error.includes("support gate drifted from the site availability contract"),
+    ),
+  );
+});
+
+test("OpenClaw disclosure follows the typed public-visibility boundary", async () => {
+  const routeSource = await readFile(
+    "app/(masugate)/demo/openclaw-reference/page.tsx",
+    "utf8",
+  );
+
+  assert.doesNotMatch(routeSource, /Anonymous access returned 404/);
+  assert.match(routeSource, /candidate\.presentation\.hero\.sourceBoundary/);
+  assert.match(routeSource, /candidate\.identity\.repositoryVisibility/);
+  assert.match(routeSource, /candidate\.presentation\.hero\.localRunBoundary/);
 });
 
 test("candidate coverage is related, related, then simulation-only", () => {

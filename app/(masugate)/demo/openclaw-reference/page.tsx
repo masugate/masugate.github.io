@@ -45,14 +45,12 @@ export default function OpenClawReferenceCandidatePage() {
                 Evidence: Reference
               </span>
             </div>
-            <p>
-              The source now has an exact public Git identity. It remains unreleased,
-              untagged, and externally unauthorized for publication, with no
-              retained supported-runtime output or verification date.
-            </p>
+            <p>{candidate.presentation.hero.sourceBoundary}</p>
             <small>
-              Anonymous access returned 404 on {candidate.identity.visibilityObservedAt}.
-              No install or “Run locally” claim is published from this state.
+              {candidate.presentation.hero.visibilityLabel}{" "}
+              {candidate.identity.visibilityObservedAt}:{" "}
+              {titleCase(candidate.identity.repositoryVisibility)}. {" "}
+              {candidate.presentation.hero.localRunBoundary}
             </small>
           </aside>
         </div>

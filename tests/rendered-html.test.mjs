@@ -330,7 +330,7 @@ test("server-renders the MasuGate primary routes through one gated shell", async
     ],
     [
       "/get-started/",
-      /Run the reference demo\./,
+      /Choose the evidence path available today\./,
     ],
     [
       "/get-started/technical/",
@@ -1045,12 +1045,18 @@ test("renders explicit evidence, presentation, release, and maturity status", as
   const getStartedTextMarkup = getStartedHtml.replace(/<!-- -->/g, "");
 
   assert.equal(getStartedResponse.status, 200);
-  assert.match(getStartedTextMarkup, /Run the reference demo\./);
-  assert.match(getStartedTextMarkup, /Five-minute demonstration/);
+  assert.match(
+    getStartedTextMarkup,
+    /Choose the evidence path available today\./,
+  );
+  assert.match(
+    getStartedTextMarkup,
+    /Local installation and run instructions stay hidden/,
+  );
   assert.doesNotMatch(getStartedTextMarkup, /Evidence: Verified/);
 });
 
-test("server-renders the focused installation and five-minute demo guide", async () => {
+test("server-renders the release-safe Get Started evaluation guide", async () => {
   const response = await render("/get-started/");
   const html = await response.text();
   const text = textContent(html);
@@ -1061,32 +1067,31 @@ test("server-renders the focused installation and five-minute demo guide", async
 
   for (const requiredCopy of [
     "Get Started",
-    "Run the reference demo.",
-    "Two steps",
-    "Prepare the local release workspace.",
-    "Run and verify the procurement scenario.",
-    "Prepare once",
-    "Set up the local workspace.",
-    "Linux/amd64",
-    "CPython 3.12",
-    "Docker and Compose",
-    "About 8 GiB free",
-    "scripts/prepare-reference-demo.py",
-    "Five-minute demonstration",
-    "Run one governed procurement action.",
-    "Run the scenario",
-    "scripts/run_reference_demos.py procurement",
-    "Expected result",
-    "A governed receipt and PSS-valid execution.",
-    "Verify the result",
-    "scripts/verify-flagship-demo.py",
-    "Open the OpenClaw demo",
+    "Choose the evidence path available today.",
+    "Available now",
+    "Explore the governed scenario in the browser.",
+    "Review the public Git candidate and documentation.",
+    "Track the remaining release and runtime gates.",
+    "Evaluation paths",
+    "Start from the boundary you need to inspect.",
+    "Explore the reference walkthrough",
+    "Inspect an application integration",
+    "Plan research reproduction",
+    "Technical readiness",
+    "See the release path without publishing a recipe early.",
+    "Confirm prerequisites",
+    "Release-gated",
+    "Public source candidate",
+    "Review the source without mistaking it for a release.",
+    "Pinned release-tree commit",
+    "Release boundary",
+    "Open the browser demo",
     "Open technical reference",
   ]) {
     assert.ok(text.includes(requiredCopy), `Get Started is missing: ${requiredCopy}`);
   }
 
-  for (const href of ["#run-demo", "/demo/"]) {
+  for (const href of ["/demo/", "/get-started/technical/"]) {
     assert.ok(
       linksIn(html).some((link) => link.href === href),
       `Get Started is missing its action: ${href}`,
@@ -1095,7 +1100,6 @@ test("server-renders the focused installation and five-minute demo guide", async
 
   for (const href of [
     "https://github.com/masugate/masugate",
-    "https://github.com/masugate/masugate/archive/refs/heads/main.zip",
     "https://github.com/masugate/masugate/blob/main/README.md",
   ]) {
     assert.ok(
@@ -1104,10 +1108,14 @@ test("server-renders the focused installation and five-minute demo guide", async
     );
   }
 
-  assert.equal(countMatches(mainMarkup(html), /<pre\b/gi), 3);
-  assert.match(html, /id="requirements"/i);
-  assert.match(html, /id="run-demo"/i);
-  assert.match(html, /id="verify-demo"/i);
+  assert.equal(countMatches(mainMarkup(html), /<pre\b/gi), 0);
+  assert.match(html, /id="evaluation-paths"/i);
+  assert.match(html, /id="technical-readiness"/i);
+  assert.match(html, /id="source-review"/i);
+  assert.doesNotMatch(
+    text,
+    /prepare-reference-demo|run_reference_demos|verify-flagship-demo|PSS-valid execution/i,
+  );
   assert.doesNotMatch(text, /Milestone 4/i);
 });
 
